@@ -15,6 +15,12 @@ AMS_Golem::AMS_Golem()
 	// Simple Monster AI Setting
 	AIControllerClass = AMSAIController::StaticClass();
 
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Ancient_Golem/Mesh/SK_Ancient_Golem.SK_Ancient_Golem'"));
+	if (CharacterMeshRef.Object)
+	{
+		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
+	}
+
 	// Simple Monster AnimClass Setting
 	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Ancient_Golem/Demo/ThirdPerson_AnimBP.ThirdPerson_AnimBP_C'"));
 	if (AnimInstanceClassRef.Class)
@@ -28,11 +34,11 @@ AMS_Golem::AMS_Golem()
 		DeadMontage = DeadMontageRef.Object;
 	}
 
-	/*static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Ancient_Golem/Animation/AM_Golem_Attack.AM_Golem_Attack'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Ancient_Golem/Animation/AM_Golem_Attack.AM_Golem_Attack'"));
 	if (AttackMontageRef.Object)
 	{
 		AttackMontage = AttackMontageRef.Object;
-	}*/
+	}
 }
 
 float AMS_Golem::GetAIPatrolRadius()

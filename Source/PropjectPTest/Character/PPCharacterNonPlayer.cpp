@@ -2,23 +2,23 @@
 
 
 #include "Character/PPCharacterNonPlayer.h"
-#include "Engine/AssetManager.h"
+// #include "Engine/AssetManager.h"
 
 APPCharacterNonPlayer::APPCharacterNonPlayer()
 {
-	GetMesh()->SetHiddenInGame(true);
+	// GetMesh()->SetHiddenInGame(true);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void APPCharacterNonPlayer::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	ensure(NPCMeshes.Num() > 0);
-	int32 RandIndex = FMath::RandRange(0, NPCMeshes.Num() - 1);
-	NPCMeshHandle = UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(NPCMeshes[RandIndex], FStreamableDelegate::CreateUObject(this, &APPCharacterNonPlayer::NPCMeshLoadCompleted));
-}
+//void APPCharacterNonPlayer::PostInitializeComponents()
+//{
+//	Super::PostInitializeComponents();
+//
+//	ensure(NPCMeshes.Num() > 0);
+//	int32 RandIndex = FMath::RandRange(0, NPCMeshes.Num() - 1);
+//	NPCMeshHandle = UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(NPCMeshes[RandIndex], FStreamableDelegate::CreateUObject(this, &APPCharacterNonPlayer::NPCMeshLoadCompleted));
+//}
 
 void APPCharacterNonPlayer::SetDead()
 {
@@ -33,20 +33,20 @@ void APPCharacterNonPlayer::SetDead()
 	), DeadEventDelayTime, false);
 }
 
-void APPCharacterNonPlayer::NPCMeshLoadCompleted()
-{
-	if (NPCMeshHandle.IsValid())
-	{
-		USkeletalMesh* NPCMesh = Cast<USkeletalMesh>(NPCMeshHandle->GetLoadedAsset());
-		if (NPCMesh)
-		{
-			GetMesh()->SetSkeletalMesh(NPCMesh);
-			GetMesh()->SetHiddenInGame(false);
-		}
-	}
-
-	NPCMeshHandle->ReleaseHandle();
-}
+//void APPCharacterNonPlayer::NPCMeshLoadCompleted()
+//{
+//	if (NPCMeshHandle.IsValid())
+//	{
+//		USkeletalMesh* NPCMesh = Cast<USkeletalMesh>(NPCMeshHandle->GetLoadedAsset());
+//		if (NPCMesh)
+//		{
+//			GetMesh()->SetSkeletalMesh(NPCMesh);
+//			GetMesh()->SetHiddenInGame(false);
+//		}
+//	}
+//
+//	NPCMeshHandle->ReleaseHandle();
+//}
 
 //void APPCharacterNonPlayer::MonsterAttack()
 //{

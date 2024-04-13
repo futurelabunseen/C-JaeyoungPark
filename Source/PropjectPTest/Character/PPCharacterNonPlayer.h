@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Character/PPCharacter.h"
-#include "Engine/StreamableManager.h"
+// #include "Engine/StreamableManager.h"
 #include "PPCharacterNonPlayer.generated.h"
 
 /**
  * 
  */
-UCLASS(config=PropjectPTest)
+UCLASS()
 class PROPJECTPTEST_API APPCharacterNonPlayer : public APPCharacter
 	//, public IMSAIInterface
 {
@@ -20,17 +20,17 @@ public:
 	APPCharacterNonPlayer();
 
 protected:
-	virtual void PostInitializeComponents() override;
+	// virtual void PostInitializeComponents() override;
 	virtual void SetDead() override;
 
 protected:
-	void NPCMeshLoadCompleted();
+	// void NPCMeshLoadCompleted();
 	// void MonsterAttack();
 
-	UPROPERTY(config)
+	/*UPROPERTY(config)
 	TArray<FSoftObjectPath> NPCMeshes;
 	
-	TSharedPtr<FStreamableHandle> NPCMeshHandle;
+	TSharedPtr<FStreamableHandle> NPCMeshHandle;*/
 
 	// AI Section
 //protected:
