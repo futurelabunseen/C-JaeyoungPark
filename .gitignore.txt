@@ -115,5 +115,6 @@ Content/Ancient_Golem/*
 Content/InfinityBladeGrassLands/*
 Content/Kraken/*
 Content/ParagonKwang/*
+Content/KiteDemo/*
 
 # End of https://www.toptal.com/developers/gitignore/api/unrealengine,c++
