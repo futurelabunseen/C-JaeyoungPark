@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "GA/PPGA_Attack.h"
-#include "Character/PPCharacter.h" // 캐릭터 베이스
+#include "Character/PPGASCharacter.h" // 캐릭터 베이스
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h" // 어빌리티 태스크, 몽타주(애니메이션)실행 및 중지
 #include "PropjectPTestGAS.h"
 #include "GameFramework/CharacterMovementComponent.h" // 캐릭터 움직임
@@ -16,16 +16,16 @@ void UPPGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	APPCharacter* PPCharacter = CastChecked<APPCharacter>(ActorInfo->AvatarActor.Get());
+	APPGASCharacter* PPGASCharacter = CastChecked<APPGASCharacter>(ActorInfo->AvatarActor.Get());
 
 	// 현재 콤보 데이터 가져오기
-	CurrentComboData = PPCharacter->GetComboActionData();
+	CurrentComboData = PPGASCharacter->GetComboActionData();
 
 	// 캐릭터 움직임 모드 정의 -> 움직임 없음
-	PPCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	PPGASCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
 	// 공격 실행 태스크
-	 UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), PPCharacter->GetComboActionMontage(), 1.0f, GetNextSection());
+	 UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), PPGASCharacter->GetComboActionMontage(), 1.0f, GetNextSection());
 	
 	// 어택 태스크가 완료되었을 때
 	PlayAttackTask->OnCompleted.AddDynamic(this, &UPPGA_Attack::OnCompletedCallBack);

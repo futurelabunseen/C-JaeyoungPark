@@ -28,11 +28,11 @@ AMS_Golem::AMS_Golem()
 		DeadMontage = DeadMontageRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Ancient_Golem/Animation/AM_Golem_Attack.AM_Golem_Attack'"));
+	/*static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Ancient_Golem/Animation/AM_Golem_Attack.AM_Golem_Attack'"));
 	if (AttackMontageRef.Object)
 	{
 		AttackMontage = AttackMontageRef.Object;
-	}
+	}*/
 }
 
 float AMS_Golem::GetAIPatrolRadius()
@@ -62,7 +62,7 @@ void AMS_Golem::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttack
 
 void AMS_Golem::AttackByAI()
 {
-	PlayAnimMontage(AttackMontage);
+	//PlayAnimMontage(AttackMontage);
 	// 예제와 구조가 다름
 	// 캐릭터 베이스에서 구조 변경 후 적용
 }
