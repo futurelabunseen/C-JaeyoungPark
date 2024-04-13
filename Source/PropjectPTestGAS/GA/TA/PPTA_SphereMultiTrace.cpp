@@ -9,6 +9,8 @@
 #include "Physics/PPCollision.h"
 #include "DrawDebugHelpers.h"
 #include "Attribute/PPCharacterSkillAttributeSet.h"
+// #include "Attribute/PPCharacterAttributeSet.h"
+
 
 FGameplayAbilityTargetDataHandle APPTA_SphereMultiTrace::MakeTargetData() const
 {
@@ -28,12 +30,23 @@ FGameplayAbilityTargetDataHandle APPTA_SphereMultiTrace::MakeTargetData() const
 		return FGameplayAbilityTargetDataHandle();
 	}
 
+	/*const UPPCharacterAttributeSet* Attribute = ASC->GetSet<UPPCharacterAttributeSet>();
+	if (!Attribute)
+	{
+		PPGAS_LOG(LogPPGAS, Error, TEXT("Attribute not found!"));
+		return FGameplayAbilityTargetDataHandle();
+	}*/
+
 	TArray<FOverlapResult> Overlaps;
 	const float SkillRadius = SkillAttribute->GetSkillRange();
+	// const float AttackRadius = Attribute->GetAttackRange();
+
 
 	FVector Origin = Character->GetActorLocation();
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(APPTA_SphereMultiTrace), false, Character);
 	GetWorld()->OverlapMultiByChannel(Overlaps, Origin, FQuat::Identity, CCHANNEL_PPACTION, FCollisionShape::MakeSphere(SkillRadius), Params);
+	// GetWorld()->OverlapMultiByChannel(Overlaps, Origin, FQuat::Identity, CCHANNEL_PPACTION, FCollisionShape::MakeSphere(AttackRadius), Params);
+
 
 	TArray<TWeakObjectPtr<AActor>> HitActors;
 	for (const FOverlapResult& Overlap : Overlaps)
@@ -54,6 +67,8 @@ FGameplayAbilityTargetDataHandle APPTA_SphereMultiTrace::MakeTargetData() const
 	{
 		FColor DrawColor = HitActors.Num() > 0 ? FColor::Green : FColor::Red;
 		DrawDebugSphere(GetWorld(), Origin, SkillRadius, 16, DrawColor, false, 5.0f);
+		// DrawDebugSphere(GetWorld(), Origin, AttackRadius, 16, DrawColor, false, 5.0f);
+
 	}
 
 #endif
