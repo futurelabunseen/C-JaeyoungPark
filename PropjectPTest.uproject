@@ -44,6 +44,11 @@
 			"Name": "BehaviorTreePlus",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/eeeeae0cc7bc494ab5390d0f8357d2ba"
+		},
+		{
+			"Name": "GmSimpleFishMovementTemplate",
+			"Enabled": true,
+			"MarketplaceURL": "https://publish.unrealengine.com/v3/edit-product/9db52008666349a7abbfc7832581fd7d"
 		}
 	],
 	"TargetPlatforms": [
