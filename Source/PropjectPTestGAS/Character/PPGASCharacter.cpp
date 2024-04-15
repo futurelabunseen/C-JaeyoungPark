@@ -93,6 +93,12 @@ APPGASCharacter::APPGASCharacter()
 		DashAction = InputActionDashRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionInteractionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Interaction.IA_Interaction'"));
+	if (nullptr != InputActionInteractionRef.Object)
+	{
+		Interaction = InputActionInteractionRef.Object;
+	}
+
 	// ----------------------------------------------------
 
 	static ConstructorHelpers::FObjectFinder<UPPComboActionData> ComboActionDataRef(TEXT("/Script/PropjectPTest.PPComboActionData'/Game/Input/PPA_ComboAttack.PPA_ComboAttack'"));
@@ -117,6 +123,12 @@ APPGASCharacter::APPGASCharacter()
 	if (DashActionMontageRef.Object)
 	{
 		DashActionMontage = DashActionMontageRef.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> InteractionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/AM_Interaction.AM_Interaction'"));
+	if (InteractionMontageRef.Object)
+	{
+		InteractionMontage = InteractionMontageRef.Object;
 	}
 
 	// ----------------------------------------------------
@@ -198,6 +210,7 @@ void APPGASCharacter::SetupGASInputComponent()
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 1);
 		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 2);
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 3);
+		EnhancedInputComponent->BindAction(Interaction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 4);
 
 	}
 }

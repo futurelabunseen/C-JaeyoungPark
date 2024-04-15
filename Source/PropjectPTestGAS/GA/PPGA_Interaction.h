@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
-#include "PPGA_Dash.generated.h"
+#include "PPGA_Interaction.generated.h"
 
 /**
  *
  */
 UCLASS()
-class PROPJECTPTESTGAS_API UPPGA_Dash : public UGameplayAbility
+class PROPJECTPTESTGAS_API UPPGA_Interaction : public UGameplayAbility
 {
 	GENERATED_BODY()
 
 public:
-	UPPGA_Dash();
+	UPPGA_Interaction();
 
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
@@ -31,8 +31,5 @@ protected:
 
 protected:
 	UPROPERTY()
-	TObjectPtr<class UAnimMontage> ActiveDashActionMontage;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Move, Meta = (AllowPrivateAccess = true))
-	float DashMoveImpulse = 10000.0f;
+	TObjectPtr<class UAnimMontage> ActiveInteractionMontage;
 };

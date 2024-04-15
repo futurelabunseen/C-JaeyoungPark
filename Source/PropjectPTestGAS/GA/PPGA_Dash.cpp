@@ -28,7 +28,6 @@ void UPPGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 		return;
 	}
 
-	// TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Custom);
 	TargetCharacter->GetCharacterMovement()->AddImpulse(TargetCharacter->GetActorForwardVector()* DashMoveImpulse, true);
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("DashMontage"), ActiveDashActionMontage, 1.0f);
