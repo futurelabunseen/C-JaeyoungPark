@@ -35,6 +35,11 @@ void APPTA_Trace::ConfirmTargetingAndContinue()
 FGameplayAbilityTargetDataHandle APPTA_Trace::MakeTargetData() const
 {
 	ACharacter* Character = CastChecked<ACharacter>(SourceActor);
+	if (!Character)
+	{
+		PPGAS_LOG(LogPPGAS, Error, TEXT("SourceActor is not a Character!"));
+		return FGameplayAbilityTargetDataHandle();
+	}
 
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
 	if (!ASC)

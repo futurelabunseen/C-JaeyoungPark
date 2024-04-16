@@ -10,7 +10,7 @@ public class PropjectPTestGAS : ModuleRules
 
         PublicIncludePaths.AddRange(new string[] { "PropjectPTestGAS" });
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "GeometryCollectionEngine" });
 
 		// GAS로 사용할 것들 정의
 		PrivateDependencyModuleNames.AddRange(new string[] {
