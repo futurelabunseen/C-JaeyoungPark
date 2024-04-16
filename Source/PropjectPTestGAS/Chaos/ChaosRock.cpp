@@ -40,6 +40,7 @@ void AChaosRock::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		{
 			RockMesh->SetSimulatePhysics(true);
 			RockDestroyDele.ExecuteIfBound(GetActorLocation());
+			BoxCollision->DestroyComponent();
 		}
 	}
 
@@ -47,6 +48,6 @@ void AChaosRock::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 void AChaosRock::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-
+	
 }
 
