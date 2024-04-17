@@ -29,7 +29,7 @@ APPCharacter::APPCharacter()
 		DeadMontage = DeadMontageRef.Object;
 	}
 
-	// 어택 몽타주는 각 몬스터에 세팅 -> NPC에 세팅
+	// 어택 몽타주는 각 몬스터에 세팅
 }
 
 void APPCharacter::BeginPlay()

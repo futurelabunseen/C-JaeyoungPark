@@ -21,14 +21,10 @@ protected:
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-private:
+protected:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	FString TransferLevelName;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level Transfer")
 	TObjectPtr<class UBoxComponent> TransferVolume;
 };

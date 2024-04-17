@@ -33,10 +33,3 @@ void ALevelTransferVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
-// Called every frame
-void ALevelTransferVolume::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-

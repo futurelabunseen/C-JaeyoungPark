@@ -4,6 +4,7 @@
 #include "Monster/MS_Golem.h"
 #include "AI/MSAIController.h"
 #include "Attribute/PPCharacterAttributeSet.h"
+#include "Character/PPGASCharacter.h"
 
 
 // Sets default values
@@ -71,6 +72,7 @@ void AMS_Golem::AttackByAI()
 	//PlayAnimMontage(AttackMontage);
 	// 예제와 구조가 다름
 	// 캐릭터 베이스에서 구조 변경 후 적용
+	
 }
 
 //void AMS_Golem::NotifyComboActionEnd()
