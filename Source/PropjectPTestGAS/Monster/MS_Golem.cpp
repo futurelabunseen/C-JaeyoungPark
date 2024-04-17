@@ -2,7 +2,7 @@
 
 
 #include "Monster/MS_Golem.h"
-#include "AI/MSAIController.h"
+#include "AI/MS/MSAIController.h"
 #include "Attribute/PPCharacterAttributeSet.h"
 #include "Character/PPGASCharacter.h"
 

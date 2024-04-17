@@ -1,28 +1,28 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/MSAIController.h"
+#include "AI/Boss/BossAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "AI/MSAI.h"
+#include "AI/Boss/BossAI.h"
 
-AMSAIController::AMSAIController()
+ABossAIController::ABossAIController()
 {
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Script/AIModule.BlackboardData'/Game/AI/BB_NormalMonster.BB_NormalMonster'"));
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Script/AIModule.BlackboardData'/Game/AI/BB_Boss.BB_Boss'"));
 	if (nullptr != BBAssetRef.Object)
 	{
 		BBAsset = BBAssetRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Script/AIModule.BehaviorTree'/Game/AI/BT_NormalMonster.BT_NormalMonster'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Script/AIModule.BehaviorTree'/Game/AI/BT_Boss.BT_Boss'"));
 	if (nullptr != BTAssetRef.Object)
 	{
 		BTAsset = BTAssetRef.Object;
 	}
 }
 
-void AMSAIController::RunAI()
+void ABossAIController::RunAI()
 {
 	UBlackboardComponent* BlackboardPtr = Blackboard.Get();
 	if (UseBlackboard(BBAsset, BlackboardPtr))
@@ -34,7 +34,7 @@ void AMSAIController::RunAI()
 	}
 }
 
-void AMSAIController::StopAI()
+void ABossAIController::StopAI()
 {
 	UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
 	if (BTComponent)
@@ -43,7 +43,7 @@ void AMSAIController::StopAI()
 	}
 }
 
-void AMSAIController::OnPossess(APawn* InPawn)
+void ABossAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 

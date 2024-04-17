@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/BTService_Detect.h"
+#include "AI/MS/BTService_Detect.h"
 #include "MSAI.h"
 #include "AIController.h"
 #include "Interface/MSAIInterface.h"

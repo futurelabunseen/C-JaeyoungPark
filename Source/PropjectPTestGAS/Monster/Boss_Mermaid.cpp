@@ -2,7 +2,7 @@
 
 
 #include "Monster/Boss_Mermaid.h"
-#include "AI/BossAIController.h"
+#include "AI/Boss/BossAIController.h"
 #include "Attribute/PPCharacterAttributeSet.h"
 #include "Character/PPGASCharacter.h"
 

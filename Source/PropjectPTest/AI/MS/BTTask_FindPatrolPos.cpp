@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/BTTask_FindPatrolPos.h"
+#include "AI/MS/BTTask_FindPatrolPos.h"
 #include "MSAI.h"
 #include "AIController.h"
 #include "NavigationSystem.h"

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/BTTask_TurnToTarget.h"
+#include "AI/MS/BTTask_TurnToTarget.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Interface/MSAIInterface.h"
 #include "MSAI.h"
