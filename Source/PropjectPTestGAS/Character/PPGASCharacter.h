@@ -50,8 +50,6 @@ protected:
 
 	virtual void Tick(float DeltaTime) override;
 
-	// virtual void NotifyComboActionEnd();
-
 protected:
 
 	// GAS Section

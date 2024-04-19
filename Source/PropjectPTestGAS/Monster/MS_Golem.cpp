@@ -5,11 +5,13 @@
 #include "AI/MS/MSAIController.h"
 #include "Attribute/PPCharacterAttributeSet.h"
 #include "Character/PPGASCharacter.h"
+#include "GA/PPGA_Attack.h"
 
 
 // Sets default values
 AMS_Golem::AMS_Golem()
 {
+
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -69,15 +71,12 @@ void AMS_Golem::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttack
 
 void AMS_Golem::AttackByAI()
 {
-	//PlayAnimMontage(AttackMontage);
-	// 예제와 구조가 다름
-	// 캐릭터 베이스에서 구조 변경 후 적용
 	
 }
 
 //void AMS_Golem::NotifyComboActionEnd()
 //{
-//	Super::NotifyComboActionEnd();
+//	
 //	OnAttackFinished.ExecuteIfBound();
 //}
 

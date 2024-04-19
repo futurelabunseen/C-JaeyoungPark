@@ -230,7 +230,6 @@ void APPGASCharacter::GASInputPressed(int32 InputId)
 			ASC->TryActivateAbility(Spec->Handle);
 		}
 	}
-	// NotifyComboActionEnd();
 }
 
 void APPGASCharacter::GASInputReleased(int32 InputId)
@@ -250,10 +249,6 @@ void APPGASCharacter::OnOutOfHealth()
 {
 	SetDead();
 }
-
-//void APPGASCharacter::NotifyComboActionEnd()
-//{
-//}
 
 //Called every frame
 void APPGASCharacter::Tick(float DeltaTime)

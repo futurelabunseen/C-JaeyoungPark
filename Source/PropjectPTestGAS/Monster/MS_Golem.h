@@ -34,5 +34,5 @@ protected:
 
 	FAICharacterAttackFinished OnAttackFinished;
 
-	// virtual void NotifyComboActionEnd() override;
+	// virtual void NotifyComboActionEnd();
 };
