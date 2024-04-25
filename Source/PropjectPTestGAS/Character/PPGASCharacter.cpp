@@ -164,7 +164,7 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 		if (CurrentAttributeSet)
 		{
-			CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+			CurrentAttributeSet->OnOutOfHealth_Player.AddDynamic(this, &ThisClass::OnOutOfHealth);
 		}
 
 		for (const auto& StartAbility : StartAbilities)

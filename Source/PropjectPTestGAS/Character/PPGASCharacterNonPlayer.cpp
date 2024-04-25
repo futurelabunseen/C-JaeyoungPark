@@ -3,14 +3,12 @@
 
 #include "Character/PPGASCharacterNonPlayer.h"
 #include "AbilitySystemComponent.h"
-#include "Attribute/PPCharacterAttributeSet.h"
 #include "UI/PPGASWidgetComponent.h"
 #include "UI/PPGASUserWidget.h"
 
 APPGASCharacterNonPlayer::APPGASCharacterNonPlayer()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
-	AttributeSet = CreateDefaultSubobject<UPPCharacterAttributeSet>(TEXT("AttributeSet"));
 
 	HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
 	HpBar->SetupAttachment(GetMesh());
@@ -23,8 +21,6 @@ APPGASCharacterNonPlayer::APPGASCharacterNonPlayer()
 		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
-
-	Level = 1;
 }
 
 UAbilitySystemComponent* APPGASCharacterNonPlayer::GetAbilitySystemComponent() const
@@ -37,7 +33,6 @@ void APPGASCharacterNonPlayer::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	ASC->InitAbilityActorInfo(this, this);
-	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);

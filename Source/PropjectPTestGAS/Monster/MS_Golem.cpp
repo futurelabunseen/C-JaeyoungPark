@@ -3,7 +3,7 @@
 
 #include "Monster/MS_Golem.h"
 #include "AI/MS/MSAIController.h"
-#include "Attribute/PPCharacterAttributeSet.h"
+#include "Attribute/MonsterAttributeSet.h"
 #include "Character/PPGASCharacter.h"
 #include "GA/PPGA_Attack.h"
 
@@ -17,6 +17,8 @@ AMS_Golem::AMS_Golem()
 
 	// Simple Monster AI Setting
 	AIControllerClass = AMSAIController::StaticClass();
+
+	MonsterAttributeSet = CreateDefaultSubobject<UMonsterAttributeSet>(TEXT("MonsterAttributeSet"));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Ancient_Golem/Mesh/SK_Ancient_Golem.SK_Ancient_Golem'"));
 	if (CharacterMeshRef.Object)
@@ -44,6 +46,13 @@ AMS_Golem::AMS_Golem()
 	}
 }
 
+void AMS_Golem::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	MonsterAttributeSet->OnOutOfHealth_Monster.AddDynamic(this, &ThisClass::OnOutOfHealth);
+}
+
 float AMS_Golem::GetAIPatrolRadius()
 {
 	return 800.0f;
@@ -56,7 +65,7 @@ float AMS_Golem::GetAIDetectRange()
 
 float AMS_Golem::GetAIAttackRange()
 {
-	return AttributeSet->GetAttackRange();
+	return MonsterAttributeSet->GetAttackRange();
 }
 
 float AMS_Golem::GetAITurnSpeed()

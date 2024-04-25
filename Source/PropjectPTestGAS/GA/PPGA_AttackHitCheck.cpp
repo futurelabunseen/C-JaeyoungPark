@@ -48,7 +48,7 @@ void UPPGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 			return;
 		}
 
-		const UPPCharacterAttributeSet* SourceAttribute = SourceASC->GetSet<UPPCharacterAttributeSet>();
+		// const UPPCharacterAttributeSet* SourceAttribute = SourceASC->GetSet<UPPCharacterAttributeSet>();
 
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
 		if (EffectSpecHandle.IsValid())

@@ -17,7 +17,7 @@ public:
 	// Sets default values for this character's properties
 	ABoss_Mermaid();
 
-public:
+	virtual void PossessedBy(AController* NewController) override;
 
 	// AI Section
 protected:

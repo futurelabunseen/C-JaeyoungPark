@@ -4,6 +4,8 @@
 #include "UI/PPGASHpBarUserWidget.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/PPCharacterAttributeSet.h"
+#include "Attribute/MonsterAttributeSet.h"
+#include "Attribute/BossAttributeSet.h"
 #include "PropjectPTestGAS.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -18,13 +20,43 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
 		ASC->RegisterGameplayTagEvent(PPTAG_CHARACTER_INVINSIBLE, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPPGASHpBarUserWidget::OnInvinsibleTagChanged);
+
+		ASC->GetGameplayAttributeValueChangeDelegate(UMonsterAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
+		ASC->GetGameplayAttributeValueChangeDelegate(UMonsterAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
+
+		ASC->GetGameplayAttributeValueChangeDelegate(UBossAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
+		ASC->GetGameplayAttributeValueChangeDelegate(UBossAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
 		PbHpBar->SetFillColorAndOpacity(HealthColor);
 
-		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
-		if (CurrentAttributeSet)
+		const UPPCharacterAttributeSet* CurrentPPCharacterAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
+		if (CurrentPPCharacterAttributeSet)
 		{
-			CurrentHealth = CurrentAttributeSet->GetHealth();
-			CurrentMaxHealth = CurrentAttributeSet->GetMaxHealth();
+			CurrentHealth = CurrentPPCharacterAttributeSet->GetHealth();
+			CurrentMaxHealth = CurrentPPCharacterAttributeSet->GetMaxHealth();
+
+			if (CurrentMaxHealth > 0.0f)
+			{
+				UpdateHpBar();
+			}
+		}
+
+		const UMonsterAttributeSet* CurrentMonsterAttributeSet = ASC->GetSet<UMonsterAttributeSet>();
+		if (CurrentMonsterAttributeSet)
+		{
+			CurrentHealth = CurrentMonsterAttributeSet->GetHealth();
+			CurrentMaxHealth = CurrentMonsterAttributeSet->GetMaxHealth();
+
+			if (CurrentMaxHealth > 0.0f)
+			{
+				UpdateHpBar();
+			}
+		}
+
+		const UBossAttributeSet* CurrentBossAttributeSet = ASC->GetSet<UBossAttributeSet>();
+		if (CurrentBossAttributeSet)
+		{
+			CurrentHealth = CurrentBossAttributeSet->GetHealth();
+			CurrentMaxHealth = CurrentBossAttributeSet->GetMaxHealth();
 
 			if (CurrentMaxHealth > 0.0f)
 			{

@@ -5,6 +5,8 @@
 #include "AbilitySystemComponent.h"
 #include "Attribute/PPCharacterSkillAttributeSet.h"
 #include "Attribute/PPCharacterAttributeSet.h"
+#include "Attribute/MonsterAttributeSet.h"
+#include "Attribute/BossAttributeSet.h"
 
 void UPPSkillDamageExecutionCalc::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
@@ -26,7 +28,9 @@ void UPPSkillDamageExecutionCalc::Execute_Implementation(const FGameplayEffectCu
 			const float InvDamageRatio = 1.0f - Distance / MaxDamageRange;
 			float Damage = InvDamageRatio * MaxDamage;
 
-			OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(UPPCharacterAttributeSet::GetDamageAttribute(), EGameplayModOp::Additive, Damage));
+			OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(UMonsterAttributeSet::GetDamageAttribute(), EGameplayModOp::Additive, Damage));
+			OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(UBossAttributeSet::GetDamageAttribute(), EGameplayModOp::Additive, Damage));
+
 		}
 	}
 }

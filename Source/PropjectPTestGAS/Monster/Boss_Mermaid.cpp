@@ -3,7 +3,7 @@
 
 #include "Monster/Boss_Mermaid.h"
 #include "AI/Boss/BossAIController.h"
-#include "Attribute/PPCharacterAttributeSet.h"
+#include "Attribute/BossAttributeSet.h"
 #include "Character/PPGASCharacter.h"
 
 
@@ -13,8 +13,10 @@ ABoss_Mermaid::ABoss_Mermaid()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Simple Monster AI Setting
+	// Boss AI Setting
 	AIControllerClass = ABossAIController::StaticClass();
+
+	BossAttributeSet = CreateDefaultSubobject<UBossAttributeSet>(TEXT("BossAttributeSet"));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Mermaid/Mesh/MermaidVersion/SK_Mermaid.SK_Mermaid'"));
 	if (CharacterMeshRef.Object)
@@ -22,7 +24,7 @@ ABoss_Mermaid::ABoss_Mermaid()
 		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
 	}
 
-	// Simple Monster AnimClass Setting
+	// Boss AnimClass Setting
 	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Mermaid/Animations/ThirdPerson/ThirdPerson_AnimBP.ThirdPerson_AnimBP_C'"));
 	if (AnimInstanceClassRef.Class)
 	{
@@ -42,6 +44,13 @@ ABoss_Mermaid::ABoss_Mermaid()
 	}
 }
 
+void ABoss_Mermaid::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	BossAttributeSet->OnOutOfHealth_Boss.AddDynamic(this, &ThisClass::OnOutOfHealth);
+}
+
 float ABoss_Mermaid::GetAIPatrolRadius()
 {
 	return 800.0f;
@@ -54,7 +63,7 @@ float ABoss_Mermaid::GetAIDetectRange()
 
 float ABoss_Mermaid::GetAIAttackRange()
 {
-	return AttributeSet->GetAttackRange();
+	return BossAttributeSet->GetAttackRange();
 }
 
 float ABoss_Mermaid::GetAITurnSpeed()

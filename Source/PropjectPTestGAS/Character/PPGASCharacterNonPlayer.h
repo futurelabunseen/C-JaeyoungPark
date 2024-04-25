@@ -28,13 +28,16 @@ protected:
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
 	UPROPERTY()
-	TObjectPtr<class UPPCharacterAttributeSet> AttributeSet;
+	TObjectPtr<class UMonsterAttributeSet> MonsterAttributeSet;
+
+	UPROPERTY()
+	TObjectPtr<class UBossAttributeSet> BossAttributeSet;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TSubclassOf<class UGameplayEffect> InitStatEffect;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
-	float Level;
+	float Level = 1;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UPPGASWidgetComponent> HpBar;
