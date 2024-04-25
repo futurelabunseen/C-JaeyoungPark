@@ -1,0 +1,1 @@
+UnrealEditor.exe %cd%\PropjectPTest.uproject -NetTrace=1 -Trace=Net
