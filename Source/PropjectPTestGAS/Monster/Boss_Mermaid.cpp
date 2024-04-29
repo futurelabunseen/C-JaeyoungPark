@@ -25,7 +25,7 @@ ABoss_Mermaid::ABoss_Mermaid()
 	}
 
 	// Boss AnimClass Setting
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Mermaid/Animations/ThirdPerson/ThirdPerson_AnimBP.ThirdPerson_AnimBP_C'"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Mermaid/Animations/Custom_Mermaid/ABP_Mermaid.ABP_Mermaid_C'"));
 	if (AnimInstanceClassRef.Class)
 	{
 		GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);

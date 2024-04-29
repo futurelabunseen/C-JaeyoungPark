@@ -80,7 +80,9 @@ void AMS_Golem::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttack
 
 void AMS_Golem::AttackByAI()
 {
-	
+	/*FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(1);
+	ASC->TryActivateAbility(Spec->Handle);*/
+	// 어떻게 해야 하지... 영상 보고 공부해보자
 }
 
 //void AMS_Golem::NotifyComboActionEnd()
