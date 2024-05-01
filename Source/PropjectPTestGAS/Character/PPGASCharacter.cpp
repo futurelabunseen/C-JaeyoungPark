@@ -22,7 +22,9 @@
 
 APPGASCharacter::APPGASCharacter()
 {
+	PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
 	ASC = nullptr; // 플레이어 스테이트에서 이미 하나 생성했기 때문에 의도적으로 null로 설정
+	PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
