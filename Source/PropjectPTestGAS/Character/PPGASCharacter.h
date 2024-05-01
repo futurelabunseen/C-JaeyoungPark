@@ -40,6 +40,8 @@ public:
 	// 멀티플레이에서는 서버에서만 호출되는 형태가 된다. 만약 네트웍 멀티플레이에서 이것을 전달 받으려면 OnLapPlayerState 이벤트 함수에서 구현해줘야 함
 	virtual void PossessedBy(AController* NewController) override;
 
+	virtual void OnRep_PlayerState() override;
+
 protected:
 	void SetupGASInputComponent();
 	void GASInputPressed(int32 InputId);

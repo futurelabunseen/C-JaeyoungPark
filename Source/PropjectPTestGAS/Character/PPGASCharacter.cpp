@@ -22,9 +22,9 @@
 
 APPGASCharacter::APPGASCharacter()
 {
-	PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+	//PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
 	ASC = nullptr; // 플레이어 스테이트에서 이미 하나 생성했기 때문에 의도적으로 null로 설정
-	PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
+	//PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
@@ -186,6 +186,24 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 
 		APlayerController* PlayerContorller = CastChecked<APlayerController>(NewController);
 		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));
+	}
+}
+
+void APPGASCharacter::OnRep_PlayerState()
+{
+	APPGASPlayerState* GASPS = GetPlayerState<APPGASPlayerState>();
+	if (GASPS)
+	{
+		ASC = GASPS->GetAbilitySystemComponent();
+		ASC->InitAbilityActorInfo(GASPS, this);
+
+		/*const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
+		if (CurrentAttributeSet)
+		{
+			CurrentAttributeSet->OnOutOfHealth_Player.AddDynamic(this, &ThisClass::OnOutOfHealth);
+		}*/
+
+		SetupGASInputComponent();
 	}
 }
 
