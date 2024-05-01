@@ -5,6 +5,7 @@
 #include "PropjectPTestGAS.h"
 #include "GameplayEffectExtension.h"
 #include "Tag/PPGameplayTag.h"
+#include "Net/UnrealNetwork.h"
 
 UPPCharacterAttributeSet::UPPCharacterAttributeSet() :
 	AttackRange(100.0f),
@@ -17,6 +18,15 @@ UPPCharacterAttributeSet::UPPCharacterAttributeSet() :
 	Damage(0.0f)
 {
 	InitHealth(GetMaxHealth());
+}
+
+void UPPCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// 오류 발생
+	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 }
 
 void UPPCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -74,4 +84,14 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	}
 
 	bOutOfHealth = (GetHealth() <= 0.0f);
+}
+
+void UPPCharacterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Health, OldHealth);
+}
+
+void UPPCharacterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, MaxHealth, OldMaxHealth);
 }
