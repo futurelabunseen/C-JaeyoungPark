@@ -7,7 +7,7 @@
 #include "Tag/PPGameplayTag.h"
 
 UMonsterAttributeSet::UMonsterAttributeSet() :
-	AttackRange(100.0f),
+	AttackRange(200.0f),
 	MaxAttackRange(300.0f),
 	AttackRadius(50.f),
 	MaxAttackRadius(150.0f),

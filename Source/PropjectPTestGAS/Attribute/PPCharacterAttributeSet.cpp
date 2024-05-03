@@ -86,6 +86,7 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	bOutOfHealth = (GetHealth() <= 0.0f);
 }
 
+// OnRep Section
 void UPPCharacterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Health, OldHealth);
@@ -95,3 +96,8 @@ void UPPCharacterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& Old
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, MaxHealth, OldMaxHealth);
 }
+
+//void UPPCharacterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
+//{
+//	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Health, OldHealth);
+//}

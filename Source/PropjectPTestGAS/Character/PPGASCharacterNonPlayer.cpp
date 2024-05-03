@@ -41,6 +41,12 @@ void APPGASCharacterNonPlayer::PossessedBy(AController* NewController)
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
+
+	for (const auto& StartAbility : StartAbilities)
+	{
+		FGameplayAbilitySpec StartSpec(StartAbility);
+		ASC->GiveAbility(StartSpec);
+	}
 }
 
 void APPGASCharacterNonPlayer::OnOutOfHealth()

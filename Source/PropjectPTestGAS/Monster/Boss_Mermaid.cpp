@@ -53,12 +53,12 @@ void ABoss_Mermaid::PossessedBy(AController* NewController)
 
 float ABoss_Mermaid::GetAIPatrolRadius()
 {
-	return 800.0f;
+	return 800.0f; // 어트리뷰트 세트로 변경 예정
 }
 
 float ABoss_Mermaid::GetAIDetectRange()
 {
-	return 1000.0f;
+	return 1000.0f; // 어트리뷰트 세트로 변경 예정
 }
 
 float ABoss_Mermaid::GetAIAttackRange()
@@ -68,7 +68,7 @@ float ABoss_Mermaid::GetAIAttackRange()
 
 float ABoss_Mermaid::GetAITurnSpeed()
 {
-	return 2.0f;
+	return 2.0f; // 어트리뷰트 세트로 변경 예정
 }
 
 void ABoss_Mermaid::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)

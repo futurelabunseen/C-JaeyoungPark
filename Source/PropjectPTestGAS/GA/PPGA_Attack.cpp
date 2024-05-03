@@ -25,7 +25,7 @@ void UPPGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	PPGASCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
 	// 공격 실행 태스크
-	 UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), PPGASCharacter->GetComboActionMontage(), 1.0f, GetNextSection());
+	 UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), ActionMontage, 1.0f, GetNextSection());
 	
 	// 어택 태스크가 완료되었을 때
 	PlayAttackTask->OnCompleted.AddDynamic(this, &UPPGA_Attack::OnCompletedCallBack);

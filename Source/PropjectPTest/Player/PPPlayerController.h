@@ -55,6 +55,12 @@ protected:
 	void OnTouchTriggered();
 	void OnTouchReleased();
 
+	UFUNCTION(Server, Reliable/*, WithValidation*/)
+	void ClickMoveServerRPC(FVector CD);
+
+	/*UFUNCTION(NetMulticast, Unreliable)
+	void ClickMoveMulicastRPC();*/
+
 private:
 	FVector CachedDestination;
 

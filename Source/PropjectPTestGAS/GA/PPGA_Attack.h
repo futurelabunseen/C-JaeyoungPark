@@ -47,6 +47,9 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UPPComboActionData> CurrentComboData; // 콤보 관련 데이터 정의
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> ActionMontage;
+
 	uint8 CurrentCombo = 0; // 현재 콤보
 	FTimerHandle ComboTimerHandle; // 콤보 타이머 정의
 	bool HasNextComboInput = false; // 다음 콤보 입력 정의
