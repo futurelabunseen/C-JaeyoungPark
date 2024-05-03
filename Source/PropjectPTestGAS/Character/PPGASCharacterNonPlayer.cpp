@@ -6,9 +6,12 @@
 #include "UI/PPGASWidgetComponent.h"
 #include "UI/PPGASUserWidget.h"
 
+
 APPGASCharacterNonPlayer::APPGASCharacterNonPlayer()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
+
+	ASC->SetIsReplicated(true);
 
 	HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
 	HpBar->SetupAttachment(GetMesh());

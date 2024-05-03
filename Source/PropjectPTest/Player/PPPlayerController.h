@@ -55,8 +55,8 @@ protected:
 	void OnTouchTriggered();
 	void OnTouchReleased();
 
-	UFUNCTION(Server, Reliable/*, WithValidation*/)
-	void ClickMoveServerRPC(FVector CD);
+	UFUNCTION(Server, Reliable /*, WithValidation*/)
+	void ClickMoveServerRPC(FVector Destination);
 
 	/*UFUNCTION(NetMulticast, Unreliable)
 	void ClickMoveMulicastRPC();*/

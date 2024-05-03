@@ -5,18 +5,34 @@
 #include "PropjectPTestGAS.h"
 #include "GameplayEffectExtension.h"
 #include "Tag/PPGameplayTag.h"
+#include "Net/UnrealNetwork.h"
 
 UBossAttributeSet::UBossAttributeSet() :
-	AttackRange(200.0f),
-	MaxAttackRange(300.0f),
-	AttackRadius(50.f),
-	MaxAttackRadius(150.0f),
-	AttackRate(30.0f),
-	MaxAttackRate(100.0f),
-	MaxHealth(100.0f),
-	Damage(0.0f)
+	AttackRange(200.0f), // 공격 범위, OnRep 안해도 됨, 고정값
+	MaxAttackRange(300.0f), // 최대 공격 범위, OnRep 안해도 됨, 고정값
+
+	AttackRadius(50.f), // 공격 반경, OnRep 안해도 됨, 고정값
+	MaxAttackRadius(150.0f), // 최대 공격 반경, OnRep 안해도 됨, 고정값
+
+	AttackRate(30.0f), // 공격 데미지, OnRep 안해도 됨, 고정값
+	MaxAttackRate(100.0f), // 최대 공격 데미지, OnRep 안해도 됨, 고정값
+
+	Health(100.0f), // 체력, OnRep 필요, 수시로 변경
+	MaxHealth(100.0f), // 최대 체력, OnRep 필요
+
+	Damage(0.0f) // 피격 데미지, OnRep 필요, 수시로 변경, 아마도?
 {
 	InitHealth(GetMaxHealth());
+}
+
+void UBossAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UBossAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBossAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBossAttributeSet, Damage, COND_None, REPNOTIFY_Always);
+
 }
 
 void UBossAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -75,3 +91,23 @@ void UBossAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 	bOutOfHealth = (GetHealth() <= 0.0f);
 }
+
+// -----------------------------------------------
+
+// OnRep Section
+void UBossAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UBossAttributeSet, Health, OldHealth);
+}
+
+void UBossAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UBossAttributeSet, MaxHealth, OldMaxHealth);
+}
+
+
+void UBossAttributeSet::OnRep_Damage(const FGameplayAttributeData& OldDamage)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UBossAttributeSet, Damage, OldDamage);
+}
+

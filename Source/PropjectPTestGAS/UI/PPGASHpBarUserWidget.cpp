@@ -17,6 +17,7 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 
 	if (ASC)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ASC->GetOwner()->GetName());
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
 		ASC->RegisterGameplayTagEvent(PPTAG_CHARACTER_INVINSIBLE, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPPGASHpBarUserWidget::OnInvinsibleTagChanged);
@@ -31,18 +32,22 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 		const UPPCharacterAttributeSet* CurrentPPCharacterAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 		if (CurrentPPCharacterAttributeSet)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("000000"));
 			CurrentHealth = CurrentPPCharacterAttributeSet->GetHealth();
 			CurrentMaxHealth = CurrentPPCharacterAttributeSet->GetMaxHealth();
 
+			UE_LOG(LogTemp, Warning, TEXT("xxxxxx"));
 			if (CurrentMaxHealth > 0.0f)
 			{
 				UpdateHpBar();
 			}
 		}
+		UE_LOG(LogTemp, Warning, TEXT("111111"));
 
 		const UMonsterAttributeSet* CurrentMonsterAttributeSet = ASC->GetSet<UMonsterAttributeSet>();
 		if (CurrentMonsterAttributeSet)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("22222"));
 			CurrentHealth = CurrentMonsterAttributeSet->GetHealth();
 			CurrentMaxHealth = CurrentMonsterAttributeSet->GetMaxHealth();
 
@@ -55,6 +60,7 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 		const UBossAttributeSet* CurrentBossAttributeSet = ASC->GetSet<UBossAttributeSet>();
 		if (CurrentBossAttributeSet)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("333333"));
 			CurrentHealth = CurrentBossAttributeSet->GetHealth();
 			CurrentMaxHealth = CurrentBossAttributeSet->GetMaxHealth();
 
@@ -64,17 +70,20 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 			}
 		}
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("5555555"));
 }
 
 void UPPGASHpBarUserWidget::OnHealthChanged(const FOnAttributeChangeData& ChangeData)
 {
 	CurrentHealth = ChangeData.NewValue;
+	const UPPCharacterAttributeSet* CurrentPPCharacterAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 	UpdateHpBar();
 }
 
 void UPPGASHpBarUserWidget::OnMaxHealthChanged(const FOnAttributeChangeData& ChangeData)
 {
-	CurrentMaxHealth = ChangeData.NewValue;
+	CurrentHealth = ChangeData.NewValue;
 	UpdateHpBar();
 }
 

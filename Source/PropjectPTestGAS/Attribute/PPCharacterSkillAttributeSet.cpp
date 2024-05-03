@@ -4,12 +4,14 @@
 #include "Attribute/PPCharacterSkillAttributeSet.h"
 
 UPPCharacterSkillAttributeSet::UPPCharacterSkillAttributeSet() :
-	SkillRange(800.0f),
-	MaxSkillRange(1200.0f),
-	SkillAttackRate(150.0f),
-	MaxSkillAttackRate(300.0f),
-	SkillEnergy(100.0f),
-	MaxSkillEnergy(100.0f)
+	SkillRange(800.0f), // 스킬 반경
+	MaxSkillRange(1200.0f), // 최대 스킬 반경
+
+	SkillAttackRate(150.0f), // 스킬 데미지
+	MaxSkillAttackRate(300.0f), // 최대 스킬 데미지
+
+	SkillEnergy(100.0f), // 스킬 마나 소모량
+	MaxSkillEnergy(100.0f) // 최대 스킬 마나 소모량
 {
 }
 

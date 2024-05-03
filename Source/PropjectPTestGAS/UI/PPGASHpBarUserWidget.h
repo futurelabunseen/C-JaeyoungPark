@@ -14,6 +14,10 @@ UCLASS()
 class PROPJECTPTESTGAS_API UPPGASHpBarUserWidget : public UPPGASUserWidget
 {
 	GENERATED_BODY()
+
+public:
+
+	void UpdateHpBar();
 	
 protected:
 	virtual void SetAbilitySystemComponent(AActor* InOwner) override;
@@ -21,8 +25,6 @@ protected:
 	virtual void OnHealthChanged(const FOnAttributeChangeData& ChangeData);
 	virtual void OnMaxHealthChanged(const FOnAttributeChangeData& ChangeData);
 	virtual void OnInvinsibleTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-
-	void UpdateHpBar();
 
 protected:
 	UPROPERTY(meta = (BindWidget))

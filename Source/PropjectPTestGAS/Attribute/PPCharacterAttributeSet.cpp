@@ -8,14 +8,19 @@
 #include "Net/UnrealNetwork.h"
 
 UPPCharacterAttributeSet::UPPCharacterAttributeSet() :
-	AttackRange(100.0f),
-	MaxAttackRange(300.0f),
-	AttackRadius(50.f),
-	MaxAttackRadius(150.0f),
-	AttackRate(30.0f),
-	MaxAttackRate(100.0f),
-	MaxHealth(100.0f),
-	Damage(0.0f)
+	AttackRange(100.0f), // 공격 범위, OnRep 안해도 됨, 고정값
+	MaxAttackRange(300.0f), // 최대 공격 범위, OnRep 안해도 됨, 고정값
+
+	AttackRadius(50.f), // 공격 반경, OnRep 안해도 됨, 고정값 -> GE를 통해 변형 (Buff)
+	MaxAttackRadius(150.0f), // 최대 공격 반경, OnRep 안해도 됨, 고정값
+
+	AttackRate(30.0f), // 공격 데미지, OnRep 안해도 됨, 고정값 -> GE를 통해 변형 (Buff)
+	MaxAttackRate(100.0f), // 최대 공격 데미지, OnRep 안해도 됨, 고정값
+
+	Health(100.0f), // 체력, OnRep 필요, 수시로 변경 -> GE를 통해 변형 (Damage, Heal, Regen, Dot 등등)
+	MaxHealth(100.0f), // 최대 체력, OnRep 필요
+
+	Damage(0.0f) // 피격 데미지, OnRep 필요, 수시로 변경, 아마도?
 {
 	InitHealth(GetMaxHealth());
 }
@@ -24,9 +29,10 @@ void UPPCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	// 오류 발생
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Damage, COND_None, REPNOTIFY_Always);
+
 }
 
 void UPPCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -86,18 +92,23 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	bOutOfHealth = (GetHealth() <= 0.0f);
 }
 
+// -----------------------------------------------
+
 // OnRep Section
 void UPPCharacterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
+	PPGAS_LOG(LogPPGAS, Warning, TEXT("Health : %f"), GetHealth());
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Health, OldHealth);
 }
 
 void UPPCharacterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
 {
+	PPGAS_LOG(LogPPGAS, Warning, TEXT("MaxHealth : %f"), GetMaxHealth());
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, MaxHealth, OldMaxHealth);
 }
 
-//void UPPCharacterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
-//{
-//	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Health, OldHealth);
-//}
+
+void UPPCharacterAttributeSet::OnRep_Damage(const FGameplayAttributeData& OldDamage)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Damage, OldDamage);
+}

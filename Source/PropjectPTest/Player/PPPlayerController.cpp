@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "PropjectPTest.h"
+#include "GameFramework/Controller.h"
 
 APPPlayerController::APPPlayerController()
 {

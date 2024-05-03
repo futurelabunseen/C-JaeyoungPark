@@ -5,18 +5,33 @@
 #include "PropjectPTestGAS.h"
 #include "GameplayEffectExtension.h"
 #include "Tag/PPGameplayTag.h"
+#include "Net/UnrealNetwork.h"
 
 UMonsterAttributeSet::UMonsterAttributeSet() :
-	AttackRange(200.0f),
-	MaxAttackRange(300.0f),
-	AttackRadius(50.f),
-	MaxAttackRadius(150.0f),
-	AttackRate(30.0f),
-	MaxAttackRate(100.0f),
-	MaxHealth(100.0f),
-	Damage(0.0f)
+	AttackRange(100.0f), // 공격 범위, OnRep 안해도 됨, 고정값
+	MaxAttackRange(300.0f), // 최대 공격 범위, OnRep 안해도 됨, 고정값
+
+	AttackRadius(50.f), // 공격 반경, OnRep 안해도 됨, 고정값
+	MaxAttackRadius(150.0f), // 최대 공격 반경, OnRep 안해도 됨, 고정값
+
+	AttackRate(30.0f), // 공격 데미지, OnRep 안해도 됨, 고정값
+	MaxAttackRate(100.0f), // 최대 공격 데미지, OnRep 안해도 됨, 고정값
+
+	Damage(0.0f), // 피격 데미지, OnRep 필요, 수시로 변경, 아마도?
+	Health(100.0f), // 체력, OnRep 필요, 수시로 변경
+	MaxHealth(100.0f) // 최대 체력, OnRep 필요
 {
 	InitHealth(GetMaxHealth());
+}
+
+void UMonsterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, Damage, COND_None, REPNOTIFY_Always);
+
 }
 
 void UMonsterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -74,4 +89,24 @@ void UMonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCal
 	}
 
 	bOutOfHealth = (GetHealth() <= 0.0f);
+}
+
+// -----------------------------------------------
+
+// OnRep Section
+void UMonsterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
+{
+	PPGAS_LOG(LogPPGAS, Warning, TEXT("Health : %f"), GetHealth());
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMonsterAttributeSet, Health, OldHealth);
+}
+
+void UMonsterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
+{
+	PPGAS_LOG(LogPPGAS, Warning, TEXT("Max Health : %f"), GetMaxHealth());
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMonsterAttributeSet, MaxHealth, OldMaxHealth);
+}
+
+void UMonsterAttributeSet::OnRep_Damage(const FGameplayAttributeData& OldDamage)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMonsterAttributeSet, Damage, OldDamage);
 }
