@@ -61,7 +61,6 @@ bool UPPCharacterAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallba
 			}
 		}
 	}
-
 	return true;
 }
 
@@ -87,9 +86,7 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	{
 		Data.Target.AddLooseGameplayTag(PPTAG_CHARACTER_ISDEAD);
 		OnOutOfHealth_Player.Broadcast();
-
 	}
-
 	bOutOfHealth = (GetHealth() <= 0.0f);
 }
 
@@ -107,7 +104,6 @@ void UPPCharacterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& Old
 	PPGAS_LOG(LogPPGAS, Warning, TEXT("MaxHealth : %f"), GetMaxHealth());
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, MaxHealth, OldMaxHealth);
 }
-
 
 void UPPCharacterAttributeSet::OnRep_Damage(const FGameplayAttributeData& OldDamage)
 {

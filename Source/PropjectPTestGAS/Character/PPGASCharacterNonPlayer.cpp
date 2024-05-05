@@ -36,7 +36,7 @@ void APPGASCharacterNonPlayer::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	ASC->InitAbilityActorInfo(this, this);
-	UE_LOG(LogTemp, Error, TEXT("%s Monster"), *ASC->GetOwner()->GetName());
+	// UE_LOG(LogTemp, Error, TEXT("%s Monster"), *ASC->GetOwner()->GetName());
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);

@@ -27,6 +27,5 @@ APPGASPlayerState::APPGASPlayerState()
 
 UAbilitySystemComponent* APPGASPlayerState::GetAbilitySystemComponent() const
 {
-
 	return ASC;
 }

@@ -16,9 +16,7 @@ class PROPJECTPTESTGAS_API UPPGASHpBarUserWidget : public UPPGASUserWidget
 	GENERATED_BODY()
 
 public:
-
 	void UpdateHpBar();
-	// virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
 	
 protected:
 	virtual void SetAbilitySystemComponent(AActor* InOwner) override;

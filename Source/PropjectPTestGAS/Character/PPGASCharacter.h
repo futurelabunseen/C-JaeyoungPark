@@ -37,7 +37,6 @@ public:
 
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
-	// virtual void BeginPlay() override;
 
 	virtual void OnRep_PlayerState() override;
 
@@ -126,4 +125,6 @@ private:
 	//스프링암 길이 목표값
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = SpringArm, meta = (AllowPrivateAccess = "true"))
 	float ExpectedSpringArmLength = 800.0f;
+	float ZoomMinLength = 150.0f;
+	float ZoomMaxLength = 800.0f;
 };

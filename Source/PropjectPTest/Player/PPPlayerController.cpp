@@ -106,8 +106,8 @@ void APPPlayerController::OnSetDestinationReleased()
 			// UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination);
 			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-			PP_LOG(LogPPNetwork, Log, TEXT("%s"), *CachedDestination.ToString());
-			PP_LOG(LogPPNetwork, Log, TEXT("%s"), *ControlledPawn->GetActorLocation().ToString());
+			// PP_LOG(LogPPNetwork, Log, TEXT("%s"), *CachedDestination.ToString());
+			// PP_LOG(LogPPNetwork, Log, TEXT("%s"), *ControlledPawn->GetActorLocation().ToString());
 		}
 		// 클라이언트에서 서버로 RPC 호출
 		// ClickMoveServerRPC(CachedDestination);

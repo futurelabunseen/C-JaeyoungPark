@@ -14,7 +14,6 @@
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthPlayerDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerHealthChangeDelegate);
 
 /**
  * 
@@ -44,7 +43,6 @@ public:
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
 	mutable FOutOfHealthPlayerDelegate OnOutOfHealth_Player;
-	mutable FPlayerHealthChangeDelegate PlayerHealthChangeDelegate;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category="Attack", Meta = (AllowPrivateAccess = true))
