@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Physics/PPCollision.h"
+#include "Net/UnrealNetwork.h"
 
 // GAS Header
 #include "Character/PPGASCharacter.h"
@@ -18,13 +19,14 @@
 #include "Attribute/PPCharacterAttributeSet.h"
 #include "PropjectPTestGAS.h"
 #include "Character/PPComboActionData.h"
+#include "UI/PPGASHpBarUserWidget.h"
 
 
 APPGASCharacter::APPGASCharacter()
 {
-	//PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
 	ASC = nullptr; // 플레이어 스테이트에서 이미 하나 생성했기 때문에 의도적으로 null로 설정
-	//PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
+	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
@@ -57,6 +59,8 @@ APPGASCharacter::APPGASCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	// ----------------------------------------------------
 
 	// Input Action
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionZoomInRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_ZoomIn.IA_ZoomIn'"));
@@ -153,6 +157,7 @@ UAbilitySystemComponent* APPGASCharacter::GetAbilitySystemComponent() const
 	return ASC;
 }
 
+// 서버에서 호출
 void APPGASCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -162,6 +167,7 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
+		// UE_LOG(LogTemp, Error, TEXT("%s Player"), *ASC->GetOwner()->GetName());
 
 		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 		if (CurrentAttributeSet)
@@ -190,8 +196,6 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 			ASC->GiveAbility(StartSpec);
 		}
 
-		SetupGASInputComponent(); // PossessedBy 는 서버에서만 호출됨, 클라에서 호출 안 됨
-
 		APlayerController* PlayerContorller = CastChecked<APlayerController>(NewController);
 		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));
 	}
@@ -199,19 +203,14 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 
 void APPGASCharacter::OnRep_PlayerState()
 {
+	Super::OnRep_PlayerState();
+
 	APPGASPlayerState* GASPS = GetPlayerState<APPGASPlayerState>();
 	if (GASPS)
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
-
-		/*const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
-		if (CurrentAttributeSet)
-		{
-			CurrentAttributeSet->OnOutOfHealth_Player.AddDynamic(this, &ThisClass::OnOutOfHealth);
-		}*/
-
-		SetupGASInputComponent();
+		HpBar->InitWidget();
 	}
 }
 
@@ -239,7 +238,6 @@ void APPGASCharacter::SetupGASInputComponent()
 		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 2);
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 3);
 		EnhancedInputComponent->BindAction(Interaction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 4);
-
 	}
 }
 
@@ -281,8 +279,6 @@ void APPGASCharacter::OnOutOfHealth()
 //Called every frame
 void APPGASCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
 	//줌 선형보간
 	if (FMath::Abs(CameraBoom->TargetArmLength - ExpectedSpringArmLength) > KINDA_SMALL_NUMBER)
 	{

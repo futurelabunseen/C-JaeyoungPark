@@ -56,8 +56,3 @@ void APPCharacter::PlayDeadAnimation()
 	AnimInstance->StopAllMontages(0.0f);
 	AnimInstance->Montage_Play(DeadMontage);
 }
-
-void APPCharacter::Tick(float DeltaTime)
-{
-
-}

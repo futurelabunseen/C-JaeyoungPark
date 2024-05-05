@@ -13,7 +13,9 @@ UCLASS()
 class PROPJECTPTESTGAS_API UPPGASWidgetComponent : public UWidgetComponent
 {
 	GENERATED_BODY()
-	
-protected:
+public:
 	virtual void InitWidget() override;
+
+protected:
+	// virtual void InitWidget() override;
 };

@@ -6,7 +6,7 @@
 
 void UPPGASUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 {
-	if (IsValid(InOwner) && InOwner)
+	if (IsValid(InOwner))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("aaaaaaaa"));
 		ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InOwner);

@@ -87,6 +87,7 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	{
 		Data.Target.AddLooseGameplayTag(PPTAG_CHARACTER_ISDEAD);
 		OnOutOfHealth_Player.Broadcast();
+
 	}
 
 	bOutOfHealth = (GetHealth() <= 0.0f);

@@ -20,7 +20,7 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *ASC->GetOwner()->GetName());
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
-		ASC->RegisterGameplayTagEvent(PPTAG_CHARACTER_INVINSIBLE, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPPGASHpBarUserWidget::OnInvinsibleTagChanged);
+		// ASC->RegisterGameplayTagEvent(PPTAG_CHARACTER_INVINSIBLE, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPPGASHpBarUserWidget::OnInvinsibleTagChanged);
 
 		ASC->GetGameplayAttributeValueChangeDelegate(UMonsterAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UMonsterAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
@@ -83,7 +83,7 @@ void UPPGASHpBarUserWidget::OnHealthChanged(const FOnAttributeChangeData& Change
 
 void UPPGASHpBarUserWidget::OnMaxHealthChanged(const FOnAttributeChangeData& ChangeData)
 {
-	CurrentHealth = ChangeData.NewValue;
+	CurrentMaxHealth = ChangeData.NewValue;
 	UpdateHpBar();
 }
 
@@ -111,5 +111,24 @@ void UPPGASHpBarUserWidget::UpdateHpBar()
 	if (TxtHpStat)
 	{
 		TxtHpStat->SetText(FText::FromString(FString::Printf(TEXT("%.0f/%0.f"), CurrentHealth, CurrentMaxHealth)));
+		UE_LOG(LogTemp, Warning, TEXT("CurrentHealth : %f"), CurrentHealth);
+		UE_LOG(LogTemp, Warning, TEXT("CurrentMaxHealth : %f"), CurrentMaxHealth);
 	}
 }
+
+//void UPPGASHpBarUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+//{
+//	Super::NativeTick(MyGeometry, InDeltaTime);
+//
+//	if (ASC)
+//	{
+//		const UPPCharacterAttributeSet* CurrentPPCharacterAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
+//		if (CurrentPPCharacterAttributeSet)
+//		{
+//			UE_LOG(LogTemp, Warning, TEXT("000000"));
+//			CurrentHealth = CurrentPPCharacterAttributeSet->GetHealth();
+//			CurrentMaxHealth = CurrentPPCharacterAttributeSet->GetMaxHealth();
+//		}
+//		UpdateHpBar();
+//	}
+//}

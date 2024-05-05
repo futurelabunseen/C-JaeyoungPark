@@ -25,8 +25,6 @@ protected:
 protected:
 	virtual void BeginPlay() override;
 
-	void Tick(float DeltaTime);
-
 	virtual void SetDead();
 
 	void PlayDeadAnimation();

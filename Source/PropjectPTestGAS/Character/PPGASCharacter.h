@@ -37,6 +37,7 @@ public:
 
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
+	// virtual void BeginPlay() override;
 
 	virtual void OnRep_PlayerState() override;
 
@@ -48,7 +49,7 @@ protected:
 	UFUNCTION()
 	virtual void OnOutOfHealth();
 
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime);
 
 protected:
 

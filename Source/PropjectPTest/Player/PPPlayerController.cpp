@@ -10,6 +10,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "PropjectPTest.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
 
 APPPlayerController::APPPlayerController()
 {
@@ -96,11 +99,18 @@ void APPPlayerController::OnSetDestinationReleased()
 	// If it was a short press
 	if (FollowTime <= ShortPressThreshold)
 	{
-		// We move there and spawn some particles
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-
+		APawn* ControlledPawn = GetPawn();
+		if (ControlledPawn != nullptr)
+		{
+			// We move there and spawn some particles
+			// UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination);
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+			PP_LOG(LogPPNetwork, Log, TEXT("%s"), *CachedDestination.ToString());
+			PP_LOG(LogPPNetwork, Log, TEXT("%s"), *ControlledPawn->GetActorLocation().ToString());
+		}
 		// 클라이언트에서 서버로 RPC 호출
-		ClickMoveServerRPC(CachedDestination);
+		// ClickMoveServerRPC(CachedDestination);
 	}
 
 	FollowTime = 0.f;
@@ -119,14 +129,20 @@ void APPPlayerController::OnTouchReleased()
 	OnSetDestinationReleased();
 }
 
-void APPPlayerController::ClickMoveServerRPC_Implementation(FVector Destination)
-{
-	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
-	// 클라이언트의 입력 처리를 위해 해당 함수 호출
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Destination);
-	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
-	PP_LOG(LogPPNetwork, Log, TEXT("%s"), *Destination.ToString());
-}
+//void APPPlayerController::ClickMoveServerRPC_Implementation(FVector Destination)
+//{
+//	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+//	// 클라이언트의 입력 처리를 위해 해당 함수 호출
+//	// UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Destination);
+//
+//	/*APawn* ControlledPawn = GetPawn();
+//	if (ControlledPawn != nullptr)
+//	{
+//		UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination);
+//	}*/
+//	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
+//	PP_LOG(LogPPNetwork, Log, TEXT("%s"), *Destination.ToString());
+//}
 
 //bool APPPlayerController::ClickMoveServerRPC_Validate()
 //{

@@ -11,7 +11,7 @@ void UPPGASWidgetComponent::InitWidget()
 	UPPGASUserWidget* GASUserWidget = Cast<UPPGASUserWidget>(GetWidget());
 	if (GASUserWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("cccccccc"));
+		UE_LOG(LogTemp, Warning, TEXT("Init Widget"));
 		GASUserWidget->SetAbilitySystemComponent(GetOwner());
 	}
 	UE_LOG(LogTemp, Warning, TEXT("ddddddd"));
