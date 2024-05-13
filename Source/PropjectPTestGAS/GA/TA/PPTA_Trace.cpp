@@ -4,14 +4,14 @@
 #include "GA/TA/PPTA_Trace.h"
 #include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
-#include "Character/PPCharacterNonPlayer.h"
+#include "Character/PPGASCharacterNonPlayer.h"
 #include "Components/CapsuleComponent.h"
 #include "Physics/PPCollision.h"
 #include "DrawDebugHelpers.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/PPCharacterAttributeSet.h"
-//#include "Attribute/MonsterAttributeSet.h"
-//#include "Attribute/BossAttributeSet.h"
+// #include "Attribute/MonsterAttributeSet.h"
+// #include "Attribute/BossAttributeSet.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "PropjectPTestGAS.h"
 
@@ -38,7 +38,7 @@ void APPTA_Trace::ConfirmTargetingAndContinue()
 FGameplayAbilityTargetDataHandle APPTA_Trace::MakeTargetData() const
 {
 	ACharacter* Character = CastChecked<ACharacter>(SourceActor);
-	// APPCharacterNonPlayer* NonPlayerCharacter = CastChecked<APPCharacterNonPlayer>(SourceActor);
+	// APPGASCharacterNonPlayer* NonPlayerCharacter = CastChecked<APPGASCharacterNonPlayer>(SourceActor);
 
 	if (!Character)
 	{
@@ -54,42 +54,43 @@ FGameplayAbilityTargetDataHandle APPTA_Trace::MakeTargetData() const
 	}
 
 	const UPPCharacterAttributeSet* CharacterAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
-	/*const UMonsterAttributeSet* MonsterAttributeSet = ASC->GetSet<UMonsterAttributeSet>();
-	const UBossAttributeSet* BossAttributeSet = ASC->GetSet<UBossAttributeSet>();*/
+	// const UMonsterAttributeSet* MonsterAttributeSet = ASC->GetSet<UMonsterAttributeSet>();
+	// const UBossAttributeSet* BossAttributeSet = ASC->GetSet<UBossAttributeSet>();
 
-	if ((!CharacterAttributeSet /*|| !MonsterAttributeSet || !BossAttributeSet*/))
+	if (!CharacterAttributeSet)
 	{
-		PPGAS_LOG(LogPPGAS, Error, TEXT("AttributeSet not found!"));
+		PPGAS_LOG(LogPPGAS, Error, TEXT("CharacterAttributeSet not found!"));
 		return FGameplayAbilityTargetDataHandle();
 	}
+
+	/*if (!MonsterAttributeSet)
+	{
+		PPGAS_LOG(LogPPGAS, Error, TEXT("MonsterAttributeSet not found!"));
+		return FGameplayAbilityTargetDataHandle();
+	}*/
 
 	const FVector Start = Character->GetActorLocation();
 	const FVector Forward = Character->GetActorForwardVector();
 
 	const FVector End_Character = Start + Forward * CharacterAttributeSet->GetAttackRange();
-	/*const FVector End_Monster = Start + Forward * MonsterAttributeSet->GetAttackRange();
-	const FVector End_Boss = Start + Forward * BossAttributeSet->GetAttackRange();*/
+	// const FVector End_Monster = Start + Forward * MonsterAttributeSet->GetAttackRange();
+	// const FVector End_Boss = Start + Forward * BossAttributeSet->GetAttackRange();
 
 	TArray<FHitResult> OutHitResults;
 	const float AttackRadius_Character = CharacterAttributeSet->GetAttackRadius();
-	/*const float AttackRadius_Monster = MonsterAttributeSet->GetAttackRadius();
-	const float AttackRadius_Boss = BossAttributeSet->GetAttackRadius();*/
+	// const float AttackRadius_Monster = MonsterAttributeSet->GetAttackRadius();
+	// const float AttackRadius_Boss = BossAttributeSet->GetAttackRadius();
 
 	const FCollisionShape CollisionShape_Character = FCollisionShape::MakeSphere(AttackRadius_Character);
-	/*const FCollisionShape CollisionShape_Monster = FCollisionShape::MakeSphere(AttackRadius_Monster);
-	const FCollisionShape CollisionShape_Boss = FCollisionShape::MakeSphere(AttackRadius_Boss);*/
+	// const FCollisionShape CollisionShape_Monster = FCollisionShape::MakeSphere(AttackRadius_Monster);
+	// const FCollisionShape CollisionShape_Boss = FCollisionShape::MakeSphere(AttackRadius_Boss);
 
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(UPPTA_Trace), false, Character);
+	FCollisionQueryParams Params_Character(SCENE_QUERY_STAT(UPPTA_Trace), false, Character);
+	// FCollisionQueryParams Params_Monster(SCENE_QUERY_STAT(UPPTA_Trace), false, NonPlayerCharacter);
 
-	GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Character, FQuat::Identity, CCHANNEL_PPACTION, CollisionShape_Character, Params);
-
-	/*if (!NonPlayerCharacter)
-	{
-		GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Character, FQuat::Identity, CCHANNEL_PPACTION1, CollisionShape_Character, Params);
-	}*/
-
-	/*GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Monster, FQuat::Identity, CCHANNEL_PPACTION1, CollisionShape_Monster, Params);
-	GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Boss, FQuat::Identity, CCHANNEL_PPACTION1, CollisionShape_Boss, Params);*/
+	GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Character, FQuat::Identity, CCHANNEL_PPACTION, CollisionShape_Character, Params_Character);
+	// GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Monster, FQuat::Identity, CCHANNEL_PPACTION2, CollisionShape_Monster, Params_Monster);
+	// GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Boss, FQuat::Identity, CCHANNEL_PPACTION1, CollisionShape_Boss, Params);
 
 	FGameplayAbilityTargetDataHandle DataHandle;
 	for (const FHitResult& HitResult : OutHitResults)
@@ -105,16 +106,14 @@ FGameplayAbilityTargetDataHandle APPTA_Trace::MakeTargetData() const
 		{
 			FVector CapsuleOrigin = HitResult.ImpactPoint;
 			float CapsuleHalfHeight_Character = AttackRadius_Character;
-			/*float CapsuleHalfHeight_Monster = AttackRadius_Monster;
-			float CapsuleHalfHeight_Boss = AttackRadius_Boss;*/
+			// float CapsuleHalfHeight_Monster = AttackRadius_Monster;
+			// float CapsuleHalfHeight_Boss = AttackRadius_Boss;
 
-			/*if (!NonPlayerCharacter)
-			{
-				DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Character, AttackRadius_Character, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
-			}*/
-			/*DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Monster, AttackRadius_Monster, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
-			DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Boss, AttackRadius_Boss, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);*/
+			
 			DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Character, AttackRadius_Character, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
+			// DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Monster, AttackRadius_Monster, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
+			// DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Boss, AttackRadius_Boss, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
+			// DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Character, AttackRadius_Character, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
 
 		}
 	}

@@ -34,7 +34,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		return EBTNodeResult::Failed;
 	}
 
-	AIPawn->SetAIAttackDelegate(OnAttackFinished);
-	AIPawn->AttackByAI();
+	/*AIPawn->SetAIAttackDelegate(OnAttackFinished);
+	AIPawn->AttackByAI();*/
 	return EBTNodeResult::InProgress;
 }

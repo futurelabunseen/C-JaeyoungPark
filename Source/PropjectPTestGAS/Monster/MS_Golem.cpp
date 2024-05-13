@@ -7,6 +7,7 @@
 #include "Character/PPGASCharacter.h"
 #include "GA/PPGA_Attack.h"
 #include "GE/PPGE_AttackDamage.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 
 // Sets default values
@@ -74,22 +75,36 @@ float AMS_Golem::GetAITurnSpeed()
 	return 2.0f; // 어트리뷰트 세트로 변경 예정
 }
 
-void AMS_Golem::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
-{
-	OnAttackFinished = InOnAttackFinished;
-}
+//void AMS_Golem::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
+//{
+//	OnAttackFinished = InOnAttackFinished;
+//}
 
-void AMS_Golem::AttackByAI()
-{
-	/*FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(1);
-	ASC->TryActivateAbility(Spec->Handle);*/
-	// 어떻게 해야 하지... 영상 보고 공부해보자
-	
-}
+//void AMS_Golem::AttackByAI()
+//{
+//	/*FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(1);
+//	ASC->TryActivateAbility(Spec->Handle);*/
+//	// 어떻게 해야 하지... 영상 보고 공부해보자
+//}
 
 //void AMS_Golem::NotifyComboActionEnd()
 //{
 //	
 //	OnAttackFinished.ExecuteIfBound();
 //}
+
+void AMS_Golem::ApplyEffectToTarget(AActor* Target)
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
+	if (TargetASC)
+	{
+		FGameplayEffectContextHandle EffectContext = TargetASC->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass, 1, EffectContext);
+		if (EffectSpecHandle.IsValid())
+		{
+			TargetASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
+}
 
