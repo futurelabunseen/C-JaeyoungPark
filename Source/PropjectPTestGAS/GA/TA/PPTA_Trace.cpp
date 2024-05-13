@@ -69,6 +69,12 @@ FGameplayAbilityTargetDataHandle APPTA_Trace::MakeTargetData() const
 		return FGameplayAbilityTargetDataHandle();
 	}*/
 
+	/*if (!BossAttributeSet)
+	{
+		PPGAS_LOG(LogPPGAS, Error, TEXT("BossAttributeSet not found!"));
+		return FGameplayAbilityTargetDataHandle();
+	}*/
+
 	const FVector Start = Character->GetActorLocation();
 	const FVector Forward = Character->GetActorForwardVector();
 
