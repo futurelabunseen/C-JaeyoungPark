@@ -20,6 +20,7 @@ public:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void NotifyActorBeginOverlap(class AActor* Other) override;
 	virtual void NotifyActorEndOverlap(class AActor* Other) override;
+	virtual void Tick(class AActor* Other);
 
 protected:
 	virtual void PostInitializeComponents() override;
@@ -30,6 +31,9 @@ protected:
 protected:
 	UPROPERTY()
 	TObjectPtr<class UAbilitySystemComponent> ASC;
+
+	UPROPERTY()
+	TObjectPtr<class UAbilitySystemComponent> TargetCharacterASC;
 
 	UPROPERTY(VisibleAnywhere, Category = Bound)
 	TObjectPtr<class USphereComponent> SphereTrigger;

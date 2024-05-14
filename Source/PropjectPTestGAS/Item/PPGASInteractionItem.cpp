@@ -8,6 +8,8 @@
 #include "Components/WidgetComponent.h"
 #include "Physics/PPCollision.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Tag/PPGameplayTag.h"
+#include "Character/PPGASCharacter.h"
 
 // Sets default values
 APPGASInteractionItem::APPGASInteractionItem()
@@ -27,6 +29,8 @@ APPGASInteractionItem::APPGASInteractionItem()
 
 	Mesh->SetRelativeLocation(FVector(0.0f, -3.5f, -30.0f));
 	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
+
+	PrimaryActorTick.bCanEverTick = true; // 틱 사용
 }
 
 UAbilitySystemComponent* APPGASInteractionItem::GetAbilitySystemComponent() const
@@ -38,31 +42,45 @@ void APPGASInteractionItem::NotifyActorBeginOverlap(AActor* Other)
 {
 	Super::NotifyActorBeginOverlap(Other);
 
+	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(Other);
 	Widget->SetVisibility(true);
-	//if (Widget->IsVisible())
-	//{
-	//	// ASC->AddLooseGameplayTag();
-	//	// Interaction 실행가능 상태로 설정
-	//	// 실행하면
-	//	// 아래 기능 사용
-	//	if ()
-	//	{
-	//		InvokeGameplayCue(Other); // 게임플레이 큐 (시각 효과 실행)
-	//		ApplyEffectToTarget(Other); // 게임플레이 이펙트 적용
-
-	//		// 액터 없애기
-	//		Mesh->SetHiddenInGame(true);
-	//		SetActorEnableCollision(false);
-	//		SetLifeSpan(2.0f);
-	//	}
-	//}
-	// 범위 안에 들어오면 태그 붙이기 -> 태그가 있을 때 Interaction 실행할 수 있도록 설정
-	// -> Interaction 실행 시, 게임플레이 이펙트 적용, 액터 삭제
+	if (Widget->IsVisible()) // 위젯이 켜졌다면
+	{
+		if (!TargetCharacter) { return; }
+		TargetCharacterASC = TargetCharacter->GetAbilitySystemComponent();
+		TargetCharacterASC->AddLooseGameplayTag(PPTAG_CHARACTER_INTERACTION); // 태그 붙이기
+	}
 }
 
 void APPGASInteractionItem::NotifyActorEndOverlap(AActor* Other)
 {
+	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(Other);
+
 	Widget->SetVisibility(false);
+	TargetCharacter->GetAbilitySystemComponent()->RemoveLooseGameplayTag(PPTAG_CHARACTER_INTERACTION); // 태그 없애기
+}
+
+void APPGASInteractionItem::Tick(AActor* Other)
+{
+	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(Other);
+	if (TargetCharacterASC->HasMatchingGameplayTag(PPTAG_CHARACTER_INTERACTIONING)) // 상호작용 어빌리티가 실행되었다면
+	{
+		UE_LOG(LogTemp, Warning, TEXT("11111"));
+		InvokeGameplayCue(TargetCharacter); // 게임플레이 큐 (시각 효과 실행)
+		ApplyEffectToTarget(TargetCharacter); // 게임플레이 이펙트 적용
+
+		UE_LOG(LogTemp, Warning, TEXT("22222"));
+		// 액터 없애기
+		Mesh->SetHiddenInGame(true);
+		SetActorEnableCollision(false);
+		SetLifeSpan(2.0f);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("33333"));
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("44444"));
 }
 
 void APPGASInteractionItem::PostInitializeComponents()
