@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Interface/MSAIInterface.h"
 #include "Character/PPGASCharacterNonPlayer.h"
+#include "GameplayTagContainer.h"
 #include "MS_Golem.generated.h"
 
 UCLASS()
@@ -29,8 +30,13 @@ protected:
 	virtual float GetAIAttackRange() override;
 	virtual float GetAITurnSpeed() override;
 
-	// void ApplyEffectToTarget(AActor* Target);
+	void ApplyEffectToTarget(AActor* Target);
+
+	void InvokeGameplayCue(AActor* Target);
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TSubclassOf<class UGameplayEffect> GameplayEffectClass;
+
+	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
+	FGameplayTag GameplayCueTag;
 };

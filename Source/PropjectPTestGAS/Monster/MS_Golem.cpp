@@ -75,18 +75,27 @@ float AMS_Golem::GetAITurnSpeed()
 	return 2.0f; // 어트리뷰트 세트로 변경 예정
 }
 
-//void AMS_Golem::ApplyEffectToTarget(AActor* Target)
-//{
-//	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
-//	if (TargetASC)
-//	{
-//		FGameplayEffectContextHandle EffectContext = TargetASC->MakeEffectContext();
-//		EffectContext.AddSourceObject(this);
-//		FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass, 1, EffectContext);
-//		if (EffectSpecHandle.IsValid())
-//		{
-//			TargetASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-//		}
-//	}
-//}
+void AMS_Golem::ApplyEffectToTarget(AActor* Target)
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
+	if (TargetASC)
+	{
+		FGameplayEffectContextHandle EffectContext = TargetASC->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass, 1, EffectContext);
+		if (EffectSpecHandle.IsValid())
+		{
+			TargetASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
+}
+
+void AMS_Golem::InvokeGameplayCue(AActor* Target)
+{
+	FGameplayCueParameters Param;
+	Param.SourceObject = this;
+	Param.Instigator = Target;
+	Param.Location = GetActorLocation();
+	ASC->ExecuteGameplayCue(GameplayCueTag, Param);
+}
 
