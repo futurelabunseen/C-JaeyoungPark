@@ -32,6 +32,9 @@ protected:
 	UFUNCTION()
 	void ApplyEffectToTarget(AActor* Target);
 
+	UFUNCTION()
+	void SpawnParticleEffect(UWorld* World, FVector Location, FRotator Rotation, UParticleSystem* ParticleSystem);
+
 	/*UFUNCTION()
 	void InvokeGameplayCue(AActor* Target);*/
 

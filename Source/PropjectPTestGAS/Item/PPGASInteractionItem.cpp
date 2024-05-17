@@ -44,13 +44,13 @@ void APPGASInteractionItem::NotifyActorBeginOverlap(AActor* Other) // 캐릭터 들�
 	if (!IsValid(TargetCharacter)) return; // 들어온 캐릭터가 플레이어가 아니면 리턴, // 유효성 검사
 
 	TargetCharacterASC = TargetCharacter->GetAbilitySystemComponent(); // 플레이어의 ASC 가져옴
-	if (!IsValid(TargetCharacterASC)) return; // ASC가 없으면 리턴, // 유효성 검사
+	if (!TargetCharacterASC) return; // ASC가 없으면 리턴, // 유효성 검사
 
 	TargetCharacter->InteractableItem = this; // 캐릭터에게 아이템 전달
 	Widget->SetVisibility(true); // 위젯 켜기
 
 	// 위젯이 켜져있고, 상호작용 아이템 칸이 비어있지 않다면, // 유효성 검사
-	if (Widget->IsVisible() && IsValid(TargetCharacter->InteractableItem))
+	if (Widget->IsVisible() && TargetCharacter->InteractableItem)
 	{
 		TargetCharacterASC->AddLooseGameplayTag(PPTAG_CHARACTER_CANINTERACTION); // 상호작용 가능 태그 붙이기
 	}

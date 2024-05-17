@@ -25,6 +25,7 @@ AMSAIController::AMSAIController()
 void AMSAIController::RunAI()
 {
 	UBlackboardComponent* BlackboardPtr = Blackboard.Get();
+
 	if (UseBlackboard(BBAsset, BlackboardPtr))
 	{
 		Blackboard->SetValueAsVector(BBKEY_HOMEPOS, GetPawn()->GetActorLocation());
@@ -46,6 +47,5 @@ void AMSAIController::StopAI()
 void AMSAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
 	RunAI();
 }

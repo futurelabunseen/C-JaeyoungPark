@@ -27,17 +27,20 @@ public:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TSubclassOf<class UGameplayEffect> GameplayEffectClass;
 
-	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
-	FGameplayTag GameplayCueTag;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
+	TObjectPtr<class UParticleSystem> ParticleSystem;
+
+	/*UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
+	FGameplayTag GameplayCueTag;*/
+
+	UPROPERTY()
+	TObjectPtr<class UAbilitySystemComponent> ASC;
 
 protected:
 	virtual void PostInitializeComponents() override;
 
 protected:
-	UPROPERTY()
-	TObjectPtr<class UAbilitySystemComponent> ASC;
-
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> TargetCharacterASC;
 
 

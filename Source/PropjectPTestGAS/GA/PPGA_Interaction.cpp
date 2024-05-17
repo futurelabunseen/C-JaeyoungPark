@@ -10,6 +10,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Item/PPGASInteractionItem.h"
+#include "Kismet/GameplayStatics.h"
+
 
 UPPGA_Interaction::UPPGA_Interaction()
 {
@@ -21,13 +23,19 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get()); // 현재 플레이어 캐릭터
+	APPGASInteractionItem* InteractableItem = Cast<APPGASInteractionItem>(TargetCharacter->InteractableItem); // 현재 상호작용 아이템
 	if (!IsValid(TargetCharacter)) // 유효성 검사
 	{
 		return;
 	}
 
+	if (!IsValid(InteractableItem)) // 유효성 검사
+	{
+		return;
+	}
+
 	ActiveInteractionMontage = TargetCharacter->GetInteractionMontage();
-	if (!IsValid(ActiveInteractionMontage)) // 유효성 검사
+	if (!ActiveInteractionMontage) // 유효성 검사
 	{
 		return;
 	}
@@ -42,7 +50,7 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 
 	TargetCharacterASC = TargetCharacter->GetAbilitySystemComponent(); // 플레이어 ASC
-	if (!IsValid(TargetCharacterASC)) // 유효성 검사
+	if (!TargetCharacterASC) // 유효성 검사
 	{
 		return;
 	}
@@ -52,8 +60,13 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		// InvokeGameplayCue(TargetCharacter); // 게임플레이 큐 (시각 효과 실행)
 		ApplyEffectToTarget(TargetCharacter); // 게임플레이 이펙트 적용
 
+		UWorld* World = GetWorld();
+		SpawnParticleEffect(World, TargetCharacter->GetActorLocation(), TargetCharacter->GetActorRotation(), InteractableItem->ParticleSystem);
+
 		// 액터 없애기
-		TargetCharacter->InteractableItem->Destroy();
+		InteractableItem->Mesh->SetHiddenInGame(true);
+		InteractableItem->SetActorEnableCollision(false);
+		InteractableItem->SetLifeSpan(2.0f);
 	}
 	else
 	{
@@ -94,10 +107,10 @@ void UPPGA_Interaction::OnInterruptedCallback()
 void UPPGA_Interaction::ApplyEffectToTarget(AActor* Target)
 {
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(Target);
-	if (IsValid(TargetCharacterASC) && IsValid(TargetCharacter)) // 유효성 검사
+	if (TargetCharacterASC && IsValid(TargetCharacter)) // 유효성 검사
 	{
 		APPGASInteractionItem* InteractableItem = Cast<APPGASInteractionItem>(TargetCharacter->InteractableItem);
-		if (IsValid(InteractableItem) && IsValid(InteractableItem->GameplayEffectClass)) // 유효성 검사
+		if (IsValid(InteractableItem) && InteractableItem->GameplayEffectClass) // 유효성 검사
 		{
 			FGameplayEffectContextHandle EffectContext = TargetCharacterASC->MakeEffectContext();
 			EffectContext.AddSourceObject(this);
@@ -110,11 +123,23 @@ void UPPGA_Interaction::ApplyEffectToTarget(AActor* Target)
 	}
 }
 
+void UPPGA_Interaction::SpawnParticleEffect(UWorld* World, FVector Location, FRotator Rotation, UParticleSystem* ParticleSystem)
+{
+	UGameplayStatics::SpawnEmitterAtLocation(World, ParticleSystem, Location, Rotation, true);
+}
+
 //void UPPGA_Interaction::InvokeGameplayCue(AActor* Target)
 //{
+//	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(Target);
+//	APPGASInteractionItem* InteractableItem = Cast<APPGASInteractionItem>(TargetCharacter->InteractableItem);
+//	if (!TargetCharacter) return;
+//	if (!InteractableItem) return;
+//
 //	FGameplayCueParameters Param;
-//	Param.SourceObject = this;
-//	Param.Instigator = Target;
-//	Param.Location = GetActorLocation();
-//	ASC->ExecuteGameplayCue(GameplayCueTag, Param); // 어빌리티에 설정된 게임플레이 큐 태그 활성화 -> 실행
+//	Param.SourceObject = InteractableItem; // 소스 아이템
+//	Param.Instigator = TargetCharacter; // 가해자
+//	Param.Location = TargetCharacter->GetActorLocation();
+//	InteractableItem->ASC->ExecuteGameplayCue(InteractableItem->GameplayCueTag, Param); // 아이템에 설정된 게임플레이 큐 태그 활성화 -> 실행
+//	UE_LOG(LogTemp, Warning, TEXT("Item Effect Excute"));
 //}
+

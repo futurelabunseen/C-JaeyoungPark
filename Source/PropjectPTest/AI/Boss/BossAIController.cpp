@@ -46,6 +46,5 @@ void ABossAIController::StopAI()
 void ABossAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
 	RunAI();
 }
