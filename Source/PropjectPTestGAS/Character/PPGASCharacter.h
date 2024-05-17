@@ -40,6 +40,9 @@ public:
 
 	virtual void OnRep_PlayerState() override;
 
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TObjectPtr<class AActor> InteractableItem;
+
 protected:
 	void SetupGASInputComponent();
 	void GASInputPressed(int32 InputId);

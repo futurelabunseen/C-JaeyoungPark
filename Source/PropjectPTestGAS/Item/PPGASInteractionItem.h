@@ -20,13 +20,18 @@ public:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void NotifyActorBeginOverlap(class AActor* Other) override;
 	virtual void NotifyActorEndOverlap(class AActor* Other) override;
-	virtual void Tick(class AActor* Other);
+
+	UPROPERTY(EditAnywhere, Category = Bound)
+	TObjectPtr<class UStaticMeshComponent> Mesh;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TSubclassOf<class UGameplayEffect> GameplayEffectClass;
+
+	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
+	FGameplayTag GameplayCueTag;
 
 protected:
 	virtual void PostInitializeComponents() override;
-
-	void ApplyEffectToTarget(AActor* Target);
-	void InvokeGameplayCue(AActor* Target);
 
 protected:
 	UPROPERTY()
@@ -35,18 +40,10 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UAbilitySystemComponent> TargetCharacterASC;
 
+
 	UPROPERTY(VisibleAnywhere, Category = Bound)
 	TObjectPtr<class USphereComponent> SphereTrigger;
 
-	UPROPERTY(VisibleAnywhere, Category = Bound)
-	TObjectPtr<class UStaticMeshComponent> Mesh;
-
 	UPROPERTY(VisibleAnywhere, Category = Widget)
 	TObjectPtr<class UWidgetComponent> Widget;
-
-	UPROPERTY(EditAnywhere, Category = GAS)
-	TSubclassOf<class UGameplayEffect> GameplayEffectClass;
-
-	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
-	FGameplayTag GameplayCueTag;
 };

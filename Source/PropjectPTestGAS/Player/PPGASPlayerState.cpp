@@ -22,7 +22,7 @@ APPGASPlayerState::APPGASPlayerState()
 
 	AttributeSet = CreateDefaultSubobject<UPPCharacterAttributeSet>(TEXT("AttributeSet"));
 	SkillAttributeSet = CreateDefaultSubobject<UPPCharacterSkillAttributeSet>(TEXT("SkillAttributeSet"));
-	NetUpdateFrequency = 50;
+	NetUpdateFrequency = 50.0f;
 }
 
 UAbilitySystemComponent* APPGASPlayerState::GetAbilitySystemComponent() const

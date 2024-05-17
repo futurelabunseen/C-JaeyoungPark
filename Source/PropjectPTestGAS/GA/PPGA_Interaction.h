@@ -29,7 +29,16 @@ protected:
 	UFUNCTION()
 	void OnInterruptedCallback();
 
+	UFUNCTION()
+	void ApplyEffectToTarget(AActor* Target);
+
+	/*UFUNCTION()
+	void InvokeGameplayCue(AActor* Target);*/
+
 protected:
 	UPROPERTY()
 	TObjectPtr<class UAnimMontage> ActiveInteractionMontage;
+
+	UPROPERTY()
+	TObjectPtr<class UAbilitySystemComponent> TargetCharacterASC;
 };
