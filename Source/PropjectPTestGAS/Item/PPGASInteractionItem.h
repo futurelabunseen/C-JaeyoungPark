@@ -30,9 +30,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
 	TObjectPtr<class UParticleSystem> ParticleSystem;
 
-	/*UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
-	FGameplayTag GameplayCueTag;*/
-
 	UPROPERTY()
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 

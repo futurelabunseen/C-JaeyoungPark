@@ -11,6 +11,7 @@
 #include "AbilitySystemComponent.h"
 #include "Item/PPGASInteractionItem.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 
 UPPGA_Interaction::UPPGA_Interaction()
@@ -55,22 +56,21 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
+	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
 	if (TargetCharacterASC->HasMatchingGameplayTag(PPTAG_CHARACTER_INTERACTIONING)) // 상호작용 어빌리티가 실행되었다면
 	{
-		// InvokeGameplayCue(TargetCharacter); // 게임플레이 큐 (시각 효과 실행)
-		ApplyEffectToTarget(TargetCharacter); // 게임플레이 이펙트 적용
+		ApplyEffectToTarget(ActorInfo); // 게임플레이 이펙트 적용
+		// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+		// ApplyEffectMulicastRPC(ActorInfo);
 
-		UWorld* World = GetWorld();
-		SpawnParticleEffect(World, TargetCharacter->GetActorLocation(), TargetCharacter->GetActorRotation(), InteractableItem->ParticleSystem);
+		// 파티클 생성
+		SpawnParticleEffect(GetWorld(), TargetCharacter->GetActorLocation(), TargetCharacter->GetActorRotation(), InteractableItem->ParticleSystem);
 
 		// 액터 없애기
 		InteractableItem->Mesh->SetHiddenInGame(true);
 		InteractableItem->SetActorEnableCollision(false);
 		InteractableItem->SetLifeSpan(2.0f);
-	}
-	else
-	{
-		return;
+
 	}
 }
 
@@ -104,19 +104,22 @@ void UPPGA_Interaction::OnInterruptedCallback()
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
 }
 
-void UPPGA_Interaction::ApplyEffectToTarget(AActor* Target)
+void UPPGA_Interaction::ApplyEffectToTarget(const FGameplayAbilityActorInfo* ActorInfo)
 {
-	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(Target);
-	if (TargetCharacterASC && IsValid(TargetCharacter)) // 유효성 검사
+	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get());
+	if (IsValid(TargetCharacter)) // 유효성 검사
 	{
+		PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("11111"));
 		APPGASInteractionItem* InteractableItem = Cast<APPGASInteractionItem>(TargetCharacter->InteractableItem);
-		if (IsValid(InteractableItem) && InteractableItem->GameplayEffectClass) // 유효성 검사
+		if (IsValid(InteractableItem)) // 유효성 검사
 		{
+			PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("22222"));
 			FGameplayEffectContextHandle EffectContext = TargetCharacterASC->MakeEffectContext();
 			EffectContext.AddSourceObject(this);
 			FGameplayEffectSpecHandle EffectSpecHandle = TargetCharacterASC->MakeOutgoingSpec(InteractableItem->GameplayEffectClass, 1, EffectContext);
 			if (EffectSpecHandle.IsValid()) // 유효성 검사
 			{
+				PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("33333"));
 				TargetCharacterASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 			}
 		}
@@ -128,18 +131,7 @@ void UPPGA_Interaction::SpawnParticleEffect(UWorld* World, FVector Location, FRo
 	UGameplayStatics::SpawnEmitterAtLocation(World, ParticleSystem, Location, Rotation, true);
 }
 
-//void UPPGA_Interaction::InvokeGameplayCue(AActor* Target)
+//void UPPGA_Interaction::ApplyEffectMulicastRPC_Implementation(const FGameplayAbilityActorInfo* ActorInfo)
 //{
-//	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(Target);
-//	APPGASInteractionItem* InteractableItem = Cast<APPGASInteractionItem>(TargetCharacter->InteractableItem);
-//	if (!TargetCharacter) return;
-//	if (!InteractableItem) return;
-//
-//	FGameplayCueParameters Param;
-//	Param.SourceObject = InteractableItem; // 소스 아이템
-//	Param.Instigator = TargetCharacter; // 가해자
-//	Param.Location = TargetCharacter->GetActorLocation();
-//	InteractableItem->ASC->ExecuteGameplayCue(InteractableItem->GameplayCueTag, Param); // 아이템에 설정된 게임플레이 큐 태그 활성화 -> 실행
-//	UE_LOG(LogTemp, Warning, TEXT("Item Effect Excute"));
+//	ApplyEffectToTarget(ActorInfo);
 //}
-

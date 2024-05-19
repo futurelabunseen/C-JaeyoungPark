@@ -62,7 +62,7 @@ float AMS_Golem::GetAIPatrolRadius()
 
 float AMS_Golem::GetAIDetectRange()
 {
-	return 1000.0f; // 어트리뷰트 세트로 변경 예정
+	return 400.0f; // 어트리뷰트 세트로 변경 예정
 }
 
 float AMS_Golem::GetAIAttackRange()
@@ -72,7 +72,7 @@ float AMS_Golem::GetAIAttackRange()
 
 float AMS_Golem::GetAITurnSpeed()
 {
-	return 2.0f; // 어트리뷰트 세트로 변경 예정
+	return 1.0f; // 어트리뷰트 세트로 변경 예정
 }
 
 void AMS_Golem::ApplyEffectToTarget(AActor* Target)

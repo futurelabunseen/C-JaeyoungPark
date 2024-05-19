@@ -29,14 +29,11 @@ protected:
 	UFUNCTION()
 	void OnInterruptedCallback();
 
-	UFUNCTION()
-	void ApplyEffectToTarget(AActor* Target);
-
-	UFUNCTION()
+	void ApplyEffectToTarget(const FGameplayAbilityActorInfo* ActorInfo);
 	void SpawnParticleEffect(UWorld* World, FVector Location, FRotator Rotation, UParticleSystem* ParticleSystem);
 
-	/*UFUNCTION()
-	void InvokeGameplayCue(AActor* Target);*/
+	/*UFUNCTION(NetMulticast, Unreliable)
+	void ApplyEffectMulicastRPC(const FGameplayAbilityActorInfo* ActorInfo);*/
 
 protected:
 	UPROPERTY()
