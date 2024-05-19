@@ -27,27 +27,35 @@ void AChaosRock::BeginPlay()
 {
 	Super::BeginPlay();
 	RockMesh->SetSimulatePhysics(false);
-	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &AChaosRock::OnOverlap);
-	BoxCollision->OnComponentEndOverlap.AddDynamic(this, &AChaosRock::EndOverlap);
+	// BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &AChaosRock::OnOverlap);
+	// BoxCollision->OnComponentEndOverlap.AddDynamic(this, &AChaosRock::EndOverlap);
 }
 
-void AChaosRock::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AChaosRock::NotifyActorBeginOverlap(AActor* Other)
 {
-	if (OtherActor)
+	const auto player = Cast<APPGASCharacter>(Other);
+	if (player)
 	{
-		const auto player = Cast<APPGASCharacter>(OtherActor);
-		if (player)
-		{
-			RockMesh->SetSimulatePhysics(true);
-			RockDestroyDele.ExecuteIfBound(GetActorLocation());
-			BoxCollision->DestroyComponent();
-		}
+		RockMesh->SetSimulatePhysics(true);
 	}
-
 }
 
-void AChaosRock::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	
-}
+//void AChaosRock::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//	if (OtherActor)
+//	{
+//		const auto player = Cast<APPGASCharacter>(OtherActor);
+//		if (player)
+//		{
+//			RockMesh->SetSimulatePhysics(true);
+//			// RockDestroyDele.ExecuteIfBound(GetActorLocation());
+//			// BoxCollision->DestroyComponent();
+//		}
+//	}
+//}
+//
+//void AChaosRock::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+//{
+//	
+//}
 

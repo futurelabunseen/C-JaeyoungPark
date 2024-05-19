@@ -69,7 +69,7 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		// 액터 없애기
 		InteractableItem->Mesh->SetHiddenInGame(true);
 		InteractableItem->SetActorEnableCollision(false);
-		InteractableItem->SetLifeSpan(2.0f);
+		InteractableItem->SetLifeSpan(0.5f);
 
 	}
 }
