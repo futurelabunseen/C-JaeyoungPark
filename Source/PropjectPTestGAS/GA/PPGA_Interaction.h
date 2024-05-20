@@ -22,6 +22,7 @@ public:
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
+
 protected:
 	UFUNCTION()
 	void OnCompleteCallback();
@@ -31,9 +32,6 @@ protected:
 
 	void ApplyEffectToTarget(const FGameplayAbilityActorInfo* ActorInfo);
 	void SpawnParticleEffect(UWorld* World, FVector Location, FRotator Rotation, UParticleSystem* ParticleSystem);
-
-	/*UFUNCTION(NetMulticast, Unreliable)
-	void ApplyEffectMulicastRPC(const FGameplayAbilityActorInfo* ActorInfo);*/
 
 protected:
 	UPROPERTY()

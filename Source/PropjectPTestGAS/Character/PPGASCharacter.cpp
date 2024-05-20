@@ -169,10 +169,13 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 		ASC->InitAbilityActorInfo(GASPS, this);
 		// UE_LOG(LogTemp, Error, TEXT("%s Player"), *ASC->GetOwner()->GetName());
 
+		PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("00000"));
 		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 		if (CurrentAttributeSet)
 		{
+
 			CurrentAttributeSet->OnOutOfHealth_Player.AddDynamic(this, &ThisClass::OnOutOfHealth);
+
 		}
 
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
@@ -196,8 +199,8 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 			ASC->GiveAbility(StartSpec);
 		}
 
-		APlayerController* PlayerContorller = CastChecked<APlayerController>(NewController);
-		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));
+		/*APlayerController* PlayerContorller = CastChecked<APlayerController>(NewController);
+		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));*/
 	}
 }
 
@@ -211,6 +214,12 @@ void APPGASCharacter::OnRep_PlayerState()
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
 		HpBar->InitWidget();
+	}
+
+	if (IsLocallyControlled() && Controller)
+	{
+		APlayerController* PlayerContorller = CastChecked<APlayerController>(GetController());
+		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));
 	}
 }
 
@@ -273,6 +282,7 @@ void APPGASCharacter::GASInputReleased(int32 InputId)
 
 void APPGASCharacter::OnOutOfHealth()
 {
+	PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("OnOutOfHealth start"));
 	SetDead();
 }
 

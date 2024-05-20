@@ -130,8 +130,3 @@ void UPPGA_Interaction::SpawnParticleEffect(UWorld* World, FVector Location, FRo
 {
 	UGameplayStatics::SpawnEmitterAtLocation(World, ParticleSystem, Location, Rotation, true);
 }
-
-//void UPPGA_Interaction::ApplyEffectMulicastRPC_Implementation(const FGameplayAbilityActorInfo* ActorInfo)
-//{
-//	ApplyEffectToTarget(ActorInfo);
-//}
