@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 #include "PPCharacter.generated.h"
 
 UCLASS(Blueprintable)
@@ -26,6 +27,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetDead();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void DeadMulticastRPC();
 
 	void PlayDeadAnimation();
 

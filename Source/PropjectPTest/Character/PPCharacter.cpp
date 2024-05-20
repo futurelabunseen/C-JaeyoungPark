@@ -27,8 +27,6 @@ APPCharacter::APPCharacter()
 	{
 		DeadMontage = DeadMontageRef.Object;
 	}
-
-	// 어택 몽타주는 각 몬스터에 세팅
 }
 
 void APPCharacter::BeginPlay()
@@ -39,13 +37,30 @@ void APPCharacter::BeginPlay()
 void APPCharacter::SetDead()
 {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	PlayDeadAnimation();
+	DeadMulticastRPC();
+	// PlayDeadAnimation();
 	SetActorEnableCollision(false);
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
 	{
 		DisableInput(PlayerController);
+	}
+
+	FTimerHandle DeadTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
+		[&]()
+		{
+			Destroy();
+		}
+	), DeadEventDelayTime, false);
+}
+
+void APPCharacter::DeadMulticastRPC_Implementation()
+{
+	if (!HasAuthority())
+	{
+		PlayDeadAnimation();
 	}
 }
 

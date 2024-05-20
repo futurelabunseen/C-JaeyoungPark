@@ -109,8 +109,6 @@ void APPPlayerController::OnSetDestinationReleased()
 			// PP_LOG(LogPPNetwork, Log, TEXT("%s"), *CachedDestination.ToString());
 			// PP_LOG(LogPPNetwork, Log, TEXT("%s"), *ControlledPawn->GetActorLocation().ToString());
 		}
-		// 클라이언트에서 서버로 RPC 호출
-		// ClickMoveServerRPC(CachedDestination);
 	}
 
 	FollowTime = 0.f;
@@ -128,29 +126,3 @@ void APPPlayerController::OnTouchReleased()
 	bIsTouch = false;
 	OnSetDestinationReleased();
 }
-
-//void APPPlayerController::ClickMoveServerRPC_Implementation(FVector Destination)
-//{
-//	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
-//	// 클라이언트의 입력 처리를 위해 해당 함수 호출
-//	// UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Destination);
-//
-//	/*APawn* ControlledPawn = GetPawn();
-//	if (ControlledPawn != nullptr)
-//	{
-//		UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination);
-//	}*/
-//	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
-//	PP_LOG(LogPPNetwork, Log, TEXT("%s"), *Destination.ToString());
-//}
-
-//bool APPPlayerController::ClickMoveServerRPC_Validate()
-//{
-//	return true;
-//}
-
-//void APPPlayerController::ClickMoveMulicastRPC_Implementation()
-//{
-//	OnSetDestinationTriggered();
-//	OnSetDestinationReleased();
-//}
