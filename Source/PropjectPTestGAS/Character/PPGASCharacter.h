@@ -6,6 +6,7 @@
 #include "Character/PPCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbilityTypes.h"
+// #include "AttributeSet.h"
 #include "PPGASCharacter.generated.h"
 
 /**
@@ -42,6 +43,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class AActor> InteractableItem;
+
+	void ResetPlayer();
+	FTimerHandle DeadTimerHandle;
 
 protected:
 	void SetupGASInputComponent();

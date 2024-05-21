@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Physics/PPCollision.h"
 #include "Net/UnrealNetwork.h"
+#include "PropjectPTest/Game/PPGASGameMode.h"
 
 // GAS Header
 #include "Character/PPGASCharacter.h"
@@ -20,6 +21,7 @@
 #include "PropjectPTestGAS.h"
 #include "Character/PPComboActionData.h"
 #include "UI/PPGASHpBarUserWidget.h"
+// #include "GameplayEffectExtension.h"
 
 
 APPGASCharacter::APPGASCharacter()
@@ -169,13 +171,11 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 		ASC->InitAbilityActorInfo(GASPS, this);
 		// UE_LOG(LogTemp, Error, TEXT("%s Player"), *ASC->GetOwner()->GetName());
 
-		PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("00000"));
+		// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("00000"));
 		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 		if (CurrentAttributeSet)
 		{
-
 			CurrentAttributeSet->OnOutOfHealth_Player.AddDynamic(this, &ThisClass::OnOutOfHealth);
-
 		}
 
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
@@ -198,9 +198,6 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 			StartSpec.InputID = StartInputAbility.Key;
 			ASC->GiveAbility(StartSpec);
 		}
-
-		/*APlayerController* PlayerContorller = CastChecked<APlayerController>(NewController);
-		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));*/
 	}
 }
 
@@ -282,8 +279,9 @@ void APPGASCharacter::GASInputReleased(int32 InputId)
 
 void APPGASCharacter::OnOutOfHealth()
 {
-	PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("OnOutOfHealth start"));
+	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("OnOutOfHealth start"));
 	SetDead();
+	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPGASCharacter::ResetPlayer, 5.0f, false);
 }
 
 //Called every frame
@@ -304,4 +302,34 @@ void APPGASCharacter::ZoomIn()
 void APPGASCharacter::ZoomOut()
 {
 	ExpectedSpringArmLength = FMath::Clamp<float>(ExpectedSpringArmLength + ZoomMinLength, ZoomMinLength, ZoomMaxLength);
+}
+
+void APPGASCharacter::ResetPlayer() // 플레이어 리셋, 체력도 리셋 해줘야함
+{
+	/*UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		AnimInstance->StopAllMontages(0.0f);
+	}*/
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	SetActorEnableCollision(true);
+	HpBar->SetHiddenInGame(false);
+
+	if (HasAuthority())
+	{
+		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
+		if (CurrentAttributeSet)
+		{
+			// CurrentAttributeSet->InitHealth(GetMaxHealth());
+		}
+		
+
+		APPGASGameMode* PPGASGameMode = GetWorld()->GetAuthGameMode<APPGASGameMode>();
+		if (PPGASGameMode)
+		{
+			FTransform NewTransform = PPGASGameMode->GetRandomStartTransform();
+			TeleportTo(NewTransform.GetLocation(), NewTransform.GetRotation().Rotator());
+		}
+	}
 }

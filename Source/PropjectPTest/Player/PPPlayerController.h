@@ -55,11 +55,8 @@ protected:
 	void OnTouchTriggered();
 	void OnTouchReleased();
 
-	//UFUNCTION(Server, Reliable /*, WithValidation*/)
-	//void ClickMoveServerRPC(FVector Destination);
-
-	/*UFUNCTION(NetMulticast, Unreliable)
-	void ClickMoveMulicastRPC();*/
+	virtual void PostNetInit() override;
+	virtual void OnPossess(APawn* InPawn) override;
 
 private:
 	FVector CachedDestination;

@@ -3,25 +3,14 @@
 
 #include "Game/PPGASGameMode.h"
 #include "PropjectPTest.h"
-// #include "PropjectPTestGAS/Player/PPGASPlayerState.h"
+// #include "PropjectPTestGAS/Player/PPGASPlayerState.h" // 플레이어 스테이트, 게임 스테이트 가져와서 사용해야 함
+#include "Player/PPPlayerController.h"
+#include "GameFramework/PlayerStart.h"
+#include "EngineUtils.h"
 
 
 APPGASGameMode::APPGASGameMode()
 {
-	//static ConstructorHelpers::FClassFinder<APawn> DefaultPawnClassRef(TEXT("/Script/Engine.Blueprint'/Game/Blueprint/BP_PPGASCharacter.BP_PPGASCharacter_C'"));
-	//if (DefaultPawnClassRef.Class)
-	//{
-	//	DefaultPawnClass = DefaultPawnClassRef.Class;
-	//}
-
-	//static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/CoreUObject.Class'/Script/PropjectPTest.PPPlayerController'"));
-
-	//if (PlayerControllerClassRef.Class)
-	//{
-	//	// DefaultPawnClass
-	//	PlayerControllerClass = PlayerControllerClassRef.Class;
-	//}
-
 	// PlayerStateClass = APPGASPlayerState::StaticClass();
 }
 
@@ -75,11 +64,79 @@ void APPGASGameMode::PostLogin(APlayerController* NewPlayer)
 	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
 }
 
-void APPGASGameMode::StartPlay()
+FTransform APPGASGameMode::GetRandomStartTransform() const // 랜덤한 플레이어 스타트 위치에서 시작
 {
-	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+	if (PlayerStartArray.Num() == 0)
+	{
+		return FTransform(FVector(0.0f, 0.0f, 230.0f));
+	}
 
+	int32 RandIndex = FMath::RandRange(0, PlayerStartArray.Num() - 1);
+	return PlayerStartArray[RandIndex]->GetActorTransform();
+}
+
+void APPGASGameMode::OnPlayerKilled(AController* Killer, AController* KilledPlayer, APawn* KilledPawn) // 플레이어 킬 카운트
+{
+	/*PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+
+	APlayerState* KillerPlayerState = Killer->PlayerState;
+	if (KillerPlayerState)
+	{
+		KillerPlayerState->SetScore(KillerPlayerState->GetScore() + 1);
+
+		if (KillerPlayerState->GetScore() > 2)
+		{
+			FinishMatch();
+		}
+	}*/
+}
+
+void APPGASGameMode::StartPlay() // 게임 시작 -> 플레이어 스타트 초기화
+{
 	Super::StartPlay();
 
-	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
+	for (APlayerStart* PlayerStart : TActorRange<APlayerStart>(GetWorld()))
+	{
+		PlayerStartArray.Add(PlayerStart);
+	}
+}
+
+void APPGASGameMode::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	// 월드 타이머 설정
+	// GetWorldTimerManager().SetTimer(GameTimerHandle, this, &APPGASGameMode::DefaultGameTimer, GetWorldSettings()->GetEffectiveTimeDilation(), true);
+}
+
+void APPGASGameMode::DefaultGameTimer() // 게임 타이머
+{
+	/*AABGameState* const APPGASGameMode = Cast<AABGameState>(GameState);
+
+	if (ABGameState && ABGameState->RemainingTime > 0)
+	{
+		ABGameState->RemainingTime--;
+		PP_LOG(LogPPNetwork, Log, TEXT("Remaining Time : %d"), ABGameState->RemainingTime);
+		if (ABGameState->RemainingTime <= 0)
+		{
+			if (GetMatchState() == MatchState::InProgress)
+			{
+				FinishMatch();
+			}
+			else if (GetMatchState() == MatchState::WaitingPostMatch)
+			{
+				GetWorld()->ServerTravel(TEXT("/Game/ArenaBattle/Maps/Part3Step2?listen"));
+			}
+		}
+	}*/
+}
+
+void APPGASGameMode::FinishMatch() // 게임 종료 실행
+{
+	/*AABGameState* const ABGameState = Cast<AABGameState>(GameState);
+	if (ABGameState && IsMatchInProgress())
+	{
+		EndMatch();
+		ABGameState->RemainingTime = ABGameState->ShowResultWaitingTime;
+	}*/
 }

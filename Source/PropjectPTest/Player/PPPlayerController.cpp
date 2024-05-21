@@ -126,3 +126,34 @@ void APPPlayerController::OnTouchReleased()
 	bIsTouch = false;
 	OnSetDestinationReleased();
 }
+
+void APPPlayerController::PostNetInit()
+{
+	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+
+	Super::PostNetInit();
+
+	UNetDriver* NetDriver = GetNetDriver();
+	if (NetDriver)
+	{
+		if (NetDriver->ServerConnection)
+		{
+			PP_LOG(LogPPNetwork, Log, TEXT("Server Connection: %s"), *NetDriver->ServerConnection->GetName());
+		}
+	}
+	else
+	{
+		PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("No NetDriver"));
+	}
+
+	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
+}
+
+void APPPlayerController::OnPossess(APawn* InPawn)
+{
+	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+
+	Super::OnPossess(InPawn);
+
+	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
+}

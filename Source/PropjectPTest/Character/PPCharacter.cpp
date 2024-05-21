@@ -38,7 +38,6 @@ void APPCharacter::SetDead()
 {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	DeadMulticastRPC();
-	// PlayDeadAnimation();
 	SetActorEnableCollision(false);
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -47,13 +46,13 @@ void APPCharacter::SetDead()
 		DisableInput(PlayerController);
 	}
 
-	FTimerHandle DeadTimerHandle;
+	/*FTimerHandle DeadTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 		[&]()
 		{
 			Destroy();
 		}
-	), DeadEventDelayTime, false);
+	), DeadEventDelayTime, false);*/
 }
 
 void APPCharacter::DeadMulticastRPC_Implementation()
