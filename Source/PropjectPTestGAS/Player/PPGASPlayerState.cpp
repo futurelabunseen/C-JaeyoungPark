@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice i the Description page of Project Settings.
 
 
 #include "Player/PPGASPlayerState.h"
@@ -12,12 +12,12 @@ APPGASPlayerState::APPGASPlayerState()
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 
-	// ¿øº»¿¡¼­ º¹Á¦º»À¸·Î °è¼Ó Àü¼ÛÀÌ µÇ¾î¾ß ÇÏ¹Ç·Î ¼Ó¼º ¼³Á¤
+	// ì›ë³¸ì—ì„œ ë³µì œë³¸ìœ¼ë¡œ ê³„ì† ì „ì†¡ì´ ë˜ì–´ì•¼ í•˜ë¯€ë¡œ ì†ì„± ì„¤ì •
 	ASC->SetIsReplicated(true);
 
-	// Mixed¸ðµå·Î ¼³Á¤ÇØ¾ß ³×Æ®¿öÅ© ´ë¿ªÆø¿¡¼­ ÃÖ°íÀÇ ¼º´ÉÀ» ¾òÀ» ¼ö ÀÖ´Ù.
-	// Mixed Mode : GameplayTag ¹× GameplayCues°¡ ¸ðµç »ç¶÷µé¿¡°Ô º¹Á¦µÊ
-	// + ÃÖ¼ÒÇÑÀÇ °ÔÀÓÇÃ·¹ÀÌ È¿°ú Á¤º¸¸¸ SimulatedProxy¿¡ º¹Á¦, ÀüÃ¼ Á¤º¸´Â Owner, AutonomousPorxy¿¡ º¹Á¦
+	// Mixedëª¨ë“œë¡œ ì„¤ì •í•´ì•¼ ë„¤íŠ¸ì›Œí¬ ëŒ€ì—­í­ì—ì„œ ìµœê³ ì˜ ì„±ëŠ¥ì„ ì–»ì„ ìˆ˜ ìžˆë‹¤.
+	// Mixed Mode : GameplayTag ë° GameplayCuesê°€ ëª¨ë“  ì‚¬ëžŒë“¤ì—ê²Œ ë³µì œë¨
+	// + ìµœì†Œí•œì˜ ê²Œìž„í”Œë ˆì´ íš¨ê³¼ ì •ë³´ë§Œ SimulatedProxyì— ë³µì œ, ì „ì²´ ì •ë³´ëŠ” Owner, AutonomousPorxyì— ë³µì œ
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	AttributeSet = CreateDefaultSubobject<UPPCharacterAttributeSet>(TEXT("AttributeSet"));
