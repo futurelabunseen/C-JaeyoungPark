@@ -22,30 +22,30 @@ AMS_Golem::AMS_Golem()
 
 	MonsterAttributeSet = CreateDefaultSubobject<UMonsterAttributeSet>(TEXT("MonsterAttributeSet"));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Ancient_Golem/Mesh/SK_Ancient_Golem.SK_Ancient_Golem'"));
-	if (CharacterMeshRef.Object)
-	{
-		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
-	}
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Ancient_Golem/Mesh/SK_Ancient_Golem.SK_Ancient_Golem'"));
+	//if (CharacterMeshRef.Object)
+	//{
+	//	GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
+	//}
 
-	// Simple Monster AnimClass Setting
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Ancient_Golem/Demo/ThirdPerson_AnimBP.ThirdPerson_AnimBP_C'"));
-	if (AnimInstanceClassRef.Class)
-	{
-		GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
-	}
+	//// Simple Monster AnimClass Setting
+	//static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Ancient_Golem/Demo/ThirdPerson_AnimBP.ThirdPerson_AnimBP_C'"));
+	//if (AnimInstanceClassRef.Class)
+	//{
+	//	GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
+	//}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Ancient_Golem/Animation/AM_Golem_Dead.AM_Golem_Dead'"));
-	if (DeadMontageRef.Object)
-	{
-		DeadMontage = DeadMontageRef.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Ancient_Golem/Animation/AM_Golem_Dead.AM_Golem_Dead'"));
+	//if (DeadMontageRef.Object)
+	//{
+	//	DeadMontage = DeadMontageRef.Object;
+	//}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Ancient_Golem/Animation/AM_Golem_Attack.AM_Golem_Attack'"));
-	if (AttackMontageRef.Object)
-	{
-		AttackMontage = AttackMontageRef.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Ancient_Golem/Animation/AM_Golem_Attack.AM_Golem_Attack'"));
+	//if (AttackMontageRef.Object)
+	//{
+	//	AttackMontage = AttackMontageRef.Object;
+	//}
 }
 
 void AMS_Golem::PossessedBy(AController* NewController)
@@ -57,12 +57,12 @@ void AMS_Golem::PossessedBy(AController* NewController)
 
 float AMS_Golem::GetAIPatrolRadius()
 {
-	return 800.0f; // ¾îÆ®¸®ºäÆ® ¼¼Æ®·Î º¯°æ ¿¹Á¤
+	return 800.0f; // ì–´íŠ¸ë¦¬ë·°íŠ¸ ì„¸íŠ¸ë¡œ ë³€ê²½ ì˜ˆì •
 }
 
 float AMS_Golem::GetAIDetectRange()
 {
-	return 400.0f; // ¾îÆ®¸®ºäÆ® ¼¼Æ®·Î º¯°æ ¿¹Á¤
+	return 400.0f; // ì–´íŠ¸ë¦¬ë·°íŠ¸ ì„¸íŠ¸ë¡œ ë³€ê²½ ì˜ˆì •
 }
 
 float AMS_Golem::GetAIAttackRange()
@@ -72,7 +72,7 @@ float AMS_Golem::GetAIAttackRange()
 
 float AMS_Golem::GetAITurnSpeed()
 {
-	return 1.0f; // ¾îÆ®¸®ºäÆ® ¼¼Æ®·Î º¯°æ ¿¹Á¤
+	return 1.0f; // ì–´íŠ¸ë¦¬ë·°íŠ¸ ì„¸íŠ¸ë¡œ ë³€ê²½ ì˜ˆì •
 }
 
 void AMS_Golem::ApplyEffectToTarget(AActor* Target)

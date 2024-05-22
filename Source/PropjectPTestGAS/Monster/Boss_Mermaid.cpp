@@ -18,30 +18,30 @@ ABoss_Mermaid::ABoss_Mermaid()
 
 	BossAttributeSet = CreateDefaultSubobject<UBossAttributeSet>(TEXT("BossAttributeSet"));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Mermaid/Mesh/MermaidVersion/SK_Mermaid.SK_Mermaid'"));
-	if (CharacterMeshRef.Object)
-	{
-		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
-	}
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Mermaid/Mesh/MermaidVersion/SK_Mermaid.SK_Mermaid'"));
+	//if (CharacterMeshRef.Object)
+	//{
+	//	GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
+	//}
 
-	// Boss AnimClass Setting
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Mermaid/Animations/Custom_Mermaid/ABP_Mermaid.ABP_Mermaid_C'"));
-	if (AnimInstanceClassRef.Class)
-	{
-		GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
-	}
+	//// Boss AnimClass Setting
+	//static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Mermaid/Animations/Custom_Mermaid/ABP_Mermaid.ABP_Mermaid_C'"));
+	//if (AnimInstanceClassRef.Class)
+	//{
+	//	GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
+	//}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Mermaid/Animations/Custom_Mermaid/Mermaid_Dead.Mermaid_Dead'"));
-	if (DeadMontageRef.Object)
-	{
-		DeadMontage = DeadMontageRef.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Mermaid/Animations/Custom_Mermaid/Mermaid_Dead.Mermaid_Dead'"));
+	//if (DeadMontageRef.Object)
+	//{
+	//	DeadMontage = DeadMontageRef.Object;
+	//}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Mermaid/Animations/Custom_Mermaid/Mermaid_Attack.Mermaid_Attack'"));
-	if (AttackMontageRef.Object)
-	{
-		AttackMontage = AttackMontageRef.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Mermaid/Animations/Custom_Mermaid/Mermaid_Attack.Mermaid_Attack'"));
+	//if (AttackMontageRef.Object)
+	//{
+	//	AttackMontage = AttackMontageRef.Object;
+	//}
 }
 
 void ABoss_Mermaid::PossessedBy(AController* NewController)
@@ -53,12 +53,12 @@ void ABoss_Mermaid::PossessedBy(AController* NewController)
 
 float ABoss_Mermaid::GetAIPatrolRadius()
 {
-	return 800.0f; // ¾îÆ®¸®ºäÆ® ¼¼Æ®·Î º¯°æ ¿¹Á¤
+	return 800.0f; // ì–´íŠ¸ë¦¬ë·°íŠ¸ ì„¸íŠ¸ë¡œ ë³€ê²½ ì˜ˆì •
 }
 
 float ABoss_Mermaid::GetAIDetectRange()
 {
-	return 1000.0f; // ¾îÆ®¸®ºäÆ® ¼¼Æ®·Î º¯°æ ¿¹Á¤
+	return 1000.0f; // ì–´íŠ¸ë¦¬ë·°íŠ¸ ì„¸íŠ¸ë¡œ ë³€ê²½ ì˜ˆì •
 }
 
 float ABoss_Mermaid::GetAIAttackRange()
@@ -68,7 +68,7 @@ float ABoss_Mermaid::GetAIAttackRange()
 
 float ABoss_Mermaid::GetAITurnSpeed()
 {
-	return 2.0f; // ¾îÆ®¸®ºäÆ® ¼¼Æ®·Î º¯°æ ¿¹Á¤
+	return 2.0f; // ì–´íŠ¸ë¦¬ë·°íŠ¸ ì„¸íŠ¸ë¡œ ë³€ê²½ ì˜ˆì •
 }
 
 void ABoss_Mermaid::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
@@ -79,8 +79,8 @@ void ABoss_Mermaid::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAt
 void ABoss_Mermaid::AttackByAI()
 {
 	//PlayAnimMontage(AttackMontage);
-	// ¿¹Á¦¿Í ±¸Á¶°¡ ´Ù¸§
-	// Ä³¸¯ÅÍ º£ÀÌ½º¿¡¼­ ±¸Á¶ º¯°æ ÈÄ Àû¿ë
+	// ì˜ˆì œì™€ êµ¬ì¡°ê°€ ë‹¤ë¦„
+	// ìºë¦­í„° ë² ì´ìŠ¤ì—ì„œ êµ¬ì¡° ë³€ê²½ í›„ ì ìš©
 
 }
 

@@ -27,7 +27,7 @@
 APPGASCharacter::APPGASCharacter()
 {
 	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
-	ASC = nullptr; // ÇÃ·¹ÀÌ¾î ½ºÅ×ÀÌÆ®¿¡¼­ ÀÌ¹Ì ÇÏ³ª »ı¼ºÇß±â ¶§¹®¿¡ ÀÇµµÀûÀ¸·Î null·Î ¼³Á¤
+	ASC = nullptr; // í”Œë ˆì´ì–´ ìŠ¤í…Œì´íŠ¸ì—ì„œ ì´ë¯¸ í•˜ë‚˜ ìƒì„±í–ˆê¸° ë•Œë¬¸ì— ì˜ë„ì ìœ¼ë¡œ nullë¡œ ì„¤ì •
 	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
 
 	// Don't rotate character to camera direction
@@ -109,13 +109,13 @@ APPGASCharacter::APPGASCharacter()
 
 	// ----------------------------------------------------
 
-	static ConstructorHelpers::FObjectFinder<UPPComboActionData> ComboActionDataRef(TEXT("/Script/PropjectPTest.PPComboActionData'/Game/Input/PPA_ComboAttack.PPA_ComboAttack'"));
+	/*static ConstructorHelpers::FObjectFinder<UPPComboActionData> ComboActionDataRef(TEXT("/Script/PropjectPTest.PPComboActionData'/Game/Input/PPA_ComboAttack.PPA_ComboAttack'"));
 	if (ComboActionDataRef.Object)
 	{
 		ComboActionData = ComboActionDataRef.Object;
-	}
+	}*/
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage>ComboActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/AM_ComboAttack.AM_ComboAttack'"));
+	/*static ConstructorHelpers::FObjectFinder<UAnimMontage>ComboActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/AM_ComboAttack.AM_ComboAttack'"));
 	if (ComboActionMontageRef.Object)
 	{
 		ComboActionMontage = ComboActionMontageRef.Object;
@@ -137,7 +137,7 @@ APPGASCharacter::APPGASCharacter()
 	if (InteractionMontageRef.Object)
 	{
 		InteractionMontage = InteractionMontageRef.Object;
-	}
+	}*/
 
 	// ----------------------------------------------------
 
@@ -159,7 +159,7 @@ UAbilitySystemComponent* APPGASCharacter::GetAbilitySystemComponent() const
 	return ASC;
 }
 
-// ¼­¹ö¿¡¼­ È£Ãâ
+// ì„œë²„ì—ì„œ í˜¸ì¶œ
 void APPGASCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -287,7 +287,7 @@ void APPGASCharacter::OnOutOfHealth()
 //Called every frame
 void APPGASCharacter::Tick(float DeltaTime)
 {
-	//ÁÜ ¼±Çüº¸°£
+	//ì¤Œ ì„ í˜•ë³´ê°„
 	if (FMath::Abs(CameraBoom->TargetArmLength - ExpectedSpringArmLength) > KINDA_SMALL_NUMBER)
 	{
 		CameraBoom->TargetArmLength = FMath::Lerp(CameraBoom->TargetArmLength, ExpectedSpringArmLength, 0.05f);
@@ -304,7 +304,7 @@ void APPGASCharacter::ZoomOut()
 	ExpectedSpringArmLength = FMath::Clamp<float>(ExpectedSpringArmLength + ZoomMinLength, ZoomMinLength, ZoomMaxLength);
 }
 
-void APPGASCharacter::ResetPlayer() // ÇÃ·¹ÀÌ¾î ¸®¼Â, Ã¼·Âµµ ¸®¼Â ÇØÁà¾ßÇÔ
+void APPGASCharacter::ResetPlayer() // í”Œë ˆì´ì–´ ë¦¬ì…‹, ì²´ë ¥ë„ ë¦¬ì…‹ í•´ì¤˜ì•¼í•¨
 {
 	/*UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
