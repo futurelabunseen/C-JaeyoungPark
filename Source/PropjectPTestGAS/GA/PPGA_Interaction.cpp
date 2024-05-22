@@ -23,26 +23,26 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get()); // «ˆ¿Á «√∑π¿ÃæÓ ƒ≥∏Ø≈Õ
-	APPGASInteractionItem* InteractableItem = Cast<APPGASInteractionItem>(TargetCharacter->InteractableItem); // «ˆ¿Á ªÛ»£¿€øÎ æ∆¿Ã≈€
-	if (!IsValid(TargetCharacter)) // ¿Ø»øº∫ ∞ÀªÁ
+	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get()); // ÌòÑÏû¨ ÌîåÎ†àÏù¥Ïñ¥ Ï∫êÎ¶≠ÌÑ∞
+	APPGASInteractionItem* InteractableItem = Cast<APPGASInteractionItem>(TargetCharacter->InteractableItem); // ÌòÑÏû¨ ÏÉÅÌò∏ÏûëÏö© ÏïÑÏù¥ÌÖú
+	if (!IsValid(TargetCharacter)) // Ïú†Ìö®ÏÑ± Í≤ÄÏÇ¨
 	{
 		return;
 	}
 
-	if (!IsValid(InteractableItem)) // ¿Ø»øº∫ ∞ÀªÁ
+	if (!IsValid(InteractableItem)) // Ïú†Ìö®ÏÑ± Í≤ÄÏÇ¨
 	{
 		return;
 	}
 
 	ActiveInteractionMontage = TargetCharacter->GetInteractionMontage();
-	if (!ActiveInteractionMontage) // ¿Ø»øº∫ ∞ÀªÁ
+	if (!ActiveInteractionMontage) // Ïú†Ìö®ÏÑ± Í≤ÄÏÇ¨
 	{
 		return;
 	}
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("InteractionMontage"), ActiveInteractionMontage, 1.0f);
-	if (IsValid(PlayMontageTask)) // ¿Ø»øº∫ ∞ÀªÁ
+	if (IsValid(PlayMontageTask)) // Ïú†Ìö®ÏÑ± Í≤ÄÏÇ¨
 	{
 		PlayMontageTask->OnCompleted.AddDynamic(this, &UPPGA_Interaction::OnCompleteCallback);
 		PlayMontageTask->OnInterrupted.AddDynamic(this, &UPPGA_Interaction::OnInterruptedCallback);
@@ -50,23 +50,23 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		PlayMontageTask->ReadyForActivation();
 	}
 
-	TargetCharacterASC = TargetCharacter->GetAbilitySystemComponent(); // «√∑π¿ÃæÓ ASC
-	if (!TargetCharacterASC) // ¿Ø»øº∫ ∞ÀªÁ
+	TargetCharacterASC = TargetCharacter->GetAbilitySystemComponent(); // ÌîåÎ†àÏù¥Ïñ¥ ASC
+	if (!TargetCharacterASC) // Ïú†Ìö®ÏÑ± Í≤ÄÏÇ¨
 	{
 		return;
 	}
 
-	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
-	if (TargetCharacterASC->HasMatchingGameplayTag(PPTAG_CHARACTER_INTERACTIONING)) // ªÛ»£¿€øÎ æÓ∫Ù∏Æ∆º∞° Ω««‡µ«æ˙¥Ÿ∏È
+	// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("Begin"));
+	if (TargetCharacterASC->HasMatchingGameplayTag(PPTAG_CHARACTER_INTERACTIONING)) // ÏÉÅÌò∏ÏûëÏö© Ïñ¥ÎπåÎ¶¨Ìã∞Í∞Ä Ïã§ÌñâÎêòÏóàÎã§Î©¥
 	{
-		ApplyEffectToTarget(ActorInfo); // ∞‘¿”«√∑π¿Ã ¿Ã∆Â∆Æ ¿˚øÎ
-		// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+		ApplyEffectToTarget(ActorInfo); // Í≤åÏûÑÌîåÎ†àÏù¥ Ïù¥ÌéôÌä∏ Ï†ÅÏö©
+		// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("Begin"));
 		// ApplyEffectMulicastRPC(ActorInfo);
 
-		// ∆ƒ∆º≈¨ ª˝º∫
+		// ÌååÌã∞ÌÅ¥ ÏÉùÏÑ±
 		SpawnParticleEffect(GetWorld(), TargetCharacter->GetActorLocation(), TargetCharacter->GetActorRotation(), InteractableItem->ParticleSystem);
 
-		// æ◊≈Õ æ¯æ÷±‚
+		// Ïï°ÌÑ∞ ÏóÜÏï†Í∏∞
 		InteractableItem->Mesh->SetHiddenInGame(true);
 		InteractableItem->SetActorEnableCollision(false);
 		InteractableItem->SetLifeSpan(0.5f);
@@ -82,7 +82,7 @@ void UPPGA_Interaction::InputPressed(const FGameplayAbilitySpecHandle Handle, co
 void UPPGA_Interaction::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get());
-	if (IsValid(TargetCharacter)) // ¿Ø»øº∫ ∞ÀªÁ
+	if (IsValid(TargetCharacter)) // Ïú†Ìö®ÏÑ± Í≤ÄÏÇ¨
 	{
 		TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}
@@ -107,19 +107,19 @@ void UPPGA_Interaction::OnInterruptedCallback()
 void UPPGA_Interaction::ApplyEffectToTarget(const FGameplayAbilityActorInfo* ActorInfo)
 {
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get());
-	if (IsValid(TargetCharacter)) // ¿Ø»øº∫ ∞ÀªÁ
+	if (IsValid(TargetCharacter)) // Ïú†Ìö®ÏÑ± Í≤ÄÏÇ¨
 	{
-		PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("11111"));
+		PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("11111"));
 		APPGASInteractionItem* InteractableItem = Cast<APPGASInteractionItem>(TargetCharacter->InteractableItem);
-		if (IsValid(InteractableItem)) // ¿Ø»øº∫ ∞ÀªÁ
+		if (IsValid(InteractableItem)) // Ïú†Ìö®ÏÑ± Í≤ÄÏÇ¨
 		{
-			PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("22222"));
+			PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("22222"));
 			FGameplayEffectContextHandle EffectContext = TargetCharacterASC->MakeEffectContext();
 			EffectContext.AddSourceObject(this);
 			FGameplayEffectSpecHandle EffectSpecHandle = TargetCharacterASC->MakeOutgoingSpec(InteractableItem->GameplayEffectClass, 1, EffectContext);
-			if (EffectSpecHandle.IsValid()) // ¿Ø»øº∫ ∞ÀªÁ
+			if (EffectSpecHandle.IsValid()) // Ïú†Ìö®ÏÑ± Í≤ÄÏÇ¨
 			{
-				PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("33333"));
+				PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("33333"));
 				TargetCharacterASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 			}
 		}

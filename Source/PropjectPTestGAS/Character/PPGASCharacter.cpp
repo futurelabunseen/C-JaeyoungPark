@@ -2,6 +2,7 @@
 
 
 // Player Setting Header
+#include "Character/PPGASCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -11,14 +12,13 @@
 #include "PropjectPTest/Game/PPGASGameMode.h"
 
 // GAS Header
-#include "Character/PPGASCharacter.h"
 #include "AbilitySystemComponent.h"
 #include "Player/PPGASPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "UI/PPGASWidgetComponent.h"
 #include "UI/PPGASUserWidget.h"
 #include "Attribute/PPCharacterAttributeSet.h"
-#include "PropjectPTestGAS.h"
+//#include "PropjectPTestGAS.h"
 #include "Character/PPComboActionData.h"
 #include "UI/PPGASHpBarUserWidget.h"
 // #include "GameplayEffectExtension.h"
@@ -26,9 +26,9 @@
 
 APPGASCharacter::APPGASCharacter()
 {
-	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("Begin"));
+	// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("Begin"));
 	ASC = nullptr; // 플레이어 스테이트에서 이미 하나 생성했기 때문에 의도적으로 null로 설정
-	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
+	// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("End"));
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
@@ -171,7 +171,7 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 		ASC->InitAbilityActorInfo(GASPS, this);
 		// UE_LOG(LogTemp, Error, TEXT("%s Player"), *ASC->GetOwner()->GetName());
 
-		// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("00000"));
+		// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("00000"));
 		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 		if (CurrentAttributeSet)
 		{
@@ -279,7 +279,7 @@ void APPGASCharacter::GASInputReleased(int32 InputId)
 
 void APPGASCharacter::OnOutOfHealth()
 {
-	// PPGAS_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("OnOutOfHealth start"));
+	// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("OnOutOfHealth start"));
 	SetDead();
 	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPGASCharacter::ResetPlayer, 5.0f, false);
 }
