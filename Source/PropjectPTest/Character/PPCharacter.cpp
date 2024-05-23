@@ -45,14 +45,6 @@ void APPCharacter::SetDead()
 	{
 		DisableInput(PlayerController);
 	}
-
-	/*FTimerHandle DeadTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
-		[&]()
-		{
-			Destroy();
-		}
-	), DeadEventDelayTime, false);*/
 }
 
 void APPCharacter::DeadMulticastRPC_Implementation()

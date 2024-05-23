@@ -280,8 +280,9 @@ void APPGASCharacter::GASInputReleased(int32 InputId)
 void APPGASCharacter::OnOutOfHealth()
 {
 	// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("OnOutOfHealth start"));
+	HpBar->SetHiddenInGame(true);
 	SetDead();
-	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPGASCharacter::ResetPlayer, 5.0f, false);
+	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPGASCharacter::ResetPlayer, 3.0f, false);
 }
 
 //Called every frame
@@ -310,26 +311,65 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋, 체력도 리셋 해
 	if (AnimInstance)
 	{
 		AnimInstance->StopAllMontages(0.0f);
+		AnimInstance->Montage_Stop(0.0f);
 	}*/
+
+	// GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	// GetMesh()->
 
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	SetActorEnableCollision(true);
 	HpBar->SetHiddenInGame(false);
 
-	if (HasAuthority())
+	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitStatEffect, Level, EffectContextHandle);
+	if (EffectSpecHandle.IsValid())
 	{
-		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
-		if (CurrentAttributeSet)
-		{
-			// CurrentAttributeSet->InitHealth(GetMaxHealth());
-		}
-		
-
-		APPGASGameMode* PPGASGameMode = GetWorld()->GetAuthGameMode<APPGASGameMode>();
-		if (PPGASGameMode)
-		{
-			FTransform NewTransform = PPGASGameMode->GetRandomStartTransform();
-			TeleportTo(NewTransform.GetLocation(), NewTransform.GetRotation().Rotator());
-		}
+		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
+
+	APPGASGameMode* PPGASGameMode = GetWorld()->GetAuthGameMode<APPGASGameMode>();
+	if (PPGASGameMode)
+	{
+		FTransform NewTransform = PPGASGameMode->GetRandomStartTransform();
+		TeleportTo(NewTransform.GetLocation(), NewTransform.GetRotation().Rotator());
+	}
+
+	//if (HasAuthority())
+	//{
+	//	//// 능력 시스템 컴포넌트 초기화
+	//	//ASC->CancelAllAbilities();
+	//	//ASC->ClearAllAbilities();
+
+	//	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	//	EffectContextHandle.AddSourceObject(this);
+	//	FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitStatEffect, Level, EffectContextHandle);
+	//	if (EffectSpecHandle.IsValid())
+	//	{
+	//		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+	//	}
+
+	//	//// 능력 다시 부여
+	//	//for (const auto& StartAbility : StartAbilities)
+	//	//{
+	//	//	FGameplayAbilitySpec StartSpec(StartAbility);
+	//	//	ASC->GiveAbility(StartSpec);
+	//	//}
+
+	//	//for (const auto& StartInputAbility : StartInputAbilities)
+	//	//{
+	//	//	FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
+	//	//	StartSpec.InputID = StartInputAbility.Key;
+	//	//	ASC->GiveAbility(StartSpec);
+	//	//}
+
+	//	// 플레이어 리스폰 위치 설정
+	//	APPGASGameMode* PPGASGameMode = GetWorld()->GetAuthGameMode<APPGASGameMode>();
+	//	if (PPGASGameMode)
+	//	{
+	//		FTransform NewTransform = PPGASGameMode->GetRandomStartTransform();
+	//		TeleportTo(NewTransform.GetLocation(), NewTransform.GetRotation().Rotator());
+	//	}
+	//}
 }
