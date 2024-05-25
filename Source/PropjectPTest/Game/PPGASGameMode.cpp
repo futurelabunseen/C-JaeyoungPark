@@ -3,7 +3,7 @@
 
 #include "Game/PPGASGameMode.h"
 #include "PropjectPTest.h"
-// #include "PropjectPTestGAS/Player/PPGASPlayerState.h" // 플레이어 스테이트, 게임 스테이트 가져와서 사용해야 함
+// #include "PropjectPTest/Player/PPGASPlayerState.h" // 플레이어 스테이트, 게임 스테이트 가져와서 사용해야 함
 #include "Player/PPPlayerController.h"
 #include "GameFramework/PlayerStart.h"
 #include "EngineUtils.h"

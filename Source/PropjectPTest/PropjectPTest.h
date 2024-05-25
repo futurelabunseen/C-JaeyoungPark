@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #define LOG_CALLINFO ANSI_TO_TCHAR(__FUNCTION__)
+#define PPGAS_LOG(LogCat, Verbosity, Format, ...) UE_LOG(LogCat, Verbosity, TEXT("%s %s"), LOG_CALLINFO, *FString::Printf(Format, ##__VA_ARGS__))
 
 #define LOG_LOCALROLEINFO *(UEnum::GetValueAsString(TEXT("Engine.ENetRole"), GetLocalRole()))
 #define LOG_REMOTEROLEINFO *(UEnum::GetValueAsString(TEXT("Engine.ENetRole"), GetRemoteRole()))
@@ -15,3 +16,5 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogPP, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogPPNetwork, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogPPGAS, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogPPGASNetwork, Log, All);

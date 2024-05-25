@@ -9,24 +9,6 @@ APPCharacter::APPCharacter()
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -100.0f), FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
-
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_GDC.Kwang_GDC'"));
-	if (CharacterMeshRef.Object)
-	{
-		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
-	}
-
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Script/Engine.AnimBlueprint'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Kwang_AnimBlueprint.Kwang_AnimBlueprint_C'"));
-	if (AnimInstanceClassRef.Class)
-	{
-		GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
-	}
-
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/AM_Death.AM_Death'"));
-	if (nullptr != DeadMontageRef.Object)
-	{
-		DeadMontage = DeadMontageRef.Object;
-	}
 }
 
 void APPCharacter::BeginPlay()
@@ -39,12 +21,6 @@ void APPCharacter::SetDead()
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	DeadMulticastRPC();
 	SetActorEnableCollision(false);
-
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController)
-	{
-		DisableInput(PlayerController);
-	}
 }
 
 void APPCharacter::DeadMulticastRPC_Implementation()
@@ -52,6 +28,14 @@ void APPCharacter::DeadMulticastRPC_Implementation()
 	if (!HasAuthority())
 	{
 		PlayDeadAnimation();
+
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		if (PlayerController)
+		{
+			// DisableInput(PlayerController);
+			// PlayerController->StopMovement();
+			// PlayerController->Input
+		}
 	}
 }
 

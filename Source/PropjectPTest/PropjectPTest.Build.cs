@@ -10,9 +10,26 @@ public class PropjectPTest : ModuleRules
 
         PublicIncludePaths.AddRange(new string[] { "PropjectPTest" });
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", "AIModule", "Niagara", "EnhancedInput", "UMG", "GameplayTasks" });
+        PublicDependencyModuleNames.AddRange(new string[] {
+            "Core",
+            "CoreUObject",
+            "Engine",
+            "InputCore",
+            "NavigationSystem",
+            "AIModule",
+            "Niagara",
+            "EnhancedInput",
+            "UMG",
+            "GeometryCollectionEngine"
+        });
 
+        // GAS로 사용할 것들 정의
         PrivateDependencyModuleNames.AddRange(new string[] {
+            "PropjectPTest",
+            "GameFeatures",
+            "GameplayAbilities",
+            "GameplayTasks",
+            "GameplayTags"
         });
 
         // Uncomment if you are using Slate UI
