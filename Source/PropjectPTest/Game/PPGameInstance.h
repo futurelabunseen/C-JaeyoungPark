@@ -98,6 +98,6 @@ private:
 	void OnDestroySessionComplete(FName SessionName, bool Succeeded);
 
 	bool bCreateSessionOnDestroy = false;
-	FString MenuLevelPath = "/Game/MainMenu"; // Example path, replace with actual menu level path
+	FString MenuLevelPath = "/Game/Maps/Demonstration_Village.Demonstration_Village"; // Example path, replace with actual menu level path
 	FName CurrentSessionName = NAME_GameSession;
 };
