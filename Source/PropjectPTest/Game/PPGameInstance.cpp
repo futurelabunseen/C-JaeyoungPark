@@ -3,6 +3,7 @@
 #include "PropjectPTest.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/PlayerState.h"
+#include "Character/PPGASCharacter.h"
 #include "Game/PPGameInstance.h"
 
 UPPGameInstance::UPPGameInstance()
@@ -40,6 +41,14 @@ void UPPGameInstance::CreateServer(const FCreateSessionInfo& InCreateSessionInfo
     }
 
     // 세션 설정
+    SessionSettings = MakeShareable(new FOnlineSessionSettings());
+    if (!SessionSettings.IsValid())
+    {
+        UE_LOG(LogPPNetwork, Error, TEXT("SessionSettings is not valid"));
+        return;
+    }
+
+    // 세션 설정
     SessionSettings->bAllowJoinInProgress = true;		// 진행중인 세션에 참가 가능한지?
     SessionSettings->bAllowJoinViaPresence = true;		// 플레이어를 통한 세션 참가가 가능한지? (ex. 특정 플레이어가 게임중이면 그 해당 세션에 참가하는 방법)
     SessionSettings->bUseLobbiesIfAvailable = true;		// 플랫폼이 제공하는 로비 기능을 사용할 것인가?
@@ -66,9 +75,24 @@ void UPPGameInstance::OnCreateSessionComplete(FName SessionName, bool Succeeded)
     UE_LOG(LogTemp, Warning, TEXT("OnCreateSessionComplete, Succeeded : %d"), Succeeded);
     if (Succeeded)
     {
-        GetWorld()->ServerTravel("/Game/Maps/ElvenRuins.ElvenRuins"); // 던전 맵으로 이동
+        if (APlayerController* PC = GetFirstLocalPlayerController())
+        { 
+            if (APPGASCharacter* Player = Cast<APPGASCharacter>(PC->GetPawn()))  // 클라이언트가 서버 권한을 가지고 있는지 확인
+            {
+                if (UWorld* World = GetWorld())
+                {
+                    World->ServerTravel("/Script/Engine.World'/Game/Maps/ElvenRuins.ElvenRuins'");
+                }
+                else
+                {
+                    UE_LOG(LogPPNetwork, Error, TEXT("Failed to get World"));
+                }
+            }
+        }
     }
 }
+
+
 
 // 세션 탐색
 void UPPGameInstance::FindSession()
@@ -78,18 +102,26 @@ void UPPGameInstance::FindSession()
     OnSearchingServer.Broadcast(true); // 세션 검색 중 (버튼 스패밍 막기위한 값)
     SessionSearch = MakeShareable(new FOnlineSessionSearch);
 
-    if (IOnlineSubsystem::Get()->GetSubsystemName() != "NULL") // 현재 서브시스템이 NULL 이면 Lan 으로 검색 (스팀이 꺼져있으면 NULL 로 반환된다.)
+    if (SessionSearch.IsValid())
     {
-        SessionSearch->bIsLanQuery = false;
+        if (IOnlineSubsystem::Get()->GetSubsystemName() != "NULL") // 현재 서브시스템이 NULL 이면 Lan 으로 검색 (스팀이 꺼져있으면 NULL 로 반환된다.)
+        {
+            SessionSearch->bIsLanQuery = false;
+        }
+        else
+        {
+            SessionSearch->bIsLanQuery = true; // Is Lan
+        }
+        SessionSearch->MaxSearchResults = 15000; // 검색 결과 최대값
+        SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals); // 검색 설정 값 지정
+        SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
     }
     else
     {
-        SessionSearch->bIsLanQuery = true; // Is Lan
+        UE_LOG(LogPPNetwork, Error, TEXT("Failed to initialize SessionSearch"));
     }
-    SessionSearch->MaxSearchResults = 15000; // 검색 결과 최대값
-    SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals); // 검색 설정 값 지정
-    SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
+
 
 // 세션을 성공적으로 탐색했다면 해당 세션들의 정보를 가져와 이를 Broadcast 함
 void UPPGameInstance::OnFindSessionsComplete(bool Succeeded)
@@ -97,39 +129,46 @@ void UPPGameInstance::OnFindSessionsComplete(bool Succeeded)
     OnSearchingServer.Broadcast(false); // 세션 검색 완료
     UE_LOG(LogPPNetwork, Warning, TEXT("Find Session %s"), Succeeded ? TEXT("Succeed") : TEXT("Failed"));
 
-    if (Succeeded)
+    if (Succeeded && SessionSearch.IsValid())
     {
-        TArray<FOnlineSessionSearchResult>& SearchResults = SessionSearch->SearchResults;
-        int32 ArrayIndex = -1;
-        for (FOnlineSessionSearchResult Result : SearchResults)
+        const TArray<FOnlineSessionSearchResult>& SearchResults = SessionSearch->SearchResults;
+        if (SearchResults.Num() > 0)
         {
-            ++ArrayIndex;
-            if (!Result.IsValid()) continue;
-            FServerInfo Info;
+            for (const FOnlineSessionSearchResult& Result : SearchResults)
+            {
+                if (Result.IsValid())
+                {
+                    FServerInfo Info;
 
-            FString SessionName = "Empty Session Name";
-            FString HostName = "Empty Host Name";
+                    FString SessionName = "Empty Session Name";
+                    FString HostName = "Empty Host Name";
 
-            Result.Session.SessionSettings.Get(FName("SESSION_ROOM_NAME_KEY"), SessionName);
-            Result.Session.SessionSettings.Get(FName("SESSION_HOSTNAME_KEY"), HostName);
+                    Result.Session.SessionSettings.Get(FName("SESSION_ROOM_NAME_KEY"), SessionName);
+                    Result.Session.SessionSettings.Get(FName("SESSION_HOSTNAME_KEY"), HostName);
 
-            Info.SessionName = SessionName;
-            Info.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
-            Info.CurrentPlayers = Info.MaxPlayers - Result.Session.NumOpenPublicConnections;
+                    Info.SessionName = SessionName;
+                    Info.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
+                    Info.CurrentPlayers = Info.MaxPlayers - Result.Session.NumOpenPublicConnections;
 
-            Info.SetPlayerCount();
-            Info.IsLan = Result.Session.SessionSettings.bIsLANMatch;
-            Info.Ping = Result.PingInMs;
-            Info.ServerArrayIndex = ArrayIndex;
+                    Info.SetPlayerCount();
+                    Info.IsLan = Result.Session.SessionSettings.bIsLANMatch;
+                    Info.Ping = Result.PingInMs;
 
-            UE_LOG(LogPPNetwork, Warning, TEXT("Found Session ID : %s"), *Result.GetSessionIdStr());
+                    UE_LOG(LogPPNetwork, Warning, TEXT("Found Session ID : %s"), *Result.GetSessionIdStr());
 
-            OnServerList.Broadcast(Info);
+                    OnServerList.Broadcast(Info);
+                }
+            }
+            UE_LOG(LogPPNetwork, Warning, TEXT("Session Count : %d"), SearchResults.Num());
         }
-
-        UE_LOG(LogPPNetwork, Warning, TEXT("Session Count : %d"), SearchResults.Num());
+        else
+        {
+            UE_LOG(LogPPNetwork, Warning, TEXT("No valid session search results"));
+        }
     }
 }
+
+
 
 // 세션 참가
 void UPPGameInstance::JoinServer(int32 ArrayIndex)
@@ -176,11 +215,26 @@ void UPPGameInstance::DestroySession()
 void UPPGameInstance::OnDestroySessionComplete(FName SessionName, bool Succeeded)
 {
     UE_LOG(LogPPNetwork, Warning, TEXT("Session Name : %s /  %s"), *SessionName.ToString(), Succeeded ? TEXT("Succeed") : TEXT("Failed"));
+
     if (Succeeded)
     {
         if (!bCreateSessionOnDestroy)
         {
-            GetWorld()->GetGameInstance()->GetFirstLocalPlayerController()->ClientTravel(MenuLevelPath, TRAVEL_Absolute);
+            if (UWorld* World = GetWorld())
+            {
+                if (APlayerController* PC = World->GetFirstPlayerController())
+                {
+                    PC->ClientTravel(MenuLevelPath, TRAVEL_Absolute);
+                }
+                else
+                {
+                    UE_LOG(LogPPNetwork, Error, TEXT("Failed to get PlayerController"));
+                }
+            }
+            else
+            {
+                UE_LOG(LogPPNetwork, Error, TEXT("Failed to get World"));
+            }
         }
         else
         {
@@ -193,3 +247,14 @@ void UPPGameInstance::OnDestroySessionComplete(FName SessionName, bool Succeeded
         UE_LOG(LogPPNetwork, Warning, TEXT("Can't Destroy Session"));
     }
 }
+
+
+// 서버(호스트)인지 확인하는 함수 추가
+//bool UPPGameInstance::IsServer() const
+//{
+//    if (GetWorld())
+//    {
+//        return GetWorld()->IsServer();
+//    }
+//    return false;
+//}

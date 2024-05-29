@@ -86,7 +86,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnServerList OnServerList;
 
-private:
+protected:
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<FOnlineSessionSettings> SessionSettings;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
@@ -100,4 +100,6 @@ private:
 	bool bCreateSessionOnDestroy = false;
 	FString MenuLevelPath = "/Game/Maps/Demonstration_Village.Demonstration_Village"; // Example path, replace with actual menu level path
 	FName CurrentSessionName = NAME_GameSession;
+
+	/*bool IsServer() const;*/
 };
