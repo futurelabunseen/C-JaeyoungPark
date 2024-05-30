@@ -20,12 +20,6 @@ APPGASItemBox::APPGASItemBox()
 
 	Trigger->SetCollisionProfileName(CPROFILE_PPTRIGGER);
 	Trigger->SetBoxExtent(FVector(40.0f, 42.0f, 30.0f));
-
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> BoxMeshRef(TEXT("/Script/Engine.StaticMesh'/Game/KiteDemo/Environments/Rocks/Large_Volcanic_Rock_001/LargeVolcanicRock_001.LargeVolcanicRock_001'"));
-	if (BoxMeshRef.Object)
-	{
-		Mesh->SetStaticMesh(BoxMeshRef.Object);
-	}
 	Mesh->SetRelativeLocation(FVector(0.0f, -3.5f, -30.0f));
 	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
 }
