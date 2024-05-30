@@ -77,17 +77,21 @@ void UPPGameInstance::OnCreateSessionComplete(FName SessionName, bool Succeeded)
     {
         if (APlayerController* PC = GetFirstLocalPlayerController())
         { 
-            if (APPGASCharacter* Player = Cast<APPGASCharacter>(PC->GetPawn()))  // 클라이언트가 서버 권한을 가지고 있는지 확인
-            {
+            //if (APPGASCharacter* Player = Cast<APPGASCharacter>(PC->GetPawn()))  // 클라이언트가 서버 권한을 가지고 있는지 확인
+            //{
+            /*if (PC->HasAuthority())
+            {*/
                 if (UWorld* World = GetWorld())
                 {
-                    World->ServerTravel("/Script/Engine.World'/Game/Maps/ElvenRuins.ElvenRuins'");
+                    // World->ServerTravel("/Game/Maps/ElvenRuins.ElvenRuins");
+                    PC->ClientTravel("/Game/Maps/ElvenRuins.ElvenRuins", ETravelType::TRAVEL_Absolute); // URL로 ClientTravel 레벨 이동
                 }
                 else
                 {
                     UE_LOG(LogPPNetwork, Error, TEXT("Failed to get World"));
                 }
-            }
+            //}+
+            //}
         }
     }
 }
