@@ -1,259 +1,259 @@
 
-#include "Game/PPGameInstance.h"
-#include "Engine/World.h"
-#include "PropjectPTest.h"
-#include "Net/UnrealNetwork.h"
-#include "GameFramework/PlayerState.h"
-#include "Character/PPGASCharacter.h"
+//#include "Game/PPGameInstance.h"
+//#include "Engine/World.h"
+//#include "PropjectPTest.h"
+//#include "Net/UnrealNetwork.h"
+//#include "GameFramework/PlayerState.h"
+//#include "Character/PPGASCharacter.h"
 
-UPPGameInstance::UPPGameInstance()
-{
-}
+//UPPGameInstance::UPPGameInstance()
+//{
+//}
 
-void UPPGameInstance::Init()
-{
-    Super::Init();
-    if (IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
-    {
-        SessionInterface = Subsystem->GetSessionInterface(); // ¼¼¼Ç °¡Á®¿À±â
-        if (SessionInterface.IsValid())
-        {
-            // µ¨¸®°ÔÀÌÆ®·Î ¼¼¼Ç °ü¸®
-            SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPPGameInstance::OnCreateSessionComplete);
-            SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPPGameInstance::OnFindSessionsComplete);
-            SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UPPGameInstance::OnJoinSessionComplete);
-            SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &ThisClass::OnDestroySessionComplete);
-        }
-    }
-}
+//void UPPGameInstance::Init()
+//{
+//    Super::Init();
+//    if (IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
+//    {
+//        SessionInterface = Subsystem->GetSessionInterface(); // ì„¸ì…˜ ê°€ì ¸ì˜¤ê¸°
+//        if (SessionInterface.IsValid())
+//        {
+//            // ë¸ë¦¬ê²Œì´íŠ¸ë¡œ ì„¸ì…˜ ê´€ë¦¬
+//            SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPPGameInstance::OnCreateSessionComplete);
+//            SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPPGameInstance::OnFindSessionsComplete);
+//            SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UPPGameInstance::OnJoinSessionComplete);
+//            SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &ThisClass::OnDestroySessionComplete);
+//        }
+//    }
+//}
+//
+//// ì„œë²„ ìƒì„±
+//void UPPGameInstance::CreateServer(const FCreateSessionInfo& InCreateSessionInfo)
+//{
+//    UE_LOG(LogPPNetwork, Warning, TEXT("Create Session"));
+//
+//    if (!SessionInterface.IsValid()) return;
+//
+//    if (SessionInterface->GetSessionState(NAME_GameSession) != EOnlineSessionState::NoSession) // ë™ì¼í•œ ì„¸ì…˜ ì—†ì• ê¸°
+//    {
+//        bCreateSessionOnDestroy = true;
+//        DestroySession();
+//    }
+//
+//    // ì„¸ì…˜ ì„¤ì •
+//    SessionSettings = MakeShareable(new FOnlineSessionSettings());
+//    if (!SessionSettings.IsValid())
+//    {
+//        UE_LOG(LogPPNetwork, Error, TEXT("SessionSettings is not valid"));
+//        return;
+//    }
+//
+//    // ì„¸ì…˜ ì„¤ì •
+//    SessionSettings->bAllowJoinInProgress = true;		// ì§„í–‰ì¤‘ì¸ ì„¸ì…˜ì— ì°¸ê°€ ê°€ëŠ¥í•œì§€?
+//    SessionSettings->bAllowJoinViaPresence = true;		// í”Œë ˆì´ì–´ë¥¼ í†µí•œ ì„¸ì…˜ ì°¸ê°€ê°€ ê°€ëŠ¥í•œì§€? (ex. íŠ¹ì • í”Œë ˆì´ì–´ê°€ ê²Œì„ì¤‘ì´ë©´ ê·¸ í•´ë‹¹ ì„¸ì…˜ì— ì°¸ê°€í•˜ëŠ” ë°©ë²•)
+//    SessionSettings->bUseLobbiesIfAvailable = true;		// í”Œë«í¼ì´ ì œê³µí•˜ëŠ” ë¡œë¹„ ê¸°ëŠ¥ì„ ì‚¬ìš©í•  ê²ƒì¸ê°€?
+//    SessionSettings->bShouldAdvertise = true;		    // ì˜¨ë¼ì¸ ë§¤ì¹˜ë©”ì´í‚¹ì— ê³µê°œë˜ëŠ”ì§€?
+//    SessionSettings->bUsesPresence = true;		        // ì°¸ì—¬ìê°€ ì„œë¡œì˜ ì˜¨ë¼ì¸ ìƒíƒœë¥¼ í™•ì¸í•  ìˆ˜ ìˆëŠ”ì§€?
+//    SessionSettings->bIsLANMatch = InCreateSessionInfo.IsLan && IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";	// Lan ë§¤ì¹˜ì¸ê°€?
+//    SessionSettings->NumPublicConnections = InCreateSessionInfo.MaxPlayers;	//ìµœëŒ€ ê°€ìš© ì¸ì›
+//    SessionSettings->BuildUniqueId = 1;		            // ê²€ìƒ‰ ì¤‘ì— ë‹¤ë¥¸ ë¹Œë“œê°€ ì„œë¡œ ë³´ì´ì§€ ì•Šë„ë¡ í•˜ëŠ”ë° ì‚¬ìš©ëœë‹¤.
+//
+//    // í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì„ì˜ì˜ ë°ì´í„°ë¥¼ ìƒì„±í•˜ê³  ì „ë‹¬í•  ìˆ˜ ìˆê²Œ ì„¤ì •í•œë‹¤.
+//    FString HostName = GetWorld() ? GetWorld()->GetFirstPlayerController()->PlayerState->GetPlayerName() : TEXT("Unknown");
+//    SessionSettings->Set(FName("SESSION_ROOM_NAME_KEY"), InCreateSessionInfo.RoomName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+//    SessionSettings->Set(FName("SESSION_HOSTNAME_KEY"), HostName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+//
+//    if (!SessionInterface->CreateSession(0, NAME_GameSession, *SessionSettings))
+//    {
+//        UE_LOG(LogPPNetwork, Warning, TEXT("Failed to Create Session"));
+//    }
+//}
 
-// ¼­¹ö »ı¼º
-void UPPGameInstance::CreateServer(const FCreateSessionInfo& InCreateSessionInfo)
-{
-    UE_LOG(LogPPNetwork, Warning, TEXT("Create Session"));
-
-    if (!SessionInterface.IsValid()) return;
-
-    if (SessionInterface->GetSessionState(NAME_GameSession) != EOnlineSessionState::NoSession) // µ¿ÀÏÇÑ ¼¼¼Ç ¾ø¾Ö±â
-    {
-        bCreateSessionOnDestroy = true;
-        DestroySession();
-    }
-
-    // ¼¼¼Ç ¼³Á¤
-    SessionSettings = MakeShareable(new FOnlineSessionSettings());
-    if (!SessionSettings.IsValid())
-    {
-        UE_LOG(LogPPNetwork, Error, TEXT("SessionSettings is not valid"));
-        return;
-    }
-
-    // ¼¼¼Ç ¼³Á¤
-    SessionSettings->bAllowJoinInProgress = true;		// ÁøÇàÁßÀÎ ¼¼¼Ç¿¡ Âü°¡ °¡´ÉÇÑÁö?
-    SessionSettings->bAllowJoinViaPresence = true;		// ÇÃ·¹ÀÌ¾î¸¦ ÅëÇÑ ¼¼¼Ç Âü°¡°¡ °¡´ÉÇÑÁö? (ex. Æ¯Á¤ ÇÃ·¹ÀÌ¾î°¡ °ÔÀÓÁßÀÌ¸é ±× ÇØ´ç ¼¼¼Ç¿¡ Âü°¡ÇÏ´Â ¹æ¹ı)
-    SessionSettings->bUseLobbiesIfAvailable = true;		// ÇÃ·§ÆûÀÌ Á¦°øÇÏ´Â ·Îºñ ±â´ÉÀ» »ç¿ëÇÒ °ÍÀÎ°¡?
-    SessionSettings->bShouldAdvertise = true;		    // ¿Â¶óÀÎ ¸ÅÄ¡¸ŞÀÌÅ·¿¡ °ø°³µÇ´ÂÁö?
-    SessionSettings->bUsesPresence = true;		        // Âü¿©ÀÚ°¡ ¼­·ÎÀÇ ¿Â¶óÀÎ »óÅÂ¸¦ È®ÀÎÇÒ ¼ö ÀÖ´ÂÁö?
-    SessionSettings->bIsLANMatch = InCreateSessionInfo.IsLan && IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";	// Lan ¸ÅÄ¡ÀÎ°¡?
-    SessionSettings->NumPublicConnections = InCreateSessionInfo.MaxPlayers;	//ÃÖ´ë °¡¿ë ÀÎ¿ø
-    SessionSettings->BuildUniqueId = 1;		            // °Ë»ö Áß¿¡ ´Ù¸¥ ºôµå°¡ ¼­·Î º¸ÀÌÁö ¾Êµµ·Ï ÇÏ´Âµ¥ »ç¿ëµÈ´Ù.
-
-    // Å¬¶óÀÌ¾ğÆ®¿¡°Ô ÀÓÀÇÀÇ µ¥ÀÌÅÍ¸¦ »ı¼ºÇÏ°í Àü´ŞÇÒ ¼ö ÀÖ°Ô ¼³Á¤ÇÑ´Ù.
-    FString HostName = GetWorld() ? GetWorld()->GetFirstPlayerController()->PlayerState->GetPlayerName() : TEXT("Unknown");
-    SessionSettings->Set(FName("SESSION_ROOM_NAME_KEY"), InCreateSessionInfo.RoomName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-    SessionSettings->Set(FName("SESSION_HOSTNAME_KEY"), HostName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-
-    if (!SessionInterface->CreateSession(0, NAME_GameSession, *SessionSettings))
-    {
-        UE_LOG(LogPPNetwork, Warning, TEXT("Failed to Create Session"));
-    }
-}
-
-// ¼¼¼ÇÀ» ¼º°øÀûÀ¸·Î »ı¼ºÇÑ´Ù¸é ¼­¹ö»ó¿¡¼­ Æ¯Á¤¸ÊÀ¸·Î ÀÌµ¿
-void UPPGameInstance::OnCreateSessionComplete(FName SessionName, bool Succeeded)
-{
-    UE_LOG(LogTemp, Warning, TEXT("OnCreateSessionComplete, Succeeded : %d"), Succeeded);
-    if (Succeeded)
-    {
-        if (APlayerController* PC = GetFirstLocalPlayerController())
-        { 
-            //if (APPGASCharacter* Player = Cast<APPGASCharacter>(PC->GetPawn()))  // Å¬¶óÀÌ¾ğÆ®°¡ ¼­¹ö ±ÇÇÑÀ» °¡Áö°í ÀÖ´ÂÁö È®ÀÎ
-            //{
-            /*if (PC->HasAuthority())
-            {*/
-                if (UWorld* World = GetWorld())
-                {
-                    // World->ServerTravel("/Game/Maps/ElvenRuins.ElvenRuins");
-                    PC->ClientTravel("/Game/Maps/ElvenRuins.ElvenRuins", ETravelType::TRAVEL_Absolute); // URL·Î ClientTravel ·¹º§ ÀÌµ¿
-                }
-                else
-                {
-                    UE_LOG(LogPPNetwork, Error, TEXT("Failed to get World"));
-                }
-            //}+
-            //}
-        }
-    }
-}
-
-
-
-// ¼¼¼Ç Å½»ö
-void UPPGameInstance::FindSession()
-{
-    UE_LOG(LogPPNetwork, Warning, TEXT("Find Session"));
-
-    OnSearchingServer.Broadcast(true); // ¼¼¼Ç °Ë»ö Áß (¹öÆ° ½ºÆĞ¹Ö ¸·±âÀ§ÇÑ °ª)
-    SessionSearch = MakeShareable(new FOnlineSessionSearch);
-
-    if (SessionSearch.IsValid())
-    {
-        if (IOnlineSubsystem::Get()->GetSubsystemName() != "NULL") // ÇöÀç ¼­ºê½Ã½ºÅÛÀÌ NULL ÀÌ¸é Lan À¸·Î °Ë»ö (½ºÆÀÀÌ ²¨Á®ÀÖÀ¸¸é NULL ·Î ¹İÈ¯µÈ´Ù.)
-        {
-            SessionSearch->bIsLanQuery = false;
-        }
-        else
-        {
-            SessionSearch->bIsLanQuery = true; // Is Lan
-        }
-        SessionSearch->MaxSearchResults = 15000; // °Ë»ö °á°ú ÃÖ´ë°ª
-        SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals); // °Ë»ö ¼³Á¤ °ª ÁöÁ¤
-        SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
-    }
-    else
-    {
-        UE_LOG(LogPPNetwork, Error, TEXT("Failed to initialize SessionSearch"));
-    }
-}
-
-
-// ¼¼¼ÇÀ» ¼º°øÀûÀ¸·Î Å½»öÇß´Ù¸é ÇØ´ç ¼¼¼ÇµéÀÇ Á¤º¸¸¦ °¡Á®¿Í ÀÌ¸¦ Broadcast ÇÔ
-void UPPGameInstance::OnFindSessionsComplete(bool Succeeded)
-{
-    OnSearchingServer.Broadcast(false); // ¼¼¼Ç °Ë»ö ¿Ï·á
-    UE_LOG(LogPPNetwork, Warning, TEXT("Find Session %s"), Succeeded ? TEXT("Succeed") : TEXT("Failed"));
-
-    if (Succeeded && SessionSearch.IsValid())
-    {
-        const TArray<FOnlineSessionSearchResult>& SearchResults = SessionSearch->SearchResults;
-        if (SearchResults.Num() > 0)
-        {
-            for (const FOnlineSessionSearchResult& Result : SearchResults)
-            {
-                if (Result.IsValid())
-                {
-                    FServerInfo Info;
-
-                    FString SessionName = "Empty Session Name";
-                    FString HostName = "Empty Host Name";
-
-                    Result.Session.SessionSettings.Get(FName("SESSION_ROOM_NAME_KEY"), SessionName);
-                    Result.Session.SessionSettings.Get(FName("SESSION_HOSTNAME_KEY"), HostName);
-
-                    Info.SessionName = SessionName;
-                    Info.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
-                    Info.CurrentPlayers = Info.MaxPlayers - Result.Session.NumOpenPublicConnections;
-
-                    Info.SetPlayerCount();
-                    Info.IsLan = Result.Session.SessionSettings.bIsLANMatch;
-                    Info.Ping = Result.PingInMs;
-
-                    UE_LOG(LogPPNetwork, Warning, TEXT("Found Session ID : %s"), *Result.GetSessionIdStr());
-
-                    OnServerList.Broadcast(Info);
-                }
-            }
-            UE_LOG(LogPPNetwork, Warning, TEXT("Session Count : %d"), SearchResults.Num());
-        }
-        else
-        {
-            UE_LOG(LogPPNetwork, Warning, TEXT("No valid session search results"));
-        }
-    }
-}
+// ì„¸ì…˜ì„ ì„±ê³µì ìœ¼ë¡œ ìƒì„±í•œë‹¤ë©´ ì„œë²„ìƒì—ì„œ íŠ¹ì •ë§µìœ¼ë¡œ ì´ë™
+//void UPPGameInstance::OnCreateSessionComplete(FName SessionName, bool Succeeded)
+//{
+//    UE_LOG(LogTemp, Warning, TEXT("OnCreateSessionComplete, Succeeded : %d"), Succeeded);
+//    if (Succeeded)
+//    {
+//        if (APlayerController* PC = GetFirstLocalPlayerController())
+//        { 
+//            //if (APPGASCharacter* Player = Cast<APPGASCharacter>(PC->GetPawn()))  // í´ë¼ì´ì–¸íŠ¸ê°€ ì„œë²„ ê¶Œí•œì„ ê°€ì§€ê³  ìˆëŠ”ì§€ í™•ì¸
+//            //{
+//            /*if (PC->HasAuthority())
+//            {*/
+//                if (UWorld* World = GetWorld())
+//                {
+//                    // World->ServerTravel("/Game/Maps/ElvenRuins.ElvenRuins");
+//                    PC->ClientTravel("/Game/Maps/ElvenRuins.ElvenRuins", ETravelType::TRAVEL_Absolute); // URLë¡œ ClientTravel ë ˆë²¨ ì´ë™
+//                }
+//                else
+//                {
+//                    UE_LOG(LogPPNetwork, Error, TEXT("Failed to get World"));
+//                }
+//            //}+
+//            //}
+//        }
+//    }
+//}
 
 
 
-// ¼¼¼Ç Âü°¡
-void UPPGameInstance::JoinServer(int32 ArrayIndex)
-{
-    UE_LOG(LogTemp, Warning, TEXT("Join Server"));
-    FOnlineSessionSearchResult Result = SessionSearch->SearchResults[ArrayIndex];
-    if (Result.IsValid())
-    {
-        UE_LOG(LogTemp, Warning, TEXT("JOINING AT INDEX : %d"), ArrayIndex);
-        SessionInterface->JoinSession(0, CurrentSessionName, Result);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("FAILED TO JOIN SERVER AT INDEX : %d"), ArrayIndex);
-    }
-}
-
-// Å¸°Ù ¼¼¼Ç¿¡ ¼º°øÀûÀ¸·Î Âü¿©ÇßÀ» °æ¿ì ¼¼¼Ç ¸ÊÀ¸·Î Å¬¶óÀÌ¾ğÆ® ¸Ê ÀÌµ¿
-void UPPGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
-{
-    UE_LOG(LogTemp, Warning, TEXT("OnJoinSessionComplete, SessionName : %s"), *SessionName.ToString());
-    if (APlayerController* PC = GetFirstLocalPlayerController())
-    {
-        FString JoinAddress = "";
-        SessionInterface->GetResolvedConnectString(SessionName, JoinAddress); // ¼¼¼Ç URL ¹İÈ¯
-        if (JoinAddress != "")
-            PC->ClientTravel(JoinAddress, TRAVEL_Absolute); // URL·Î ClientTravel ·¹º§ ÀÌµ¿
-    }
-}
-
-// ¼¼¼Ç »èÁ¦
-void UPPGameInstance::DestroySession()
-{
-    if (SessionInterface->DestroySession(NAME_GameSession))
-    {
-        UE_LOG(LogPPNetwork, Warning, TEXT("Destroy Session Success"));
-    }
-    else
-    {
-        UE_LOG(LogPPNetwork, Warning, TEXT("Destroy Session Failed"));
-    }
-}
-
-void UPPGameInstance::OnDestroySessionComplete(FName SessionName, bool Succeeded)
-{
-    UE_LOG(LogPPNetwork, Warning, TEXT("Session Name : %s /  %s"), *SessionName.ToString(), Succeeded ? TEXT("Succeed") : TEXT("Failed"));
-
-    if (Succeeded)
-    {
-        if (!bCreateSessionOnDestroy)
-        {
-            if (UWorld* World = GetWorld())
-            {
-                if (APlayerController* PC = World->GetFirstPlayerController())
-                {
-                    PC->ClientTravel(MenuLevelPath, TRAVEL_Absolute);
-                }
-                else
-                {
-                    UE_LOG(LogPPNetwork, Error, TEXT("Failed to get PlayerController"));
-                }
-            }
-            else
-            {
-                UE_LOG(LogPPNetwork, Error, TEXT("Failed to get World"));
-            }
-        }
-        else
-        {
-            bCreateSessionOnDestroy = false;
-        }
-        UE_LOG(LogPPNetwork, Warning, TEXT("Session Destroyed"));
-    }
-    else
-    {
-        UE_LOG(LogPPNetwork, Warning, TEXT("Can't Destroy Session"));
-    }
-}
+// ì„¸ì…˜ íƒìƒ‰
+//void UPPGameInstance::FindSession()
+//{
+//    UE_LOG(LogPPNetwork, Warning, TEXT("Find Session"));
+//
+//    OnSearchingServer.Broadcast(true); // ì„¸ì…˜ ê²€ìƒ‰ ì¤‘ (ë²„íŠ¼ ìŠ¤íŒ¨ë° ë§‰ê¸°ìœ„í•œ ê°’)
+//    SessionSearch = MakeShareable(new FOnlineSessionSearch);
+//
+//    if (SessionSearch.IsValid())
+//    {
+//        if (IOnlineSubsystem::Get()->GetSubsystemName() != "NULL") // í˜„ì¬ ì„œë¸Œì‹œìŠ¤í…œì´ NULL ì´ë©´ Lan ìœ¼ë¡œ ê²€ìƒ‰ (ìŠ¤íŒ€ì´ êº¼ì ¸ìˆìœ¼ë©´ NULL ë¡œ ë°˜í™˜ëœë‹¤.)
+//        {
+//            SessionSearch->bIsLanQuery = false;
+//        }
+//        else
+//        {
+//            SessionSearch->bIsLanQuery = true; // Is Lan
+//        }
+//        SessionSearch->MaxSearchResults = 15000; // ê²€ìƒ‰ ê²°ê³¼ ìµœëŒ€ê°’
+//        SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals); // ê²€ìƒ‰ ì„¤ì • ê°’ ì§€ì •
+//        SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+//    }
+//    else
+//    {
+//        UE_LOG(LogPPNetwork, Error, TEXT("Failed to initialize SessionSearch"));
+//    }
+//}
 
 
-// ¼­¹ö(È£½ºÆ®)ÀÎÁö È®ÀÎÇÏ´Â ÇÔ¼ö Ãß°¡
+// ì„¸ì…˜ì„ ì„±ê³µì ìœ¼ë¡œ íƒìƒ‰í–ˆë‹¤ë©´ í•´ë‹¹ ì„¸ì…˜ë“¤ì˜ ì •ë³´ë¥¼ ê°€ì ¸ì™€ ì´ë¥¼ Broadcast í•¨
+//void UPPGameInstance::OnFindSessionsComplete(bool Succeeded)
+//{
+//    OnSearchingServer.Broadcast(false); // ì„¸ì…˜ ê²€ìƒ‰ ì™„ë£Œ
+//    UE_LOG(LogPPNetwork, Warning, TEXT("Find Session %s"), Succeeded ? TEXT("Succeed") : TEXT("Failed"));
+//
+//    if (Succeeded && SessionSearch.IsValid())
+//    {
+//        const TArray<FOnlineSessionSearchResult>& SearchResults = SessionSearch->SearchResults;
+//        if (SearchResults.Num() > 0)
+//        {
+//            for (const FOnlineSessionSearchResult& Result : SearchResults)
+//            {
+//                if (Result.IsValid())
+//                {
+//                    FServerInfo Info;
+//
+//                    FString SessionName = "Empty Session Name";
+//                    FString HostName = "Empty Host Name";
+//
+//                    Result.Session.SessionSettings.Get(FName("SESSION_ROOM_NAME_KEY"), SessionName);
+//                    Result.Session.SessionSettings.Get(FName("SESSION_HOSTNAME_KEY"), HostName);
+//
+//                    Info.SessionName = SessionName;
+//                    Info.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
+//                    Info.CurrentPlayers = Info.MaxPlayers - Result.Session.NumOpenPublicConnections;
+//
+//                    Info.SetPlayerCount();
+//                    Info.IsLan = Result.Session.SessionSettings.bIsLANMatch;
+//                    Info.Ping = Result.PingInMs;
+//
+//                    UE_LOG(LogPPNetwork, Warning, TEXT("Found Session ID : %s"), *Result.GetSessionIdStr());
+//
+//                    OnServerList.Broadcast(Info);
+//                }
+//            }
+//            UE_LOG(LogPPNetwork, Warning, TEXT("Session Count : %d"), SearchResults.Num());
+//        }
+//        else
+//        {
+//            UE_LOG(LogPPNetwork, Warning, TEXT("No valid session search results"));
+//        }
+//    }
+//}
+
+
+
+// ì„¸ì…˜ ì°¸ê°€
+//void UPPGameInstance::JoinServer(int32 ArrayIndex)
+//{
+//    UE_LOG(LogTemp, Warning, TEXT("Join Server"));
+//    FOnlineSessionSearchResult Result = SessionSearch->SearchResults[ArrayIndex];
+//    if (Result.IsValid())
+//    {
+//        UE_LOG(LogTemp, Warning, TEXT("JOINING AT INDEX : %d"), ArrayIndex);
+//        SessionInterface->JoinSession(0, CurrentSessionName, Result);
+//    }
+//    else
+//    {
+//        UE_LOG(LogTemp, Warning, TEXT("FAILED TO JOIN SERVER AT INDEX : %d"), ArrayIndex);
+//    }
+//}
+
+// íƒ€ê²Ÿ ì„¸ì…˜ì— ì„±ê³µì ìœ¼ë¡œ ì°¸ì—¬í–ˆì„ ê²½ìš° ì„¸ì…˜ ë§µìœ¼ë¡œ í´ë¼ì´ì–¸íŠ¸ ë§µ ì´ë™
+//void UPPGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+//{
+//    UE_LOG(LogTemp, Warning, TEXT("OnJoinSessionComplete, SessionName : %s"), *SessionName.ToString());
+//    if (APlayerController* PC = GetFirstLocalPlayerController())
+//    {
+//        FString JoinAddress = "";
+//        SessionInterface->GetResolvedConnectString(SessionName, JoinAddress); // ì„¸ì…˜ URL ë°˜í™˜
+//        if (JoinAddress != "")
+//            PC->ClientTravel(JoinAddress, TRAVEL_Absolute); // URLë¡œ ClientTravel ë ˆë²¨ ì´ë™
+//    }
+//}
+
+// ì„¸ì…˜ ì‚­ì œ
+//void UPPGameInstance::DestroySession()
+//{
+//    if (SessionInterface->DestroySession(NAME_GameSession))
+//    {
+//        UE_LOG(LogPPNetwork, Warning, TEXT("Destroy Session Success"));
+//    }
+//    else
+//    {
+//        UE_LOG(LogPPNetwork, Warning, TEXT("Destroy Session Failed"));
+//    }
+//}
+
+//void UPPGameInstance::OnDestroySessionComplete(FName SessionName, bool Succeeded)
+//{
+//    UE_LOG(LogPPNetwork, Warning, TEXT("Session Name : %s /  %s"), *SessionName.ToString(), Succeeded ? TEXT("Succeed") : TEXT("Failed"));
+//
+//    if (Succeeded)
+//    {
+//        if (!bCreateSessionOnDestroy)
+//        {
+//            if (UWorld* World = GetWorld())
+//            {
+//                if (APlayerController* PC = World->GetFirstPlayerController())
+//                {
+//                    PC->ClientTravel(MenuLevelPath, TRAVEL_Absolute);
+//                }
+//                else
+//                {
+//                    UE_LOG(LogPPNetwork, Error, TEXT("Failed to get PlayerController"));
+//                }
+//            }
+//            else
+//            {
+//                UE_LOG(LogPPNetwork, Error, TEXT("Failed to get World"));
+//            }
+//        }
+//        else
+//        {
+//            bCreateSessionOnDestroy = false;
+//        }
+//        UE_LOG(LogPPNetwork, Warning, TEXT("Session Destroyed"));
+//    }
+//    else
+//    {
+//        UE_LOG(LogPPNetwork, Warning, TEXT("Can't Destroy Session"));
+//    }
+//}
+
+
+// ì„œë²„(í˜¸ìŠ¤íŠ¸)ì¸ì§€ í™•ì¸í•˜ëŠ” í•¨ìˆ˜ ì¶”ê°€
 //bool UPPGameInstance::IsServer() const
 //{
 //    if (GetWorld())

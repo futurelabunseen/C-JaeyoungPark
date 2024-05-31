@@ -8,19 +8,19 @@
 #include "Net/UnrealNetwork.h"
 
 UPPCharacterAttributeSet::UPPCharacterAttributeSet() :
-	AttackRange(100.0f), // °ø°İ ¹üÀ§, OnRep ¾ÈÇØµµ µÊ, °íÁ¤°ª
-	MaxAttackRange(300.0f), // ÃÖ´ë °ø°İ ¹üÀ§, OnRep ¾ÈÇØµµ µÊ, °íÁ¤°ª
+	AttackRange(100.0f), // ê³µê²© ë²”ìœ„, OnRep ì•ˆí•´ë„ ë¨, ê³ ì •ê°’
+	MaxAttackRange(300.0f), // ìµœëŒ€ ê³µê²© ë²”ìœ„, OnRep ì•ˆí•´ë„ ë¨, ê³ ì •ê°’
 
-	AttackRadius(50.f), // °ø°İ ¹İ°æ, OnRep ¾ÈÇØµµ µÊ, °íÁ¤°ª -> GE¸¦ ÅëÇØ º¯Çü (Buff)
-	MaxAttackRadius(150.0f), // ÃÖ´ë °ø°İ ¹İ°æ, OnRep ¾ÈÇØµµ µÊ, °íÁ¤°ª
+	AttackRadius(50.f), // ê³µê²© ë°˜ê²½, OnRep ì•ˆí•´ë„ ë¨, ê³ ì •ê°’ -> GEë¥¼ í†µí•´ ë³€í˜• (Buff)
+	MaxAttackRadius(150.0f), // ìµœëŒ€ ê³µê²© ë°˜ê²½, OnRep ì•ˆí•´ë„ ë¨, ê³ ì •ê°’
 
-	AttackRate(30.0f), // °ø°İ µ¥¹ÌÁö, OnRep ¾ÈÇØµµ µÊ, °íÁ¤°ª -> GE¸¦ ÅëÇØ º¯Çü (Buff)
-	MaxAttackRate(100.0f), // ÃÖ´ë °ø°İ µ¥¹ÌÁö, OnRep ¾ÈÇØµµ µÊ, °íÁ¤°ª
+	AttackRate(30.0f), // ê³µê²© ë°ë¯¸ì§€, OnRep ì•ˆí•´ë„ ë¨, ê³ ì •ê°’ -> GEë¥¼ í†µí•´ ë³€í˜• (Buff)
+	MaxAttackRate(100.0f), // ìµœëŒ€ ê³µê²© ë°ë¯¸ì§€, OnRep ì•ˆí•´ë„ ë¨, ê³ ì •ê°’
 
-	Health(100.0f), // Ã¼·Â, OnRep ÇÊ¿ä, ¼ö½Ã·Î º¯°æ -> GE¸¦ ÅëÇØ º¯Çü (Damage, Heal, Regen, Dot µîµî)
-	MaxHealth(100.0f), // ÃÖ´ë Ã¼·Â, OnRep ÇÊ¿ä
+	Health(100.0f), // ì²´ë ¥, OnRep í•„ìš”, ìˆ˜ì‹œë¡œ ë³€ê²½ -> GEë¥¼ í†µí•´ ë³€í˜• (Damage, Heal, Regen, Dot ë“±ë“±)
+	MaxHealth(100.0f), // ìµœëŒ€ ì²´ë ¥, OnRep í•„ìš”
 
-	Damage(0.0f) // ÇÇ°İ µ¥¹ÌÁö, OnRep ÇÊ¿ä, ¼ö½Ã·Î º¯°æ, ¾Æ¸¶µµ?
+	Damage(0.0f) // í”¼ê²© ë°ë¯¸ì§€, OnRep í•„ìš”, ìˆ˜ì‹œë¡œ ë³€ê²½, ì•„ë§ˆë„?
 {
 	InitHealth(GetMaxHealth());
 }
