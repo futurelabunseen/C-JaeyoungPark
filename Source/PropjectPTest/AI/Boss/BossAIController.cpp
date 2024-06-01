@@ -34,7 +34,7 @@ void ABossAIController::RunAI()
 	}
 }
 
-void ABossAIController::StopAI()
+void ABossAIController::StopAI() const
 {
 	UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
 	if (BTComponent)

@@ -18,7 +18,7 @@ public:
 	ABossAIController();
 
 	void RunAI();
-	void StopAI();
+	void StopAI() const;
 
 protected:
 
