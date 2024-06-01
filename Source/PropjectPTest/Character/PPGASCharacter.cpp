@@ -10,6 +10,7 @@
 #include "Physics/PPCollision.h"
 #include "Net/UnrealNetwork.h"
 #include "PropjectPTest/Game/PPGASGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 // GAS Header
 #include "AbilitySystemComponent.h"
@@ -20,6 +21,7 @@
 #include "Attribute/PPCharacterAttributeSet.h"
 #include "Character/PPComboActionData.h"
 #include "UI/PPGASHpBarUserWidget.h"
+
 
 
 APPGASCharacter::APPGASCharacter()
@@ -245,3 +247,28 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 		TeleportTo(NewTransform.GetLocation(), NewTransform.GetRotation().Rotator());
 	}
 }
+
+//void APPGASCharacter::MoveToStreamingLevel(const bool IsPlayerDeath)
+//{
+//	if (IsLocallyControlled())
+//	{
+//		const FName DungeonLevelName = FName("ElvenRuins");
+//		const FName BossLevelName = FName("_mansion_");
+//		const FName OnLevelLoadFinishedFunc = FName("OnStreamingLevelLoadFinished");
+//		FLatentActionInfo LoadLatentInfo;
+//		LoadLatentInfo.CallbackTarget = this;
+//		LoadLatentInfo.Linkage = 0;
+//		LoadLatentInfo.ExecutionFunction = OnLevelLoadFinishedFunc;
+//
+//		UnloadMultipleStreamingLevels(DungeonLevelName); // 던전 레벨 언로드
+//		UGameplayStatics::LoadStreamLevel(this, BossLevelName, true, true, LoadLatentInfo); // 보스 레벨 로드
+//	}
+//}
+
+//void APPGASCharacter::UnloadMultipleStreamingLevels(const FName& LevelName)
+//{
+//	if (LevelName != NAME_None)
+//	{
+//		UGameplayStatics::UnloadStreamLevel(this, LevelName, FLatentActionInfo(), false);
+//	}
+//}

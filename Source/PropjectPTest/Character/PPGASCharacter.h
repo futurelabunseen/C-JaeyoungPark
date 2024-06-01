@@ -57,6 +57,9 @@ protected:
 
 	virtual void Tick(float DeltaTime);
 
+	/*void MoveToStreamingLevel(const bool IsPlayerDeath);
+	void UnloadMultipleStreamingLevels(const FName& LevelName);*/
+
 protected:
 
 	// GAS Section
