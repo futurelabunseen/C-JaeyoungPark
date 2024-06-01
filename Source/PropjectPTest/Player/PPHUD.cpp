@@ -1,15 +1,15 @@
+// PPHUD.cpp
 
 #include "PPHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Monster/Boss_Mermaid.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "UI/PPGASHpBarUserWidget.h"
 
 APPHUD::APPHUD()
 {
     PrimaryActorTick.bCanEverTick = true;
-    // BossHpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("BossWidget"));
-    
 }
 
 void APPHUD::BeginPlay()
@@ -28,45 +28,28 @@ void APPHUD::BeginPlay()
             }
         }
     }
+
+    if (GASWidgetClass)
+    {
+        BossHpBarWidget = CreateWidget<UPPGASHpBarUserWidget>(GetWorld(), GASWidgetClass);
+        if (BossHpBarWidget)
+        {
+            BossHpBarWidget->AddToViewport();
+            BossHpBarWidget->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
 }
 
-//void APPHUD::Tick(float DeltaTime)
-//{
-//    Super::Tick(DeltaTime);
-//
-//    ABoss_Mermaid* Boss = Cast<ABoss_Mermaid>(UGameplayStatics::GetActorOfClass(GetWorld(), ABoss_Mermaid::StaticClass()));
-//    if (Boss)
-//    {
-//        if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
-//        {
-//            APawn* PlayerPawn = PlayerController->GetPawn();
-//            if (PlayerPawn)
-//            {
-//                FVector BossLocation = Boss->GetActorLocation();
-//                FVector PlayerLocation = PlayerPawn->GetActorLocation();
-//                float Distance = FVector::Dist(BossLocation, PlayerLocation);
-//
-//                if (Distance <= Boss->GetAIDetectRange())
-//                {
-//                    if (!BossHpBarWidget)
-//                    {
-//                        BossHpBarWidget = CreateWidget<UPPGASWidgetComponent>(GetWorld(), BossHpBarWidget);
-//                        if (BossHpBarWidget)
-//                        {
-//                            BossHpBarWidget->AddToViewport();
-//                        }
-//                    }
-//                }
-//                else
-//                {
-//                    if (BossHpBarWidget)
-//                    {
-//                        BossHpBarWidget->RemoveFromViewport();
-//                        BossHpBarWidget = nullptr;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+void APPHUD::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+}
 
+void APPHUD::ShowBossHealthBar(AActor* BossActor)
+{
+    if (BossHpBarWidget)
+    {
+        BossHpBarWidget->SetVisibility(ESlateVisibility::Visible);
+        BossHpBarWidget->SetAbilitySystemComponent(BossActor);
+    }
+}

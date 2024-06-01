@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "UI/PPGASHpBarUserWidget.h"
 #include "PPHUD.generated.h"
 
 UCLASS()
@@ -13,8 +14,9 @@ class PROPJECTPTEST_API APPHUD : public AHUD
 public:
     APPHUD();
 
-    // void Tick(float DeltaTime) override;
+    void Tick(float DeltaTime) override;
     virtual void BeginPlay() override;
+    void ShowBossHealthBar(AActor* BossActor);
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -23,6 +25,9 @@ protected:
     UPROPERTY()
     TArray<TObjectPtr<class UUserWidget>> CurrentWidgets;
 
-    UPROPERTY(EditAnywhere)
-    TObjectPtr<class UPPGASWidgetComponent> BossHpBar;
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<class UPPGASHpBarUserWidget> GASWidgetClass;
+
+    UPROPERTY()
+    TObjectPtr<class UPPGASHpBarUserWidget> BossHpBarWidget;
 };

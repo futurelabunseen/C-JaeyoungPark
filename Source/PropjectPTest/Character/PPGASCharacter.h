@@ -6,7 +6,6 @@
 #include "Character/PPCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbilityTypes.h"
-// #include "AttributeSet.h"
 #include "PPGASCharacter.generated.h"
 
 /**

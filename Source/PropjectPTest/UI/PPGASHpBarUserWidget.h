@@ -17,10 +17,9 @@ class PROPJECTPTEST_API UPPGASHpBarUserWidget : public UPPGASUserWidget
 
 public:
 	void UpdateHpBar();
-	
-protected:
 	virtual void SetAbilitySystemComponent(AActor* InOwner) override;
 
+protected:
 	virtual void OnHealthChanged(const FOnAttributeChangeData& ChangeData);
 	virtual void OnMaxHealthChanged(const FOnAttributeChangeData& ChangeData);
 	virtual void OnInvinsibleTagChanged(const FGameplayTag CallbackTag, int32 NewCount);

@@ -5,6 +5,8 @@
 #include "AI/Boss/BossAIController.h"
 #include "Attribute/BossAttributeSet.h"
 #include "Character/PPGASCharacter.h"
+#include "Player/PPHUD.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -17,6 +19,11 @@ ABoss_Mermaid::ABoss_Mermaid()
 	AIControllerClass = ABossAIController::StaticClass();
 
 	BossAttributeSet = CreateDefaultSubobject<UBossAttributeSet>(TEXT("BossAttributeSet"));
+
+	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
+	DetectionSphere->SetupAttachment(RootComponent);
+	DetectionSphere->SetSphereRadius(1000.0f); // Set the detection radius
+	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABoss_Mermaid::OnOverlapBegin);
 }
 
 void ABoss_Mermaid::PossessedBy(AController* NewController)
@@ -59,9 +66,23 @@ void ABoss_Mermaid::AttackByAI()
 
 }
 
-//void AMS_Golem::NotifyComboActionEnd()
-//{
-//	Super::NotifyComboActionEnd();
-//	OnAttackFinished.ExecuteIfBound();
-//}
-
+void ABoss_Mermaid::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor != this)
+	{
+		// OtherActor가 플레이어 캐릭터인지 확인합니다.
+		APawn* PlayerPawn = Cast<APawn>(OtherActor);
+		if (PlayerPawn)
+		{
+			APlayerController* PlayerController = Cast<APlayerController>(PlayerPawn->GetController());
+			if (PlayerController)
+			{
+				APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
+				if (PlayerHUD)
+				{
+					PlayerHUD->ShowBossHealthBar(this);
+				}
+			}
+		}
+	}
+}
