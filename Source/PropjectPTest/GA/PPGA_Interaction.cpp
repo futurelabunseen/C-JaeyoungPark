@@ -46,6 +46,7 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		PlayMontageTask->OnCompleted.AddDynamic(this, &UPPGA_Interaction::OnCompleteCallback);
 		PlayMontageTask->OnInterrupted.AddDynamic(this, &UPPGA_Interaction::OnInterruptedCallback);
+		PlayMontageTask->OnCancelled.AddDynamic(this, &UPPGA_Interaction::OnCancelledCallback);
 
 		PlayMontageTask->ReadyForActivation();
 	}
@@ -104,22 +105,41 @@ void UPPGA_Interaction::OnInterruptedCallback()
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
 }
 
+void UPPGA_Interaction::OnCancelledCallback()
+{
+	bool bReplicatedEndAbility = true;
+	bool bWasCancelled = true;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
+}
+
 void UPPGA_Interaction::ApplyEffectToTarget(const FGameplayAbilityActorInfo* ActorInfo)
 {
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get());
 	if (IsValid(TargetCharacter)) // 유효성 검사
 	{
-		PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("11111"));
+		// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("11111"));
 		APPGASInteractionItem* InteractableItem = Cast<APPGASInteractionItem>(TargetCharacter->InteractableItem);
 		if (IsValid(InteractableItem)) // 유효성 검사
 		{
-			PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("22222"));
+
+			// 애니메이션 몽타주 중지 코드 추가
+			if (UAnimInstance* AnimInstance = TargetCharacter->GetMesh()->GetAnimInstance())
+			{
+				if (ActiveInteractionMontage)
+				{
+					AnimInstance->Montage_Stop(0.2f, ActiveInteractionMontage);
+					UE_LOG(LogTemp, Warning, TEXT("Interaction Montage Stopped"));
+				}
+			}
+
+
+			// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("22222"));
 			FGameplayEffectContextHandle EffectContext = TargetCharacterASC->MakeEffectContext();
 			EffectContext.AddSourceObject(this);
 			FGameplayEffectSpecHandle EffectSpecHandle = TargetCharacterASC->MakeOutgoingSpec(InteractableItem->GameplayEffectClass, 1, EffectContext);
 			if (EffectSpecHandle.IsValid()) // 유효성 검사
 			{
-				PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("33333"));
+				// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("33333"));
 				TargetCharacterASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 			}
 		}

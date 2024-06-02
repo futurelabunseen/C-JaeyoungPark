@@ -30,6 +30,9 @@ protected:
 	UFUNCTION()
 	void OnInterruptedCallback();
 
+	UFUNCTION()
+	void OnCancelledCallback();
+
 	void ApplyEffectToTarget(const FGameplayAbilityActorInfo* ActorInfo);
 	void SpawnParticleEffect(UWorld* World, FVector Location, FRotator Rotation, UParticleSystem* ParticleSystem);
 
