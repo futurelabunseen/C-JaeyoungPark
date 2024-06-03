@@ -31,6 +31,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UPPCharacterSkillAttributeSet, SkillEnergy);
 	ATTRIBUTE_ACCESSORS(UPPCharacterSkillAttributeSet, MaxSkillEnergy);
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	
 protected:
@@ -46,10 +47,17 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxSkillAttackRate;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_SkillEnergy)
 	FGameplayAttributeData SkillEnergy;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MaxSkillEnergy)
 	FGameplayAttributeData MaxSkillEnergy;
 
+// MultiPlay Section
+protected:
+	UFUNCTION()
+	void OnRep_SkillEnergy(const FGameplayAttributeData& OldSkillEnergy);
+
+	UFUNCTION()
+	void OnRep_MaxSkillEnergy(const FGameplayAttributeData& OldMaxSkillEnergy);
 };

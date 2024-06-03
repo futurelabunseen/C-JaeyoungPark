@@ -4,6 +4,7 @@
 #include "UI/PPGASHpBarUserWidget.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/PPCharacterAttributeSet.h"
+// #include "Attribute/PPCharacterSkillAttributeSet.h"
 #include "Attribute/MonsterAttributeSet.h"
 #include "Attribute/BossAttributeSet.h"
 #include "PropjectPTest.h"
@@ -20,6 +21,10 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *ASC->GetOwner()->GetName());
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
+
+		/*ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterSkillAttributeSet::GetSkillEnergyAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnSkillEnergyChanged);
+		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterSkillAttributeSet::GetMaxSkillEnergyAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxSkillEnergyChanged);*/
+
 		ASC->RegisterGameplayTagEvent(PPTAG_CHARACTER_INVINSIBLE, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPPGASHpBarUserWidget::OnInvinsibleTagChanged);
 
 		ASC->GetGameplayAttributeValueChangeDelegate(UMonsterAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
@@ -27,13 +32,35 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 
 		ASC->GetGameplayAttributeValueChangeDelegate(UBossAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UBossAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
-		PbHpBar->SetFillColorAndOpacity(HealthColor);
+		
+		if (PbHpBar)
+		{
+			PbHpBar->SetFillColorAndOpacity(HealthColor);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("PbHpBar is not set"));
+		}
+
+		/*if (PbMpBar)
+		{
+			PbMpBar->SetFillColorAndOpacity(SkillEnergyColor);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("PbMpBar is not set"));
+		}*/
 
 		const UPPCharacterAttributeSet* CurrentPPCharacterAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
+		// const UPPCharacterSkillAttributeSet* CurrentPPCharacterSkillAttributeSet = ASC->GetSet<UPPCharacterSkillAttributeSet>();
 		if (CurrentPPCharacterAttributeSet)
 		{
 			CurrentHealth = CurrentPPCharacterAttributeSet->GetHealth();
 			CurrentMaxHealth = CurrentPPCharacterAttributeSet->GetMaxHealth();
+
+			/*CurrentSkillEnergy = CurrentPPCharacterSkillAttributeSet->GetSkillEnergy();
+			CurrentMaxSkillEnergy = CurrentPPCharacterSkillAttributeSet->GetMaxSkillEnergy();*/
+
 			if (CurrentMaxHealth > 0.0f)
 			{
 				UpdateHpBar();
@@ -79,6 +106,20 @@ void UPPGASHpBarUserWidget::OnMaxHealthChanged(const FOnAttributeChangeData& Cha
 	UpdateHpBar();
 }
 
+
+//void UPPGASHpBarUserWidget::OnSkillEnergyChanged(const FOnAttributeChangeData& ChangeData)
+//{
+//	CurrentSkillEnergy = ChangeData.NewValue;
+//	const UPPCharacterSkillAttributeSet* CurrentPPCharacterSkillAttributeSet = ASC->GetSet<UPPCharacterSkillAttributeSet>();
+//	UpdateHpBar();
+//}
+//
+//void UPPGASHpBarUserWidget::OnMaxSkillEnergyChanged(const FOnAttributeChangeData& ChangeData)
+//{
+//	CurrentMaxSkillEnergy = ChangeData.NewValue;
+//	UpdateHpBar();
+//}
+
 void UPPGASHpBarUserWidget::OnInvinsibleTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	if (NewCount > 0)
@@ -100,10 +141,22 @@ void UPPGASHpBarUserWidget::UpdateHpBar()
 		PbHpBar->SetPercent(CurrentHealth / CurrentMaxHealth);
 	}
 
+	/*if (PbMpBar)
+	{
+		PbMpBar->SetPercent(CurrentSkillEnergy / CurrentMaxSkillEnergy);
+	}*/
+
 	if (TxtHpStat)
 	{
 		TxtHpStat->SetText(FText::FromString(FString::Printf(TEXT("%.0f/%0.f"), CurrentHealth, CurrentMaxHealth)));
-		UE_LOG(LogTemp, Warning, TEXT("CurrentHealth : %f"), CurrentHealth);
-		UE_LOG(LogTemp, Warning, TEXT("CurrentMaxHealth : %f"), CurrentMaxHealth);
+		// UE_LOG(LogTemp, Warning, TEXT("CurrentHealth : %f"), CurrentHealth);
+		// UE_LOG(LogTemp, Warning, TEXT("CurrentMaxHealth : %f"), CurrentMaxHealth);
 	}
+
+	//if (TxtMpStat)
+	//{
+	//	TxtMpStat->SetText(FText::FromString(FString::Printf(TEXT("%.0f/%0.f"), CurrentSkillEnergy, CurrentMaxSkillEnergy)));
+	//	// UE_LOG(LogTemp, Warning, TEXT("CurrentSkillEnergy : %f"), CurrentSkillEnergy);
+	//	// UE_LOG(LogTemp, Warning, TEXT("CurrentMaxSkillEnergy : %f"), CurrentMaxSkillEnergy);
+	//}
 }
