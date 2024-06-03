@@ -3,8 +3,8 @@
 
 #include "Character/PPGASCharacterNonPlayer.h"
 #include "AbilitySystemComponent.h"
-#include "UI/PPGASWidgetComponent.h"
-#include "UI/PPGASUserWidget.h"
+//#include "UI/PPGASWidgetComponent.h"
+//#include "UI/PPGASUserWidget.h"
 
 
 APPGASCharacterNonPlayer::APPGASCharacterNonPlayer()
@@ -13,7 +13,7 @@ APPGASCharacterNonPlayer::APPGASCharacterNonPlayer()
 
 	ASC->SetIsReplicated(true);
 
-	HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
+	/*HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
 	HpBar->SetupAttachment(GetMesh());
 	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
 	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/UI/WBP_HpBar.WBP_HpBar_C"));
@@ -23,7 +23,7 @@ APPGASCharacterNonPlayer::APPGASCharacterNonPlayer()
 		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
 		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+	}*/
 }
 
 UAbilitySystemComponent* APPGASCharacterNonPlayer::GetAbilitySystemComponent() const

@@ -8,6 +8,8 @@
 #include "GA/PPGA_Attack.h"
 #include "GE/PPGE_AttackDamage.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "UI/PPGASWidgetComponent.h"
+#include "UI/PPGASUserWidget.h"
 
 
 // Sets default values
@@ -21,6 +23,19 @@ AMS_Golem::AMS_Golem()
 	AIControllerClass = AMSAIController::StaticClass();
 
 	MonsterAttributeSet = CreateDefaultSubobject<UMonsterAttributeSet>(TEXT("MonsterAttributeSet"));
+
+	// NonPlayer에 있던 체력바 UI 몬스터만 띄우도록 가져옴
+	HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
+	HpBar->SetupAttachment(GetMesh());
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
+	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/UI/WBP_HpBar.WBP_HpBar_C"));
+	if (HpBarWidgetRef.Class)
+	{
+		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
+		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
+		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
+		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void AMS_Golem::PossessedBy(AController* NewController)
