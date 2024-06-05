@@ -14,9 +14,11 @@ class PROPJECTPTEST_API APPHUD : public AHUD
 public:
     APPHUD();
 
-    void Tick(float DeltaTime) override;
     virtual void BeginPlay() override;
     void ShowBossHealthBar(AActor* BossActor);
+
+    UFUNCTION(BlueprintCallable, Category = "HUD")
+    void SetHUDVisibility(bool bVisible);
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -30,4 +32,6 @@ protected:
 
     UPROPERTY()
     TObjectPtr<class UPPGASHpBarUserWidget> BossHpBarWidget;
+
+    bool bIsVisible;
 };

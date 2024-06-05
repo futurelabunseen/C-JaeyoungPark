@@ -40,16 +40,24 @@ void APPHUD::BeginPlay()
     }
 }
 
-void APPHUD::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-}
-
 void APPHUD::ShowBossHealthBar(AActor* BossActor)
 {
     if (BossHpBarWidget)
     {
         BossHpBarWidget->SetVisibility(ESlateVisibility::Visible);
         BossHpBarWidget->SetAbilitySystemComponent(BossActor);
+    }
+}
+
+void APPHUD::SetHUDVisibility(bool bVisible)
+{
+    ESlateVisibility NewVisibility = bVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+
+    for (UUserWidget* Widget : CurrentWidgets)
+    {
+        if (Widget)
+        {
+            Widget->SetVisibility(NewVisibility);
+        }
     }
 }
