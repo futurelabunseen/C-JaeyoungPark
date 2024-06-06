@@ -8,10 +8,10 @@
 #include "Net/UnrealNetwork.h"
 
 UBossAttributeSet::UBossAttributeSet() :
-	AttackRange(200.0f), // 공격 범위, OnRep 안해도 됨, 고정값
+	AttackRange(300.0f), // 공격 범위, OnRep 안해도 됨, 고정값
 	MaxAttackRange(300.0f), // 최대 공격 범위, OnRep 안해도 됨, 고정값
 
-	AttackRadius(50.f), // 공격 반경, OnRep 안해도 됨, 고정값
+	AttackRadius(150.f), // 공격 반경, OnRep 안해도 됨, 고정값
 	MaxAttackRadius(150.0f), // 최대 공격 반경, OnRep 안해도 됨, 고정값
 
 	AttackRate(30.0f), // 공격 데미지, OnRep 안해도 됨, 고정값
