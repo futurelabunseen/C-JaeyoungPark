@@ -59,7 +59,7 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
 	const FVector Start = NonPlayerCharacter->GetActorLocation();
 	const FVector Forward = NonPlayerCharacter->GetActorForwardVector();
 	// const FVector End_Boss = Start + Forward * BossAttributeSet->GetAttackRange();
-	const FVector End_Boss = Start + Forward * 1000.0f;
+	const FVector End_Boss = Start + Forward * 2000.0f;
 
 	TArray<FHitResult> OutHitResults;
 	const float AttackRadius_Boss = BossAttributeSet->GetAttackRadius();

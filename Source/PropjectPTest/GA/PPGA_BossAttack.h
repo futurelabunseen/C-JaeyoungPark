@@ -22,7 +22,7 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 	// 어빌리티 취소 정의
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+	// virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 
 	// 어빌리티 끝내기 정의
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
@@ -30,19 +30,11 @@ public:
 protected:
 
 	UFUNCTION()
-	void OnCompletedCallBack(); // 콜 백 완료 정의
+	void OnCompletedCallBack();
 
 	UFUNCTION()
-	void OnInterruptedCallBack(); // 콜 백 방해받는 중? 정의
+	void OnInterruptedCallBack();
 
-	/*UFUNCTION()
-	void CreateAttackRange();
-
-	UFUNCTION()
-	void DestroyAttackRange();
-
-	UFUNCTION()
-	void OnAttackRangeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);*/
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)

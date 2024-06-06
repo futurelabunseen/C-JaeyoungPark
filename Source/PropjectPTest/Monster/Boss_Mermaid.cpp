@@ -40,7 +40,7 @@ float ABoss_Mermaid::GetAIPatrolRadius()
 
 float ABoss_Mermaid::GetAIDetectRange()
 {
-	return 1000.0f; // 어트리뷰트 세트로 변경 예정
+	return 3000.0f; // 어트리뷰트 세트로 변경 예정
 }
 
 float ABoss_Mermaid::GetAIAttackRange()
