@@ -246,6 +246,8 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 		FTransform NewTransform = PPGASGameMode->GetRandomStartTransform();
 		TeleportTo(NewTransform.GetLocation(), NewTransform.GetRotation().Rotator());
 	}
+
+	IsDeadFlag = false;
 }
 
 //void APPGASCharacter::MoveToStreamingLevel(const bool IsPlayerDeath)

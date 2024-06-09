@@ -26,4 +26,14 @@ protected:
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData() const;
 
 	bool bShowDebug = false;
+
+	UPROPERTY(EditAnywhere)
+	float ForwardLength = 0.0f;
+
+	UPROPERTY(EditAnywhere)
+	float AttackAngle = 0.0f;
+
+	UPROPERTY(EditAnywhere)
+	float AttackRadius = 0.0f;
+
 };

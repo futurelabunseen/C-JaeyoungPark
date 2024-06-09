@@ -33,60 +33,107 @@ void APPTA_BossAttackTrace::ConfirmTargetingAndContinue()
 
 FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
 {
-	APPGASCharacterNonPlayer* NonPlayerCharacter = CastChecked<APPGASCharacterNonPlayer>(SourceActor);
+    APPGASCharacterNonPlayer* NonPlayerCharacter = CastChecked<APPGASCharacterNonPlayer>(SourceActor);
 
-	if (!NonPlayerCharacter)
-	{
-		PPGAS_LOG(LogPPGAS, Error, TEXT("SourceActor is not a Character!"));
-		return FGameplayAbilityTargetDataHandle();
-	}
+    if (!NonPlayerCharacter)
+    {
+        PPGAS_LOG(LogPPGAS, Error, TEXT("SourceActor is not a Character!"));
+        return FGameplayAbilityTargetDataHandle();
+    }
 
-	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
-	if (!ASC)
-	{
-		PPGAS_LOG(LogPPGAS, Error, TEXT("ASC not found!"));
-		return FGameplayAbilityTargetDataHandle();
-	}
+    UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
+    if (!ASC)
+    {
+        PPGAS_LOG(LogPPGAS, Error, TEXT("ASC not found!"));
+        return FGameplayAbilityTargetDataHandle();
+    }
 
-	const UBossAttributeSet* BossAttributeSet = ASC->GetSet<UBossAttributeSet>();
+    const UBossAttributeSet* BossAttributeSet = ASC->GetSet<UBossAttributeSet>();
 
-	if (!BossAttributeSet)
-	{
-		PPGAS_LOG(LogPPGAS, Error, TEXT("BossAttributeSet not found!"));
-		return FGameplayAbilityTargetDataHandle();
-	}
+    if (!BossAttributeSet)
+    {
+        PPGAS_LOG(LogPPGAS, Error, TEXT("BossAttributeSet not found!"));
+        return FGameplayAbilityTargetDataHandle();
+    }
 
-	const FVector Start = NonPlayerCharacter->GetActorLocation();
-	const FVector Forward = NonPlayerCharacter->GetActorForwardVector();
-	// const FVector End_Boss = Start + Forward * BossAttributeSet->GetAttackRange();
-	const FVector End_Boss = Start + Forward * 2000.0f;
+    const FVector Start = NonPlayerCharacter->GetActorLocation();
+    const FVector Forward = NonPlayerCharacter->GetActorForwardVector();
 
-	TArray<FHitResult> OutHitResults;
-	const float AttackRadius_Boss = BossAttributeSet->GetAttackRadius();
-	const float AttackHalfHeight_Boss = BossAttributeSet->GetAttackRange() / 2.0f;
+    TArray<FHitResult> OutHitResults;
 
-	const FCollisionShape CollisionShape_Boss = FCollisionShape::MakeCapsule(AttackRadius_Boss, AttackHalfHeight_Boss);
+    if (AttackAngle > 0.0f)
+    {
+        // 부채꼴 모양 공격
+        FCollisionQueryParams Params_Boss(SCENE_QUERY_STAT(UPPTA_BossAttackTrace), false, NonPlayerCharacter);
 
-	FCollisionQueryParams Params_Boss(SCENE_QUERY_STAT(UPPTA_BossAttackTrace), false, NonPlayerCharacter);
-	GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Boss, FQuat::Identity, CCHANNEL_PPACTION, CollisionShape_Boss, Params_Boss);
+        // 바닥에 붙어있는 라인 트레이스를 생성하기 위해 약간 아래쪽으로 오프셋을 추가
+        // 높이를 올리기 위해 추가 값을 더함
+        float HeightOffset = NonPlayerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - 60.0f; // 60.0f 만큼 더 올림
+        FVector StartOffset = Start - FVector(0, 0, HeightOffset);
 
-	FGameplayAbilityTargetDataHandle DataHandle;
-	for (const FHitResult& HitResult : OutHitResults)
-	{
-		FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit(HitResult);
-		DataHandle.Add(TargetData);
-	}
+        // Forward 벡터를 기준으로 부채꼴 영역을 정의
+        FVector RightVector = Forward.RotateAngleAxis(AttackAngle / 2.0f, FVector::UpVector);
+        FVector LeftVector = Forward.RotateAngleAxis(-AttackAngle / 2.0f, FVector::UpVector);
+
+        // RightVector와 LeftVector의 끝점 계산
+        FVector RightEnd = StartOffset + RightVector * AttackRadius;
+        FVector LeftEnd = StartOffset + LeftVector * AttackRadius;
+
+        // RightEnd와 LeftEnd를 포함하는 부채꼴 영역을 판정
+        GetWorld()->SweepMultiByChannel(OutHitResults, StartOffset, StartOffset + Forward * AttackRadius, FQuat::Identity, CCHANNEL_PPACTION, FCollisionShape::MakeSphere(AttackRadius), Params_Boss);
+
+        // 부채꼴 영역 내에서 실제 부채꼴에 해당하는 충돌 객체를 필터링
+        TArray<FHitResult> FilteredHitResults;
+        for (const FHitResult& HitResult : OutHitResults)
+        {
+            FVector HitDirection = HitResult.ImpactPoint - StartOffset;
+            HitDirection.Normalize();
+            float HitAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(Forward, HitDirection)));
+            if (HitAngle <= AttackAngle / 2.0f)
+            {
+                FilteredHitResults.Add(HitResult);
+            }
+        }
 
 #if ENABLE_DRAW_DEBUG
-	if (bShowDebug)
-	{
-		for (const FHitResult& HitResult : OutHitResults)
-		{
-			FVector CapsuleOrigin = HitResult.ImpactPoint;
-			DrawDebugCapsule(GetWorld(), CapsuleOrigin, AttackHalfHeight_Boss, AttackRadius_Boss, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
-		}
-	}
+        if (bShowDebug)
+        {
+            DrawDebugLine(GetWorld(), StartOffset, RightEnd, FColor::Green, false, 5.0f, 0, 1.0f);
+            DrawDebugLine(GetWorld(), StartOffset, LeftEnd, FColor::Green, false, 5.0f, 0, 1.0f);
+            DrawDebugLine(GetWorld(), RightEnd, LeftEnd, FColor::Green, false, 5.0f, 0, 1.0f);
+        }
 #endif
 
-	return DataHandle;
+        OutHitResults = FilteredHitResults;
+    }
+    else
+    {
+        // 캡슐 형태의 공격 범위
+        const FVector End_Boss = Start + Forward * ForwardLength;
+        const float AttackHalfHeight_Boss = BossAttributeSet->GetAttackRange() / 2.0f;
+        const FCollisionShape CollisionShape_Boss = FCollisionShape::MakeCapsule(AttackRadius, AttackHalfHeight_Boss);
+
+        FCollisionQueryParams Params_Boss(SCENE_QUERY_STAT(UPPTA_BossAttackTrace), false, NonPlayerCharacter);
+        GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Boss, FQuat::Identity, CCHANNEL_PPACTION, CollisionShape_Boss, Params_Boss);
+
+#if ENABLE_DRAW_DEBUG
+        if (bShowDebug)
+        {
+            for (const FHitResult& HitResult : OutHitResults)
+            {
+                FVector CapsuleOrigin = HitResult.ImpactPoint;
+                DrawDebugCapsule(GetWorld(), CapsuleOrigin, AttackHalfHeight_Boss, AttackRadius, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
+            }
+        }
+#endif
+    }
+
+    FGameplayAbilityTargetDataHandle DataHandle;
+    for (const FHitResult& HitResult : OutHitResults)
+    {
+        FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit(HitResult);
+        DataHandle.Add(TargetData);
+    }
+
+    return DataHandle;
 }

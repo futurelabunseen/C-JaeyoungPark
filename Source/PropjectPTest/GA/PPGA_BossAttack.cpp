@@ -22,9 +22,9 @@ void UPPGA_BossAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 	// 캐릭터 움직임 모드 정의 -> 움직임 없음
 	PPGASCharacterNonPlayer->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
-	//// 시전 중 회전 고정
-	//PPGASCharacterNonPlayer->bUseControllerRotationYaw = true;
-	//PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
+	// 시전 중 회전 고정
+	PPGASCharacterNonPlayer->bUseControllerRotationYaw = false;
+	PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	// 공격 실행 태스크
 	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayMonsterAttack"), ActionMontage, 1.0f);
@@ -39,16 +39,6 @@ void UPPGA_BossAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 	PlayAttackTask->ReadyForActivation();
 }
 
-//void UPPGA_BossAttack::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
-//{
-//	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-//
-//	APPGASCharacterNonPlayer* PPGASCharacterNonPlayer = CastChecked<APPGASCharacterNonPlayer>(ActorInfo->AvatarActor.Get());
-//
-//	// 캐릭터 움직임 모드 정의 -> 움직임
-//	// PPGASCharacterNonPlayer->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-//}
-
 void UPPGA_BossAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
@@ -58,9 +48,9 @@ void UPPGA_BossAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 	// 캐릭터 움직임 모드 정의 -> 움직임
 	PPGASCharacterNonPlayer->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 
-	//// 회전 잠금 해제
-	//PPGASCharacterNonPlayer->bUseControllerRotationYaw = false;
-	//PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = true;
+	// 회전 잠금 해제
+	PPGASCharacterNonPlayer->bUseControllerRotationYaw = true;
+	PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 void UPPGA_BossAttack::OnCompletedCallBack()

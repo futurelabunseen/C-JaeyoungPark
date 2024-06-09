@@ -17,6 +17,8 @@ public:
 
 	FORCEINLINE class UAnimMontage* GetDeadMontage() const { return DeadMontage; }
 
+	bool IsDeadFlag = false;
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = "true"))

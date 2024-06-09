@@ -23,15 +23,15 @@ public:
 	UFUNCTION()
 	virtual void OnOutOfHealth();
 
-protected:
-	UPROPERTY(EditAnywhere, Category = GAS)
-	TObjectPtr<class UAbilitySystemComponent> ASC;
-
 	UPROPERTY()
 	TObjectPtr<class UMonsterAttributeSet> MonsterAttributeSet;
 
 	UPROPERTY()
 	TObjectPtr<class UBossAttributeSet> BossAttributeSet;
+
+protected:
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TObjectPtr<class UAbilitySystemComponent> ASC;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TSubclassOf<class UGameplayEffect> InitStatEffect;

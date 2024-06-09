@@ -21,6 +21,7 @@ void APPCharacter::SetDead()
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	DeadMulticastRPC();
 	SetActorEnableCollision(false);
+	IsDeadFlag = true;
 }
 
 void APPCharacter::DeadMulticastRPC_Implementation()
