@@ -22,6 +22,8 @@ public:
 	virtual void ConfirmTargetingAndContinue() override;
 	void SetShowDebug(bool InShowDebug) { bShowDebug = InShowDebug; }
 
+	void DrawDebugFan(UWorld* World, const FVector& Start, const FVector& Forward, float Radius, float Angle, const FColor& Color, float Duration, bool bPersistentLines = false, uint8 DepthPriority = 0, float Thickness = 1.0f) const;
+
 protected:
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData() const;
 

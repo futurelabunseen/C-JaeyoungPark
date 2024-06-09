@@ -1,4 +1,3 @@
-
 #include "GA/TA/PPTA_BossAttackTrace.h"
 #include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
@@ -17,18 +16,18 @@ APPTA_BossAttackTrace::APPTA_BossAttackTrace()
 
 void APPTA_BossAttackTrace::StartTargeting(UGameplayAbility* Ability)
 {
-	Super::StartTargeting(Ability);
+    Super::StartTargeting(Ability);
 
-	SourceActor = Ability->GetCurrentActorInfo()->AvatarActor.Get();
+    SourceActor = Ability->GetCurrentActorInfo()->AvatarActor.Get();
 }
 
 void APPTA_BossAttackTrace::ConfirmTargetingAndContinue()
 {
-	if (SourceActor)
-	{
-		FGameplayAbilityTargetDataHandle DataHandle = MakeTargetData();
-		TargetDataReadyDelegate.Broadcast(DataHandle);
-	}
+    if (SourceActor)
+    {
+        FGameplayAbilityTargetDataHandle DataHandle = MakeTargetData();
+        TargetDataReadyDelegate.Broadcast(DataHandle);
+    }
 }
 
 FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
@@ -71,25 +70,17 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
         float HeightOffset = NonPlayerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - 60.0f; // 60.0f 만큼 더 올림
         FVector StartOffset = Start - FVector(0, 0, HeightOffset);
 
-        // Forward 벡터를 기준으로 부채꼴 영역을 정의
-        FVector RightVector = Forward.RotateAngleAxis(AttackAngle / 2.0f, FVector::UpVector);
-        FVector LeftVector = Forward.RotateAngleAxis(-AttackAngle / 2.0f, FVector::UpVector);
-
-        // RightVector와 LeftVector의 끝점 계산
-        FVector RightEnd = StartOffset + RightVector * AttackRadius;
-        FVector LeftEnd = StartOffset + LeftVector * AttackRadius;
-
-        // RightEnd와 LeftEnd를 포함하는 부채꼴 영역을 판정
+        // 부채꼴 영역을 기준으로 스위핑
         GetWorld()->SweepMultiByChannel(OutHitResults, StartOffset, StartOffset + Forward * AttackRadius, FQuat::Identity, CCHANNEL_PPACTION, FCollisionShape::MakeSphere(AttackRadius), Params_Boss);
 
         // 부채꼴 영역 내에서 실제 부채꼴에 해당하는 충돌 객체를 필터링
         TArray<FHitResult> FilteredHitResults;
         for (const FHitResult& HitResult : OutHitResults)
         {
-            FVector HitDirection = HitResult.ImpactPoint - StartOffset;
-            HitDirection.Normalize();
-            float HitAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(Forward, HitDirection)));
-            if (HitAngle <= AttackAngle / 2.0f)
+            FVector HitDirection = (HitResult.ImpactPoint - StartOffset).GetSafeNormal();
+            float HitAngle = FMath::Acos(FVector::DotProduct(Forward, HitDirection));
+            float DegreesHitAngle = FMath::RadiansToDegrees(HitAngle);
+            if (DegreesHitAngle <= (AttackAngle / 2.0f))
             {
                 FilteredHitResults.Add(HitResult);
             }
@@ -98,9 +89,8 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
 #if ENABLE_DRAW_DEBUG
         if (bShowDebug)
         {
-            DrawDebugLine(GetWorld(), StartOffset, RightEnd, FColor::Green, false, 5.0f, 0, 1.0f);
-            DrawDebugLine(GetWorld(), StartOffset, LeftEnd, FColor::Green, false, 5.0f, 0, 1.0f);
-            DrawDebugLine(GetWorld(), RightEnd, LeftEnd, FColor::Green, false, 5.0f, 0, 1.0f);
+            // 부채꼴 디버그 드로잉
+            DrawDebugFan(GetWorld(), StartOffset, Forward, AttackRadius, AttackAngle, FColor::Green, 5.0f);
         }
 #endif
 
@@ -136,4 +126,27 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
     }
 
     return DataHandle;
+}
+
+void APPTA_BossAttackTrace::DrawDebugFan(UWorld* World, const FVector& Start, const FVector& Forward, float Radius, float Angle, const FColor& Color, float Duration, bool bPersistentLines, uint8 DepthPriority, float Thickness) const
+{
+    // Number of segments to draw the fan
+    const int32 NumSegments = 20;
+    const float AngleStep = Angle / NumSegments;
+
+    FVector LastPoint = Start + Forward.RotateAngleAxis(-Angle / 2.0f, FVector::UpVector) * Radius;
+    for (int32 i = 1; i <= NumSegments; ++i)
+    {
+        float CurrentAngle = -Angle / 2.0f + i * AngleStep;
+        FVector CurrentVector = Forward.RotateAngleAxis(CurrentAngle, FVector::UpVector);
+        FVector CurrentPoint = Start + CurrentVector * Radius;
+
+        // Draw the line segment
+        DrawDebugLine(World, LastPoint, CurrentPoint, Color, bPersistentLines, Duration, DepthPriority, Thickness);
+        LastPoint = CurrentPoint;
+    }
+
+    // Draw the base lines
+    DrawDebugLine(World, Start, Start + Forward.RotateAngleAxis(Angle / 2.0f, FVector::UpVector) * Radius, Color, bPersistentLines, Duration, DepthPriority, Thickness);
+    DrawDebugLine(World, Start, Start + Forward.RotateAngleAxis(-Angle / 2.0f, FVector::UpVector) * Radius, Color, bPersistentLines, Duration, DepthPriority, Thickness);
 }
