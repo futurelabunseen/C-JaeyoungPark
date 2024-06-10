@@ -96,7 +96,6 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 void UPPGASHpBarUserWidget::OnHealthChanged(const FOnAttributeChangeData& ChangeData)
 {
 	CurrentHealth = ChangeData.NewValue;
-	const UPPCharacterAttributeSet* CurrentPPCharacterAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 	UpdateHpBar();
 }
 

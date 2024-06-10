@@ -7,6 +7,8 @@
 #include "Character/PPGASCharacter.h"
 #include "Player/PPHUD.h"
 #include "Components/SphereComponent.h"
+#include "UI/PPGASWidgetComponent.h"
+#include "UI/PPGASUserWidget.h"
 
 
 // Sets default values
@@ -24,6 +26,17 @@ ABoss_Mermaid::ABoss_Mermaid()
 	DetectionSphere->SetupAttachment(RootComponent);
 	DetectionSphere->SetSphereRadius(1000.0f); // Set the detection radius
 	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABoss_Mermaid::OnOverlapBegin);
+
+	DamageText = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("DamageTextWidget"));
+	DamageText->SetupAttachment(GetMesh());
+	static ConstructorHelpers::FClassFinder<UUserWidget> DamageTextWidgetRef(TEXT("/Game/UI/WBP_DamageText.WBP_DamageText_C"));
+	if (DamageTextWidgetRef.Class)
+	{
+		DamageText->SetWidgetClass(DamageTextWidgetRef.Class);
+		DamageText->SetWidgetSpace(EWidgetSpace::Screen);
+		DamageText->SetDrawSize(FVector2D(200.0f, 50.0f));
+		DamageText->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void ABoss_Mermaid::PossessedBy(AController* NewController)

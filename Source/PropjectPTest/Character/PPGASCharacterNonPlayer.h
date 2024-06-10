@@ -42,6 +42,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UPPGASWidgetComponent> HpBar;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UPPGASWidgetComponent> DamageText;
+
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
 
