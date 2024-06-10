@@ -26,7 +26,25 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> DamageTextBlock;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Materials")
+	TObjectPtr<class UMaterialInterface> OverlayMaterial;
+
+	UPROPERTY()
+	TArray<UMaterialInterface*> OriginalMaterials; // 원래 머티리얼 배열
+
+	FTimerHandle OverlayTimerHandle; // 오버레이 타이머 핸들
+	FTimerHandle DamageTextTimerHandle; // 데미지 텍스트 타이머 핸들
+
+	UFUNCTION()
+	void ApplyOverlayMaterial();
+
+	UFUNCTION()
+	void ResetMaterial();
+
+	UFUNCTION()
+	void ShowDamageText(float Damage);
+
 private:
 	UPROPERTY()
-	AActor* OwnerActor;
+	TObjectPtr <class AActor> OwnerActor;
 };

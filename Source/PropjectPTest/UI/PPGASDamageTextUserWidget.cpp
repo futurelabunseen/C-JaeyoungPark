@@ -7,7 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "TimerManager.h"
 #include "Components/CanvasPanelSlot.h"
-
+#include "Materials/MaterialInstanceDynamic.h"
 
 void UPPGASDamageTextUserWidget::NativeConstruct()
 {
@@ -40,6 +40,12 @@ void UPPGASDamageTextUserWidget::SpawnDamage(const FOnAttributeChangeData& Chang
 		return;
 	}
 
+	ShowDamageText(Damage);
+	ApplyOverlayMaterial();
+}
+
+void UPPGASDamageTextUserWidget::ShowDamageText(float Damage)
+{
 	if (DamageTextBlock)
 	{
 		// 랜덤 위치 설정
@@ -58,12 +64,70 @@ void UPPGASDamageTextUserWidget::SpawnDamage(const FOnAttributeChangeData& Chang
 		}
 
 		// 일정 시간 후에 데미지 텍스트 숨기기
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([this]() {
+		if (GetWorld()->GetTimerManager().IsTimerActive(DamageTextTimerHandle))
+		{
+			GetWorld()->GetTimerManager().ClearTimer(DamageTextTimerHandle);
+		}
+
+		GetWorld()->GetTimerManager().SetTimer(DamageTextTimerHandle, FTimerDelegate::CreateLambda([this]() {
 			if (DamageTextBlock)
 			{
 				DamageTextBlock->SetVisibility(ESlateVisibility::Hidden);
 			}
-			}), 1.0f, false); // 1초 후에 숨기기
+			}), 0.5f, false); // 1초 후에 숨기기
 	}
 }
+
+void UPPGASDamageTextUserWidget::ApplyOverlayMaterial()
+{
+	if (OwnerActor)
+	{
+		UMeshComponent* MeshComp = OwnerActor->FindComponentByClass<UMeshComponent>();
+		if (MeshComp && OverlayMaterial)
+		{
+			int32 NumMaterials = MeshComp->GetNumMaterials();
+			if (OriginalMaterials.Num() == 0) // 최초로 적용될 때만 원래 머티리얼 저장
+			{
+				OriginalMaterials.SetNum(NumMaterials);
+				for (int32 i = 0; i < NumMaterials; ++i)
+				{
+					OriginalMaterials[i] = MeshComp->GetMaterial(i); // 원래 머티리얼 저장
+				}
+			}
+
+			for (int32 i = 0; i < NumMaterials; ++i)
+			{
+				MeshComp->SetMaterial(i, OverlayMaterial); // 오버레이 머티리얼 적용
+			}
+
+			// 기존 타이머가 있으면 취소하고 새로운 타이머 설정
+			if (GetWorld()->GetTimerManager().IsTimerActive(OverlayTimerHandle))
+			{
+				GetWorld()->GetTimerManager().ClearTimer(OverlayTimerHandle);
+			}
+
+			GetWorld()->GetTimerManager().SetTimer(OverlayTimerHandle, this, &UPPGASDamageTextUserWidget::ResetMaterial, 0.1f, false); // 1초 후에 복귀
+		}
+	}
+}
+
+void UPPGASDamageTextUserWidget::ResetMaterial()
+{
+	if (OwnerActor)
+	{
+		UMeshComponent* MeshComp = OwnerActor->FindComponentByClass<UMeshComponent>();
+		if (MeshComp)
+		{
+			for (int32 i = 0; i < OriginalMaterials.Num(); ++i)
+			{
+				if (OriginalMaterials[i])
+				{
+					MeshComp->SetMaterial(i, OriginalMaterials[i]); // 원래 머티리얼로 복귀
+				}
+			}
+		}
+		// 머티리얼 복원이 완료되었으므로 OriginalMaterials 배열을 비웁니다.
+		OriginalMaterials.Empty();
+	}
+}
+
