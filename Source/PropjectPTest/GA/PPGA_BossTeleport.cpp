@@ -1,20 +1,17 @@
 
-#include "GA/PPGA_BossAttack.h"
+#include "GA/PPGA_BossTeleport.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "PropjectPTest.h"
 #include "GameFramework/Character.h"
-#include "Components/SphereComponent.h"
-#include "GameFramework/Actor.h"
 #include "Character/PPGASCharacterNonPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
-// #include "BehaviorTree/BlackboardComponent.h"
 
-UPPGA_BossAttack::UPPGA_BossAttack()
+UPPGA_BossTeleport::UPPGA_BossTeleport()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
-void UPPGA_BossAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void UPPGA_BossTeleport::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -27,27 +24,20 @@ void UPPGA_BossAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 	PPGASCharacterNonPlayer->bUseControllerRotationYaw = false;
 	PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
 
-	// 공격 중 상태 설정
-	/*UBlackboardComponent* BlackboardComp = ActorInfo->OwnerActor->FindComponentByClass<UBlackboardComponent>();
-	if (BlackboardComp)
-	{
-		BlackboardComp->SetValueAsBool("IsAttacking", true);
-	}*/
-
 	// 공격 실행 태스크
 	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayMonsterAttack"), ActionMontage, 1.0f);
 
 	// 어택 태스크가 완료되었을 때
-	PlayAttackTask->OnCompleted.AddDynamic(this, &UPPGA_BossAttack::OnCompletedCallBack);
+	PlayAttackTask->OnCompleted.AddDynamic(this, &UPPGA_BossTeleport::OnCompletedCallBack);
 
 	// 어택 태스크가 방해받았을 때
-	PlayAttackTask->OnInterrupted.AddDynamic(this, &UPPGA_BossAttack::OnInterruptedCallBack);
+	PlayAttackTask->OnInterrupted.AddDynamic(this, &UPPGA_BossTeleport::OnInterruptedCallBack);
 
 	// 어택 태스크 활성화 준비 완료
 	PlayAttackTask->ReadyForActivation();
 }
 
-void UPPGA_BossAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void UPPGA_BossTeleport::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
@@ -59,38 +49,17 @@ void UPPGA_BossAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 	// 회전 잠금 해제
 	PPGASCharacterNonPlayer->bUseControllerRotationYaw = true;
 	PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = true;
-
-	// 공격 중 상태 해제
-	/*UBlackboardComponent* BlackboardComp = ActorInfo->OwnerActor->FindComponentByClass<UBlackboardComponent>();
-	if (BlackboardComp)
-	{
-		BlackboardComp->SetValueAsBool("IsAttacking", false);
-	}*/
 }
 
-void UPPGA_BossAttack::OnCompletedCallBack()
+void UPPGA_BossTeleport::OnCompletedCallBack()
 {
-
-	/*UBlackboardComponent* BlackboardComp = CurrentActorInfo->OwnerActor->FindComponentByClass<UBlackboardComponent>();
-	if (BlackboardComp)
-	{
-		BlackboardComp->SetValueAsBool("IsAttacking", false);
-	}*/
-
 	bool bReplicatedEndAbility = true;
 	bool bWasCancelled = false;
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
 }
 
-void UPPGA_BossAttack::OnInterruptedCallBack()
+void UPPGA_BossTeleport::OnInterruptedCallBack()
 {
-
-	/*UBlackboardComponent* BlackboardComp = CurrentActorInfo->OwnerActor->FindComponentByClass<UBlackboardComponent>();
-	if (BlackboardComp)
-	{
-		BlackboardComp->SetValueAsBool("IsAttacking", false);
-	}*/
-
 	bool bReplicatedEndAbility = true;
 	bool bWasCancelled = true;
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);

@@ -157,3 +157,28 @@ void APPPlayerController::OnPossess(APawn* InPawn)
 
 	PP_LOG(LogPPNetwork, Log, TEXT("%s"), TEXT("End"));
 }
+
+//void APPPlayerController::Tick(float DeltaTime)
+//{
+//	FHitResult HitResult;
+//	GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+//
+//	// 이전에 활성화된 메쉬 컴포넌트를 추적하여 비활성화합니다.
+//	static UMeshComponent* PreviousMeshComp = nullptr;
+//	if (PreviousMeshComp && PreviousMeshComp != HitResult.GetComponent())
+//	{
+//		PreviousMeshComp->SetRenderCustomDepth(false);
+//		PreviousMeshComp = nullptr;
+//	}
+//
+//	if (HitResult.bBlockingHit)
+//	{
+//		UMeshComponent* MeshComp = Cast<UMeshComponent>(HitResult.GetComponent());
+//		if (MeshComp)
+//		{
+//			MeshComp->SetRenderCustomDepth(true);
+//			MeshComp->CustomDepthStencilValue = 1;
+//			PreviousMeshComp = MeshComp;
+//		}
+//	}
+//}

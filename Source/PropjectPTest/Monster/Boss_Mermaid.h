@@ -32,6 +32,8 @@ protected:
 	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
 	virtual void AttackByAI() override;
 
+	// void Tick(float DeltaTime) override;
+
 	FAICharacterAttackFinished OnAttackFinished;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")

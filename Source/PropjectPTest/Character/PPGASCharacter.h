@@ -56,6 +56,7 @@ protected:
 	virtual void OnOutOfHealth();
 
 	virtual void Tick(float DeltaTime);
+	// virtual void BeginPlay() override;
 
 	/*void MoveToStreamingLevel(const bool IsPlayerDeath);
 	void UnloadMultipleStreamingLevels(const FName& LevelName);*/
@@ -82,7 +83,7 @@ protected:
 
 	// Character Section
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<class UPPGASWidgetComponent> HpBar;
+	TObjectPtr<class UPPGASWidgetComponent> PlayerStatus;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> SkillActionMontage;

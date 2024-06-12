@@ -21,6 +21,7 @@
 #include "Attribute/PPCharacterAttributeSet.h"
 #include "Character/PPComboActionData.h"
 #include "UI/PPGASHpBarUserWidget.h"
+#include "Player/PPHUD.h"
 
 
 
@@ -60,20 +61,6 @@ APPGASCharacter::APPGASCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-
-	// ----------------------------------------------------
-
-	HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
-	HpBar->SetupAttachment(GetMesh());
-	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
-	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/UI/WBP_HpBar.WBP_HpBar_C"));
-	if (HpBarWidgetRef.Class)
-	{
-		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
-		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
-		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
-		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
 }
 
 UAbilitySystemComponent* APPGASCharacter::GetAbilitySystemComponent() const
@@ -132,14 +119,22 @@ void APPGASCharacter::OnRep_PlayerState()
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
-		HpBar->InitWidget();
 	}
 
-	if (IsLocallyControlled() && Controller)
+	if (APlayerController* PlayerController = GetController<APlayerController>())
+	{
+		APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
+		if (PlayerHUD)
+		{
+			PlayerHUD->ShowStatus(this);
+		}
+	}
+
+	/*if (IsLocallyControlled() && Controller)
 	{
 		APlayerController* PlayerContorller = CastChecked<APlayerController>(GetController());
 		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));
-	}
+	}*/
 }
 
 void APPGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -215,6 +210,20 @@ void APPGASCharacter::Tick(float DeltaTime)
 	}
 }
 
+//void APPGASCharacter::BeginPlay()
+//{
+//	Super::BeginPlay();
+//
+//	if (APlayerController* PlayerController = GetController<APlayerController>())
+//	{
+//		APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
+//		if (PlayerHUD)
+//		{
+//			PlayerHUD->ShowStatus(this);
+//		}
+//	}
+//}
+
 void APPGASCharacter::ZoomIn()
 {
 	ExpectedSpringArmLength = FMath::Clamp<float>(ExpectedSpringArmLength - ZoomMinLength, ZoomMinLength, ZoomMaxLength);
@@ -229,7 +238,7 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	SetActorEnableCollision(true);
-	HpBar->SetHiddenInGame(false);
+	// PlayerStatus->SetHiddenInGame(false);
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);

@@ -99,3 +99,4 @@ void ABoss_Mermaid::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 		}
 	}
 }
+

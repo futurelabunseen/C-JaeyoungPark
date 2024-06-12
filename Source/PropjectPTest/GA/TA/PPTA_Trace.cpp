@@ -105,25 +105,25 @@ FGameplayAbilityTargetDataHandle APPTA_Trace::MakeTargetData() const
 		DataHandle.Add(TargetData);
 	}
 
-#if ENABLE_DRAW_DEBUG
-	if (bShowDebug)
-	{
-		for (const FHitResult& HitResult : OutHitResults)
-		{
-			FVector CapsuleOrigin = HitResult.ImpactPoint;
-			float CapsuleHalfHeight_Character = AttackRadius_Character;
-			// float CapsuleHalfHeight_Monster = AttackRadius_Monster;
-			// float CapsuleHalfHeight_Boss = AttackRadius_Boss;
-
-			
-			DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Character, AttackRadius_Character, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
-			// DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Monster, AttackRadius_Monster, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
-			// DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Boss, AttackRadius_Boss, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
-			// DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Character, AttackRadius_Character, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
-
-		}
-	}
-#endif
+//#if ENABLE_DRAW_DEBUG
+//	if (bShowDebug)
+//	{
+//		for (const FHitResult& HitResult : OutHitResults)
+//		{
+//			FVector CapsuleOrigin = HitResult.ImpactPoint;
+//			float CapsuleHalfHeight_Character = AttackRadius_Character;
+//			// float CapsuleHalfHeight_Monster = AttackRadius_Monster;
+//			// float CapsuleHalfHeight_Boss = AttackRadius_Boss;
+//
+//			
+//			DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Character, AttackRadius_Character, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
+//			// DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Monster, AttackRadius_Monster, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
+//			// DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Boss, AttackRadius_Boss, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
+//			// DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight_Character, AttackRadius_Character, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
+//
+//		}
+//	}
+//#endif
 
 	return DataHandle;
 }
