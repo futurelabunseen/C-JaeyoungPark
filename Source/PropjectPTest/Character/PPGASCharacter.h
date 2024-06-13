@@ -40,6 +40,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void OnRep_PlayerState() override;
+	virtual void OnRep_Controller() override;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class AActor> InteractableItem;

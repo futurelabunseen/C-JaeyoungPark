@@ -22,6 +22,7 @@
 #include "Character/PPComboActionData.h"
 #include "UI/PPGASHpBarUserWidget.h"
 #include "Player/PPHUD.h"
+#include "Player/PPPlayerController.h"
 
 
 
@@ -121,7 +122,27 @@ void APPGASCharacter::OnRep_PlayerState()
 		ASC->InitAbilityActorInfo(GASPS, this);
 	}
 
-	if (APlayerController* PlayerController = GetController<APlayerController>())
+	/*if (APlayerController* PlayerController = GetController<APlayerController>())
+	{
+		APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
+		if (PlayerHUD)
+		{
+			PlayerHUD->ShowStatus(this);
+		}
+	}*/
+
+	/*if (IsLocallyControlled() && Controller)
+	{
+		APlayerController* PlayerContorller = CastChecked<APlayerController>(GetController());
+		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));
+	}*/
+}
+
+void APPGASCharacter::OnRep_Controller()
+{
+	Super::OnRep_Controller();
+
+	if (APPPlayerController* PlayerController = GetController<APPPlayerController>())
 	{
 		APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
 		if (PlayerHUD)
@@ -129,12 +150,6 @@ void APPGASCharacter::OnRep_PlayerState()
 			PlayerHUD->ShowStatus(this);
 		}
 	}
-
-	/*if (IsLocallyControlled() && Controller)
-	{
-		APlayerController* PlayerContorller = CastChecked<APlayerController>(GetController());
-		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));
-	}*/
 }
 
 void APPGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

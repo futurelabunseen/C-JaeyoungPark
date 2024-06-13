@@ -81,7 +81,7 @@ void APPHUD::ShowBossHealthBar(AActor* BossActor)
 
 void APPHUD::ShowStatus(AActor* PlayerActor)
 {
-    if (PlayerActor)
+    if (PlayerActor && PlayerStatusUserWidget)
     {
         PlayerStatusUserWidget->SetAbilitySystemComponent(PlayerActor);
         // PlayerStatusUserWidget->AddToViewport();
