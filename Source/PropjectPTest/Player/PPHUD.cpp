@@ -79,14 +79,14 @@ void APPHUD::ShowBossHealthBar(AActor* BossActor)
     }
 }
 
-void APPHUD::ShowStatus(AActor* PlayerActor)
-{
-    if (PlayerActor && PlayerStatusUserWidget)
-    {
-        PlayerStatusUserWidget->SetAbilitySystemComponent(PlayerActor);
-        // PlayerStatusUserWidget->AddToViewport();
-    }
-}
+//void APPHUD::ShowStatus(AActor* PlayerActor)
+//{
+//    if (PlayerActor && PlayerStatusUserWidget)
+//    {
+//        PlayerStatusUserWidget->SetAbilitySystemComponent(PlayerActor);
+//        // PlayerStatusUserWidget->AddToViewport();
+//    }
+//}
 
 void APPHUD::SetHUDVisibility(bool bVisible)
 {

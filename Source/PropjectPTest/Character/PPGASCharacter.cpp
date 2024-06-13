@@ -122,7 +122,8 @@ void APPGASCharacter::OnRep_PlayerState()
 		ASC->InitAbilityActorInfo(GASPS, this);
 	}
 
-	/*if (APlayerController* PlayerController = GetController<APlayerController>())
+	// 작동은 하는 데 패키징 시 문제 발생
+	/*if (APPPlayerController* PlayerController = GetController<APPPlayerController>())
 	{
 		APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
 		if (PlayerHUD)
@@ -131,6 +132,7 @@ void APPGASCharacter::OnRep_PlayerState()
 		}
 	}*/
 
+	// 어빌리티 시스템 디버그 용
 	/*if (IsLocallyControlled() && Controller)
 	{
 		APlayerController* PlayerContorller = CastChecked<APlayerController>(GetController());
@@ -144,13 +146,33 @@ void APPGASCharacter::OnRep_Controller()
 
 	if (APPPlayerController* PlayerController = GetController<APPPlayerController>())
 	{
-		APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
-		if (PlayerHUD)
+		UE_LOG(LogTemp, Warning, TEXT("PlayerController is valid"));
+
+		if (APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD()))
 		{
-			PlayerHUD->ShowStatus(this);
+			UE_LOG(LogTemp, Warning, TEXT("PlayerHUD is valid"));
+
+			if (PlayerHUD->PlayerStatusUserWidget)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("PlayerStatusUserWidget is valid"));
+				PlayerHUD->PlayerStatusUserWidget->SetAbilitySystemComponent(this);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("PlayerStatusUserWidget is null"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("PlayerHUD is null"));
 		}
 	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlayerController is null"));
+	}
 }
+
 
 void APPGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -225,20 +247,6 @@ void APPGASCharacter::Tick(float DeltaTime)
 	}
 }
 
-//void APPGASCharacter::BeginPlay()
-//{
-//	Super::BeginPlay();
-//
-//	if (APlayerController* PlayerController = GetController<APlayerController>())
-//	{
-//		APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
-//		if (PlayerHUD)
-//		{
-//			PlayerHUD->ShowStatus(this);
-//		}
-//	}
-//}
-
 void APPGASCharacter::ZoomIn()
 {
 	ExpectedSpringArmLength = FMath::Clamp<float>(ExpectedSpringArmLength - ZoomMinLength, ZoomMinLength, ZoomMaxLength);
@@ -253,7 +261,6 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	SetActorEnableCollision(true);
-	// PlayerStatus->SetHiddenInGame(false);
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
@@ -261,7 +268,7 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 	if (EffectSpecHandle.IsValid())
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-		// UE_LOG(LogTemp, Error, EffectSpecHandle.Data->get)
+		// UE_LOG(LogTemp, Error, EffectSpecHandle.Data->get);
 	}
 
 	APPGASGameMode* PPGASGameMode = GetWorld()->GetAuthGameMode<APPGASGameMode>();

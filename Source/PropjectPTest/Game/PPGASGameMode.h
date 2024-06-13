@@ -18,6 +18,7 @@ public:
 
 	virtual FTransform GetRandomStartTransform() const;
 	virtual void OnPlayerKilled(AController* Killer, AController* KilledPlayer, APawn* KilledPawn);
+	// virtual void BeginPlay() override;
 
 protected:
 	virtual void PostInitializeComponents() override;

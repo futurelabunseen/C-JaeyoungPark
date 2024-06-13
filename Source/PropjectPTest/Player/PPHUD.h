@@ -17,10 +17,13 @@ public:
 
     virtual void BeginPlay() override;
     void ShowBossHealthBar(AActor* BossActor);
-    void ShowStatus(AActor* PlayerActor);
+    // void ShowStatus(AActor* PlayerActor);
 
     UFUNCTION(BlueprintCallable, Category = "HUD")
     void SetHUDVisibility(bool bVisible);
+
+    UPROPERTY()
+    TObjectPtr<class UPPGASPlayerStatusUserWidget> PlayerStatusUserWidget;
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -39,9 +42,6 @@ protected:
 
     UPROPERTY()
     TObjectPtr<class UPPGASHpBarUserWidget> BossHpBarWidget;
-
-    UPROPERTY()
-    TObjectPtr<class UPPGASPlayerStatusUserWidget> PlayerStatusUserWidget;
 
     bool bIsVisible;
 };

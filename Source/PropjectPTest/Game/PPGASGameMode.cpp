@@ -3,16 +3,47 @@
 
 #include "Game/PPGASGameMode.h"
 #include "PropjectPTest.h"
-// #include "PropjectPTest/Player/PPGASPlayerState.h" // 플레이어 스테이트, 게임 스테이트 가져와서 사용해야 함
+#include "Player/PPGASPlayerState.h" // 플레이어 스테이트, 게임 스테이트 가져와서 사용해야 함
+#include "Character/PPGASCharacter.h"
 #include "Player/PPPlayerController.h"
 #include "GameFramework/PlayerStart.h"
 #include "EngineUtils.h"
+#include "Player/PPHUD.h"
+#include "Kismet/GameplayStatics.h"
 
 
 APPGASGameMode::APPGASGameMode()
 {
-	// PlayerStateClass = APPGASPlayerState::StaticClass();
+	// DefaultPawnClass = APPGASCharacter::StaticClass();
+	// PlayerControllerClass = APPPlayerController::StaticClass();
+	// HUDClass = APPHUD::StaticClass();
 }
+
+//void APPGASGameMode::BeginPlay()
+//{
+//	Super::BeginPlay();
+//
+//	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+//	if (PlayerController)
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("PlayerController is valid in GameMode BeginPlay"));
+//
+//		APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
+//		if (PlayerHUD)
+//		{
+//			UE_LOG(LogTemp, Warning, TEXT("PlayerHUD is valid in GameMode BeginPlay"));
+//		}
+//		else
+//		{
+//			UE_LOG(LogTemp, Error, TEXT("PlayerHUD is null in GameMode BeginPlay"));
+//		}
+//	}
+//	else
+//	{
+//		UE_LOG(LogTemp, Error, TEXT("PlayerController is null in GameMode BeginPlay"));
+//	}
+//}
+
 
 void APPGASGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {

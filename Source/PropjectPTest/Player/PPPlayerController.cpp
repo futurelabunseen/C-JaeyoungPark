@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
+#include "Player/PPHUD.h"
 
 APPPlayerController::APPPlayerController()
 {
@@ -32,6 +33,16 @@ void APPPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+
+	//if (APPHUD* PlayerHUD = Cast<APPHUD>(GetHUD()))
+	//{
+	//	// HUD 초기화 확인 로그
+	//	UE_LOG(LogTemp, Warning, TEXT("PlayerHUD is valid in APPPlayerController"));
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("PlayerHUD is null in APPPlayerController"));
+	//}
 }
 
 void APPPlayerController::SetupInputComponent()

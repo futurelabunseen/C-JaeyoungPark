@@ -42,7 +42,12 @@ void UPPGASPlayerStatusUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 void UPPGASPlayerStatusUserWidget::OnSkillEnergyChanged(const FOnAttributeChangeData& ChangeData)
 {
 	CurrentSkillEnergy = ChangeData.NewValue;
-	const UPPCharacterSkillAttributeSet* CurrentPPCharacterSkillAttributeSet = ASC->GetSet<UPPCharacterSkillAttributeSet>();
+	// const UPPCharacterSkillAttributeSet* CurrentPPCharacterSkillAttributeSet = ASC->GetSet<UPPCharacterSkillAttributeSet>();
+	/*if (CurrentPPCharacterSkillAttributeSet)
+	{
+		UpdateMpBar();
+	}*/
+
 	UpdateMpBar();
 }
 
