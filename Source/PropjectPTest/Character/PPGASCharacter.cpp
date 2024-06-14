@@ -144,33 +144,43 @@ void APPGASCharacter::OnRep_Controller()
 {
 	Super::OnRep_Controller();
 
-	if (APPPlayerController* PlayerController = GetController<APPPlayerController>())
+	if (HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerController is valid"));
-
-		if (APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD()))
+		return;
+	}
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+	{
+		//ASC 붙이는 코드
+		if (APPPlayerController* PlayerController = GetController<APPPlayerController>())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("PlayerHUD is valid"));
+			UE_LOG(LogTemp, Warning, TEXT("PlayerController is valid"));
 
-			if (PlayerHUD->PlayerStatusUserWidget)
+			if (APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD()))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("PlayerStatusUserWidget is valid"));
-				PlayerHUD->PlayerStatusUserWidget->SetAbilitySystemComponent(this);
+				UE_LOG(LogTemp, Warning, TEXT("PlayerHUD is valid"));
+
+				if (PlayerHUD->PlayerStatusUserWidget)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("PlayerStatusUserWidget is valid"));
+
+					PlayerHUD->PlayerStatusUserWidget->SetAbilitySystemComponent(this);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("PlayerStatusUserWidget is null"));
+				}
 			}
 			else
 			{
-				UE_LOG(LogTemp, Error, TEXT("PlayerStatusUserWidget is null"));
+				UE_LOG(LogTemp, Error, TEXT("PlayerHUD is null"));
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("PlayerHUD is null"));
+			UE_LOG(LogTemp, Error, TEXT("PlayerController is null"));
 		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("PlayerController is null"));
-	}
+	});
 }
 
 
