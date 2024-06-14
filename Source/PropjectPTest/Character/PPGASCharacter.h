@@ -40,7 +40,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void OnRep_PlayerState() override;
-	virtual void OnRep_Controller() override;
+	// virtual void OnRep_Controller() override;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class AActor> InteractableItem;
@@ -136,4 +136,7 @@ private:
 
 	const float ZoomMinLength = 150.0f;
 	const float ZoomMaxLength = 800.0f;
+
+	UPROPERTY()
+	TObjectPtr<class UPPGASWidgetComponent> HpBar;
 };
