@@ -63,7 +63,7 @@ APPGASCharacter::APPGASCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-	HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
+	/*HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
 	HpBar->SetupAttachment(GetMesh());
 	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
 	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/UI/WBP_HpBar.WBP_HpBar_C"));
@@ -73,7 +73,7 @@ APPGASCharacter::APPGASCharacter()
 		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
 		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+	}*/
 }
 
 UAbilitySystemComponent* APPGASCharacter::GetAbilitySystemComponent() const
@@ -132,7 +132,7 @@ void APPGASCharacter::OnRep_PlayerState()
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
-		HpBar->InitWidget();
+		// HpBar->InitWidget();
 	}
 
 	// 작동은 하는 데 패키징 시 문제 발생
@@ -153,48 +153,48 @@ void APPGASCharacter::OnRep_PlayerState()
 	}*/
 }
 
-//void APPGASCharacter::OnRep_Controller()
-//{
-//	Super::OnRep_Controller();
-//
-//	if (HasAuthority())
-//	{
-//		return;
-//	}
-//	
-//	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
-//	{
-//		//ASC 붙이는 코드
-//		if (APPPlayerController* PlayerController = GetController<APPPlayerController>())
-//		{
-//			UE_LOG(LogTemp, Warning, TEXT("PlayerController is valid"));
-//
-//			if (APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD()))
-//			{
-//				UE_LOG(LogTemp, Warning, TEXT("PlayerHUD is valid"));
-//
-//				if (PlayerHUD->PlayerStatusUserWidget)
-//				{
-//					UE_LOG(LogTemp, Warning, TEXT("PlayerStatusUserWidget is valid"));
-//
-//					PlayerHUD->PlayerStatusUserWidget->SetAbilitySystemComponent(this);
-//				}
-//				else
-//				{
-//					UE_LOG(LogTemp, Error, TEXT("PlayerStatusUserWidget is null"));
-//				}
-//			}
-//			else
-//			{
-//				UE_LOG(LogTemp, Error, TEXT("PlayerHUD is null"));
-//			}
-//		}
-//		else
-//		{
-//			UE_LOG(LogTemp, Error, TEXT("PlayerController is null"));
-//		}
-//	});
-//}
+void APPGASCharacter::OnRep_Controller()
+{
+	Super::OnRep_Controller();
+
+	if (HasAuthority())
+	{
+		return;
+	}
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick([&]()
+	{
+		//ASC 붙이는 코드
+		if (APPPlayerController* PlayerController = GetController<APPPlayerController>())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("PlayerController is valid"));
+
+			if (APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD()))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("PlayerHUD is valid"));
+
+				if (PlayerHUD->PlayerStatusUserWidget)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("PlayerStatusUserWidget is valid"));
+
+					PlayerHUD->PlayerStatusUserWidget->SetAbilitySystemComponent(this);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("PlayerStatusUserWidget is null"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("PlayerHUD is null"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("PlayerController is null"));
+		}
+	});
+}
 
 
 void APPGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
