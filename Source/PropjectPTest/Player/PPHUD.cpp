@@ -51,14 +51,13 @@ void APPHUD::BeginPlay()
         }
     }
 
-    for (TSubclassOf<UUserWidget> GASPlayerWidget : GASPlayerWidgetClass)
+    /*for (TSubclassOf<UUserWidget> GASPlayerWidget : GASPlayerWidgetClass)
     {
         if (GASPlayerWidget)
         {
             PlayerStatusUserWidget = CreateWidget<UPPGASPlayerStatusUserWidget>(GetWorld(), GASPlayerWidget);
             if (PlayerStatusUserWidget)
             {
-                // APPGASCharacter* Player = Cast<APPGASCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
                 PlayerStatusUserWidget->AddToViewport();
                 CurrentWidgets.Add(PlayerStatusUserWidget);
             }
@@ -67,7 +66,7 @@ void APPHUD::BeginPlay()
                 UE_LOG(LogTemp, Error, TEXT("Failed to create PlayerStatusUserWidget."));
             }
         }
-    }
+    }*/
 }
 
 void APPHUD::ShowBossHealthBar(AActor* BossActor)
