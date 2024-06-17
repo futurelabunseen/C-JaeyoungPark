@@ -17,6 +17,10 @@ void APPHUD::BeginPlay()
 {
     Super::BeginPlay();
 
+    // 현재 레벨 이름 가져오기
+    FString CurrentLevelName = GetWorld()->GetMapName();
+    CurrentLevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+
     for (TSubclassOf<UUserWidget> WidgetClass : HUDWidgetClasses)
     {
         if (WidgetClass)
@@ -47,6 +51,24 @@ void APPHUD::BeginPlay()
             else
             {
                 UE_LOG(LogTemp, Error, TEXT("Failed to create BossHpBarWidget."));
+            }
+        }
+    }
+
+    if (CurrentLevelName == TEXT("ElvenRuins"))
+    {
+        if (ExitWidgetClass)
+        {
+            ExitWidget = CreateWidget<UUserWidget>(GetWorld(), ExitWidgetClass);
+            if (ExitWidget)
+            {
+                ExitWidget->AddToViewport();
+                CurrentWidgets.Add(ExitWidget);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to create ExitWidget."));
+                CurrentWidgets.Remove(ExitWidget);
             }
         }
     }

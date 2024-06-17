@@ -29,19 +29,25 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     TArray<TSubclassOf<class UUserWidget>> HUDWidgetClasses;
 
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TArray <TSubclassOf<class UPPGASHpBarUserWidget>> GASWidgetClass;
+
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<UUserWidget> ExitWidgetClass;
+
     UPROPERTY()
     TArray<TObjectPtr<class UUserWidget>> CurrentWidgets;
 
     // --------------------------------------
-
-    UPROPERTY(EditDefaultsOnly, Category = "UI")
-    TArray <TSubclassOf<class UPPGASHpBarUserWidget>> GASWidgetClass;
 
     /*UPROPERTY(EditDefaultsOnly, Category = "UI")
     TArray <TSubclassOf<class UPPGASPlayerStatusUserWidget>> GASPlayerWidgetClass;*/
 
     UPROPERTY()
     TObjectPtr<class UPPGASHpBarUserWidget> BossHpBarWidget;
+
+    UPROPERTY()
+    TObjectPtr<class UUserWidget> ExitWidget;
 
     bool bIsVisible;
 };
