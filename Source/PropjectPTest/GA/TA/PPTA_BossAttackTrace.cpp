@@ -87,13 +87,13 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
             }
         }
 
-//#if ENABLE_DRAW_DEBUG
-//        if (bShowDebug)
-//        {
-//            // 부채꼴 디버그 드로잉
-//            DrawDebugFan(GetWorld(), StartOffset, Forward, AttackRadius, AttackAngle, FColor::Green, 5.0f);
-//        }
-//#endif
+#if ENABLE_DRAW_DEBUG
+        if (bShowDebug)
+        {
+            // 부채꼴 디버그 드로잉
+            DrawDebugFan(GetWorld(), StartOffset, Forward, AttackRadius, AttackAngle, FColor::Green, 5.0f);
+        }
+#endif
 
         OutHitResults = FilteredHitResults;
     }
@@ -107,16 +107,12 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
         FCollisionQueryParams Params_Boss(SCENE_QUERY_STAT(UPPTA_BossAttackTrace), false, NonPlayerCharacter);
         GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Boss, FQuat::Identity, CCHANNEL_PPACTION, CollisionShape_Boss, Params_Boss);
 
-//#if ENABLE_DRAW_DEBUG
-//        if (bShowDebug)
-//        {
-//            for (const FHitResult& HitResult : OutHitResults)
-//            {
-//                FVector CapsuleOrigin = HitResult.ImpactPoint;
-//                DrawDebugCapsule(GetWorld(), CapsuleOrigin, AttackHalfHeight_Boss, AttackRadius, FRotationMatrix::MakeFromZ(Forward).ToQuat(), FColor::Green, false, 5.0f);
-//            }
-//        }
-//#endif
+#if ENABLE_DRAW_DEBUG
+        if (bShowDebug)
+        {
+            DrawDebugCapsule(GetWorld(), (Start + End_Boss) / 2, AttackHalfHeight_Boss, AttackRadius, FQuat::Identity, FColor::Green, false, 5.0f);
+        }
+#endif
     }
 
     FGameplayAbilityTargetDataHandle DataHandle;
@@ -129,25 +125,25 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
     return DataHandle;
 }
 
-//void APPTA_BossAttackTrace::DrawDebugFan(UWorld* World, const FVector& Start, const FVector& Forward, float Radius, float Angle, const FColor& Color, float Duration, bool bPersistentLines, uint8 DepthPriority, float Thickness) const
-//{
-//    // Number of segments to draw the fan
-//    const int32 NumSegments = 20;
-//    const float AngleStep = Angle / NumSegments;
-//
-//    FVector LastPoint = Start + Forward.RotateAngleAxis(-Angle / 2.0f, FVector::UpVector) * Radius;
-//    for (int32 i = 1; i <= NumSegments; ++i)
-//    {
-//        float CurrentAngle = -Angle / 2.0f + i * AngleStep;
-//        FVector CurrentVector = Forward.RotateAngleAxis(CurrentAngle, FVector::UpVector);
-//        FVector CurrentPoint = Start + CurrentVector * Radius;
-//
-//        // Draw the line segment
-//        DrawDebugLine(World, LastPoint, CurrentPoint, Color, bPersistentLines, Duration, DepthPriority, Thickness);
-//        LastPoint = CurrentPoint;
-//    }
-//
-//    // Draw the base lines
-//    DrawDebugLine(World, Start, Start + Forward.RotateAngleAxis(Angle / 2.0f, FVector::UpVector) * Radius, Color, bPersistentLines, Duration, DepthPriority, Thickness);
-//    DrawDebugLine(World, Start, Start + Forward.RotateAngleAxis(-Angle / 2.0f, FVector::UpVector) * Radius, Color, bPersistentLines, Duration, DepthPriority, Thickness);
-//}
+void APPTA_BossAttackTrace::DrawDebugFan(UWorld* World, const FVector& Start, const FVector& Forward, float Radius, float Angle, const FColor& Color, float Duration, bool bPersistentLines, uint8 DepthPriority, float Thickness) const
+{
+    // Number of segments to draw the fan
+    const int32 NumSegments = 20;
+    const float AngleStep = Angle / NumSegments;
+
+    FVector LastPoint = Start + Forward.RotateAngleAxis(-Angle / 2.0f, FVector::UpVector) * Radius;
+    for (int32 i = 1; i <= NumSegments; ++i)
+    {
+        float CurrentAngle = -Angle / 2.0f + i * AngleStep;
+        FVector CurrentVector = Forward.RotateAngleAxis(CurrentAngle, FVector::UpVector);
+        FVector CurrentPoint = Start + CurrentVector * Radius;
+
+        // Draw the line segment
+        DrawDebugLine(World, LastPoint, CurrentPoint, Color, bPersistentLines, Duration, DepthPriority, Thickness);
+        LastPoint = CurrentPoint;
+    }
+
+    // Draw the base lines
+    DrawDebugLine(World, Start, Start + Forward.RotateAngleAxis(Angle / 2.0f, FVector::UpVector) * Radius, Color, bPersistentLines, Duration, DepthPriority, Thickness);
+    DrawDebugLine(World, Start, Start + Forward.RotateAngleAxis(-Angle / 2.0f, FVector::UpVector) * Radius, Color, bPersistentLines, Duration, DepthPriority, Thickness);
+}
