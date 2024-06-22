@@ -17,6 +17,7 @@ public:
 
     virtual void BeginPlay() override;
     void ShowBossHealthBar(AActor* BossActor);
+    // void DeleteBossHealthBar(AActor* BossActor);
     // void ShowStatus(AActor* PlayerActor);
 
     UFUNCTION(BlueprintCallable, Category = "HUD")

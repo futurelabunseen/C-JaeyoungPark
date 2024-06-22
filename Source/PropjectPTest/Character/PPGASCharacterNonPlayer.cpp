@@ -3,6 +3,8 @@
 
 #include "Character/PPGASCharacterNonPlayer.h"
 #include "AbilitySystemComponent.h"
+#include "Monster/Boss_Mermaid.h"
+#include "Player/PPHUD.h"
 //#include "UI/PPGASWidgetComponent.h"
 //#include "UI/PPGASUserWidget.h"
 
@@ -13,6 +15,7 @@ APPGASCharacterNonPlayer::APPGASCharacterNonPlayer()
 
 	ASC->SetIsReplicated(true);
 
+	// bIsBoss = false;
 	/*HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
 	HpBar->SetupAttachment(GetMesh());
 	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
@@ -56,4 +59,22 @@ void APPGASCharacterNonPlayer::PossessedBy(AController* NewController)
 void APPGASCharacterNonPlayer::OnOutOfHealth()
 {
 	SetDead();
+
+	// 보스인 경우에만 보스 체력바 삭제
+	/*if (bIsBoss)
+	{
+		APawn* PlayerPawn = Cast<APawn>(this);
+		if (PlayerPawn)
+		{
+			APlayerController* PlayerController = Cast<APlayerController>(PlayerPawn->GetController());
+			if (PlayerController)
+			{
+				APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
+				if (PlayerHUD)
+				{
+					PlayerHUD->DeleteBossHealthBar(this);
+				}
+			}
+		}
+	}*/
 }

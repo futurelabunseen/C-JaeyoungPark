@@ -100,6 +100,15 @@ void APPHUD::ShowBossHealthBar(AActor* BossActor)
     }
 }
 
+//void APPHUD::DeleteBossHealthBar(AActor* BossActor)
+//{
+//    if (BossHpBarWidget)
+//    {
+//        // BossHpBarWidget->SetVisibility(ESlateVisibility::Hidden);
+//        // BossHpBarWidget->RemoveFromViewport();
+//    }
+//}
+
 //void APPHUD::ShowStatus(AActor* PlayerActor)
 //{
 //    if (PlayerActor && PlayerStatusUserWidget)
