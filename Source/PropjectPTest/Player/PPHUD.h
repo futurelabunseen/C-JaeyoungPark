@@ -16,6 +16,7 @@ public:
     APPHUD();
 
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
     void ShowBossHealthBar(AActor* BossActor);
     // void DeleteBossHealthBar(AActor* BossActor);
     // void ShowStatus(AActor* PlayerActor);
@@ -51,4 +52,27 @@ protected:
     TObjectPtr<class UUserWidget> ExitWidget;
 
     bool bIsVisible;
+
+    // --------------------------------------
+
+    UPROPERTY(EditAnywhere, Category = "UI")
+    TSubclassOf<class UUserWidget> MinimapWidgetClass;
+
+    UPROPERTY()
+    TObjectPtr<class UMinimapWidget> MinimapWidget;
+
+    UPROPERTY(EditAnywhere, Category = "Minimap")
+    FVector VolumeOrigin;
+
+    UPROPERTY(EditAnywhere, Category = "Minimap")
+    FVector VolumeExtent;
+
+    UPROPERTY(EditAnywhere, Category = "Minimap")
+    FVector2D MinimapSize;
+
+    FVector PlayerLocation;
+
+    bool bIsMinimapVisible;
+
+    void ToggleMinimap();
 };

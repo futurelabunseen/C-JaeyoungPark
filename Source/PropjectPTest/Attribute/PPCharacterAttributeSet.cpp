@@ -17,10 +17,9 @@ UPPCharacterAttributeSet::UPPCharacterAttributeSet() :
 	AttackRate(30.0f), // 공격 데미지, OnRep 안해도 됨, 고정값 -> GE를 통해 변형 (Buff)
 	MaxAttackRate(100.0f), // 최대 공격 데미지, OnRep 안해도 됨, 고정값
 
+	Damage(0.0f), // 피격 데미지, OnRep 필요, 수시로 변경, 아마도?
 	Health(100.0f), // 체력, OnRep 필요, 수시로 변경 -> GE를 통해 변형 (Damage, Heal, Regen, Dot 등등)
-	MaxHealth(100.0f), // 최대 체력, OnRep 필요
-
-	Damage(0.0f) // 피격 데미지, OnRep 필요, 수시로 변경, 아마도?
+	MaxHealth(100.0f) // 최대 체력, OnRep 필요
 {
 	InitHealth(GetMaxHealth());
 }
