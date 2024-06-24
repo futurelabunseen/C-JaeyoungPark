@@ -11,6 +11,7 @@
 #include "UI/PPGASUserWidget.h"
 #include "TimerManager.h"
 #include "Player/PPPlayerController.h"
+#include "Physics/PPCollision.h"
 
 
 // Sets default values
@@ -24,14 +25,15 @@ ABoss_Mermaid::ABoss_Mermaid()
 
 	BossAttributeSet = CreateDefaultSubobject<UBossAttributeSet>(TEXT("BossAttributeSet"));
 
-	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	DetectionSphere->SetupAttachment(GetMesh());
-	DetectionSphere->SetSphereRadius(1000.0f); // Set the detection radius
-	DetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	DetectionSphere->SetCollisionObjectType(ECC_WorldDynamic);
-	DetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	DetectionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABoss_Mermaid::OnOverlapBegin);
+	//DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
+	//DetectionSphere->SetupAttachment(GetMesh());
+	//DetectionSphere->SetSphereRadius(1000.0f); // Set the detection radius
+	//DetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	//// DetectionSphere->SetCollisionObjectType(ECollisionChannel::CPROFILE_PPTRIGGER);
+	//DetectionSphere->SetCollisionProfileName(CPROFILE_PPTRIGGER);
+	//DetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
+	//DetectionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	//DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABoss_Mermaid::OnOverlapBegin);
 
 	DamageText = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("DamageTextWidget"));
 	DamageText->SetupAttachment(GetMesh());
@@ -102,38 +104,38 @@ void ABoss_Mermaid::AttackByAI()
 
 }
 
-void ABoss_Mermaid::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor && OtherActor != this)
-	{
-		// OtherActor가 플레이어 캐릭터인지 확인합니다.
-		APawn* PlayerPawn = Cast<APawn>(OtherActor);
-		if (PlayerPawn)
-		{
-			APlayerController* PlayerController = Cast<APlayerController>(PlayerPawn->GetController());
-			if (PlayerController)
-			{
-				APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
-				if (PlayerHUD)
-				{
-					PlayerHUD->ShowBossHealthBar(this);
-					
-					// Server에서 DetectionSphere 반지름 줄이기 호출
-					if (HasAuthority())
-					{
-						ReduceDetectionRadiusMulticastRPC();
-					}
-				}
-			}
-		}
-	}
-}
+//void ABoss_Mermaid::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//	if (OtherActor && OtherActor != this)
+//	{
+//		// OtherActor가 플레이어 캐릭터인지 확인합니다.
+//		APawn* PlayerPawn = Cast<APawn>(OtherActor);
+//		if (PlayerPawn)
+//		{
+//			APlayerController* PlayerController = Cast<APlayerController>(PlayerPawn->GetController());
+//			if (PlayerController)
+//			{
+//				APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
+//				if (PlayerHUD)
+//				{
+//					PlayerHUD->ShowBossHealthBar(this);
+//					
+//					// Server에서 DetectionSphere 반지름 줄이기 호출
+//					/*if (HasAuthority())
+//					{
+//						ReduceDetectionRadiusMulticastRPC();
+//					}*/
+//				}
+//			}
+//		}
+//	}
+//}
 
-void ABoss_Mermaid::ReduceDetectionRadiusMulticastRPC_Implementation()
-{
-	UE_LOG(LogTemp, Warning, TEXT("MulticastReduceDetectionRadius called on clients"));
-	// 모든 클라이언트에서 반지름 줄이기
-	DetectionSphere->SetSphereRadius(100.0f);
-	DetectionSphere->UpdateOverlaps();
-}
+//void ABoss_Mermaid::ReduceDetectionRadiusMulticastRPC_Implementation()
+//{
+//	UE_LOG(LogTemp, Warning, TEXT("MulticastReduceDetectionRadius called on clients"));
+//	// 모든 클라이언트에서 반지름 줄이기
+//	DetectionSphere->SetSphereRadius(100.0f);
+//	DetectionSphere->UpdateOverlaps();
+//}
 

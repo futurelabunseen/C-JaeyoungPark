@@ -23,8 +23,8 @@ public:
 
 	void DisconnectFromServer();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
-	TObjectPtr<class USphereComponent> DetectionSphere;
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
+	TObjectPtr<class USphereComponent> DetectionSphere;*/
 
 	// AI Section
 protected:
@@ -40,8 +40,8 @@ protected:
 	virtual void AttackByAI() override;
 
 	// Multicast to sync the detection sphere radius on all clients
-	UFUNCTION(NetMulticast, Unreliable)
-	void ReduceDetectionRadiusMulticastRPC();
+	/*UFUNCTION(NetMulticast, Unreliable)
+	void ReduceDetectionRadiusMulticastRPC();*/
 
 	// void Tick(float DeltaTime) override;
 
@@ -49,6 +49,6 @@ protected:
 
 	// virtual void NotifyComboActionEnd() override;
 
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	/*UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);*/
 };
