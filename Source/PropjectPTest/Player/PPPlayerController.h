@@ -6,6 +6,7 @@
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
+#include "Components/SphereComponent.h" // USphereComponent Æ÷ÇÔ
 #include "PPPlayerController.generated.h"
 
 /** Forward declaration to improve compiling times */

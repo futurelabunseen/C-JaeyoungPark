@@ -19,6 +19,13 @@ public:
 
 	virtual void PossessedBy(AController* NewController) override;
 
+	virtual void OnOutOfHealth() override;
+
+	void DisconnectFromServer();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
+	TObjectPtr<class USphereComponent> DetectionSphere;
+
 	// AI Section
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
@@ -32,12 +39,13 @@ protected:
 	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
 	virtual void AttackByAI() override;
 
+	// Multicast to sync the detection sphere radius on all clients
+	UFUNCTION(NetMulticast, Unreliable)
+	void ReduceDetectionRadiusMulticastRPC();
+
 	// void Tick(float DeltaTime) override;
 
 	FAICharacterAttackFinished OnAttackFinished;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
-	TObjectPtr<class USphereComponent> DetectionSphere;
 
 	// virtual void NotifyComboActionEnd() override;
 

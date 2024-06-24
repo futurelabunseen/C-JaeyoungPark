@@ -19,4 +19,6 @@ public:
 
 protected:
 	virtual void SetDead() override;
+
+	FTimerHandle DeadTimerHandle;
 };

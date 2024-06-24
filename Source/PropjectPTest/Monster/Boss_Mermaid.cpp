@@ -9,6 +9,8 @@
 #include "Components/SphereComponent.h"
 #include "UI/PPGASWidgetComponent.h"
 #include "UI/PPGASUserWidget.h"
+#include "TimerManager.h"
+#include "Player/PPPlayerController.h"
 
 
 // Sets default values
@@ -16,7 +18,6 @@ ABoss_Mermaid::ABoss_Mermaid()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	// bIsBoss = true;
 
 	// Boss AI Setting
 	AIControllerClass = ABossAIController::StaticClass();
@@ -24,8 +25,12 @@ ABoss_Mermaid::ABoss_Mermaid()
 	BossAttributeSet = CreateDefaultSubobject<UBossAttributeSet>(TEXT("BossAttributeSet"));
 
 	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	DetectionSphere->SetupAttachment(RootComponent);
+	DetectionSphere->SetupAttachment(GetMesh());
 	DetectionSphere->SetSphereRadius(1000.0f); // Set the detection radius
+	DetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DetectionSphere->SetCollisionObjectType(ECC_WorldDynamic);
+	DetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
+	DetectionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABoss_Mermaid::OnOverlapBegin);
 
 	DamageText = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("DamageTextWidget"));
@@ -44,7 +49,24 @@ void ABoss_Mermaid::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	BossAttributeSet->OnOutOfHealth_Boss.AddDynamic(this, &ThisClass::OnOutOfHealth);
+	BossAttributeSet->OnOutOfHealth_Boss.AddDynamic(this, &ABoss_Mermaid::OnOutOfHealth);
+}
+
+void ABoss_Mermaid::OnOutOfHealth()
+{
+	Super::OnOutOfHealth();
+
+	// 5초 후에 서버 연결을 끊는 함수 호출
+	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
+}
+
+void ABoss_Mermaid::DisconnectFromServer()
+{
+	// 서버 연결 끊기 로직 구현
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	{
+		PC->ClientTravel("/Game/Maps/Demonstration_Village.Demonstration_Village'", TRAVEL_Absolute);
+	}
 }
 
 float ABoss_Mermaid::GetAIPatrolRadius()
@@ -95,9 +117,23 @@ void ABoss_Mermaid::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 				if (PlayerHUD)
 				{
 					PlayerHUD->ShowBossHealthBar(this);
+					
+					// Server에서 DetectionSphere 반지름 줄이기 호출
+					if (HasAuthority())
+					{
+						ReduceDetectionRadiusMulticastRPC();
+					}
 				}
 			}
 		}
 	}
+}
+
+void ABoss_Mermaid::ReduceDetectionRadiusMulticastRPC_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("MulticastReduceDetectionRadius called on clients"));
+	// 모든 클라이언트에서 반지름 줄이기
+	DetectionSphere->SetSphereRadius(100.0f);
+	DetectionSphere->UpdateOverlaps();
 }
 

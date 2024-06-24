@@ -21,7 +21,7 @@ void APPCharacterNonPlayer::SetDead()
         AIController->UnPossess();
     }
 
-    FTimerHandle DeadTimerHandle;
+    // FTimerHandle DeadTimerHandle;
     GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
         [&]()
         {
