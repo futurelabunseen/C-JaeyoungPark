@@ -45,6 +45,11 @@ public:
 	mutable FOutOfHealthPlayerDelegate OnOutOfHealth_Player;
 
 protected:
+
+	bool bOutOfHealth = false;
+
+	friend class UPPGE_AttackDamage;
+
 	UPROPERTY(BlueprintReadOnly, Category="Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData AttackRange;
 
@@ -71,10 +76,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true) , ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
-
-	bool bOutOfHealth = false;
-
-	friend class UPPGE_AttackDamage;
 
 // MultiPlay Section
 protected:

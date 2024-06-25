@@ -29,14 +29,6 @@ void APPCharacter::DeadMulticastRPC_Implementation()
 	if (!HasAuthority())
 	{
 		PlayDeadAnimation();
-
-		APlayerController* PlayerController = Cast<APlayerController>(GetController());
-		if (PlayerController)
-		{
-			// DisableInput(PlayerController);
-			// PlayerController->StopMovement();
-			// PlayerController->Input
-		}
 	}
 }
 

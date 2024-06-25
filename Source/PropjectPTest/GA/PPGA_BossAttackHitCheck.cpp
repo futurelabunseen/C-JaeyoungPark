@@ -11,6 +11,7 @@ UPPGA_BossAttackHitCheck::UPPGA_BossAttackHitCheck()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
+// 능력 활성화
 void UPPGA_BossAttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	PPGAS_LOG(LogPPGAS, Log, TEXT("%s"), *TriggerEventData->EventTag.GetTagName().ToString());
@@ -19,36 +20,37 @@ void UPPGA_BossAttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle 
 
 	CurrentLevel = TriggerEventData->EventMagnitude;
 
-	UPPAT_BossAttackTrace* AttackTraceTask = UPPAT_BossAttackTrace::CreateTask(this, TargetActorClass);
-	AttackTraceTask->OnComplete.AddDynamic(this, &UPPGA_BossAttackHitCheck::OnTraceResultCallback);
-	AttackTraceTask->ReadyForActivation();
+	UPPAT_BossAttackTrace* AttackTraceTask = UPPAT_BossAttackTrace::CreateTask(this, TargetActorClass);  // 보스 공격 추적 작업을 생성하고 초기화
+	AttackTraceTask->OnComplete.AddDynamic(this, &UPPGA_BossAttackHitCheck::OnTraceResultCallback); // 작업 완료시 호출될 콜백 함수 연결
+	AttackTraceTask->ReadyForActivation(); // 작업을 활성화 준비 상태로 설정
 }
 
+// 공격 추적 결과를 처리하는 콜백 함수
 void UPPGA_BossAttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
 	bool bHitDetected = false;
 
-	for (int32 i = 0; i < TargetDataHandle.Data.Num(); ++i)
+	for (int32 i = 0; i < TargetDataHandle.Data.Num(); ++i) // 대상 데이터 순회
 	{
-		if (UAbilitySystemBlueprintLibrary::TargetDataHasHitResult(TargetDataHandle, i))
+		if (UAbilitySystemBlueprintLibrary::TargetDataHasHitResult(TargetDataHandle, i)) // 히트 결과가 있는지 확인
 		{
-			FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, i);
+			FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, i); // 히트 결과를 가져옴
 			PPGAS_LOG(LogPPGAS, Log, TEXT("Target %s Detected"), *(HitResult.GetActor()->GetName()));
 
-			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor()); // 대상 ASC 가져오기
 
 			if (TargetASC)
 			{
 				bHitDetected = true;
-				ApplyEffectsToTarget(TargetASC, TargetDataHandle, i, HitResult);
+				ApplyEffectsToTarget(TargetASC, TargetDataHandle, i, HitResult); // 효과 적용
 			}
 		}
-		else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, i))
+		else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, i)) // 대상 데이터에 액터 확인
 		{
 			TArray<TWeakObjectPtr<AActor>> TargetActors = TargetDataHandle.Data[i]->GetActors();
 			for (TWeakObjectPtr<AActor> TargetActor : TargetActors)
 			{
-				UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor.Get());
+				UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor.Get()); // 대상 ASC 가져오기
 				if (TargetASC)
 				{
 					bHitDetected = true;
@@ -57,7 +59,6 @@ void UPPGA_BossAttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTarge
 			}
 		}
 	}
-
 	if (!bHitDetected)
 	{
 		UE_LOG(LogTemp, Log, TEXT("No valid ASC found in target data!"));
@@ -65,7 +66,7 @@ void UPPGA_BossAttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTarge
 
 	bool bReplicatedEndAbility = true;
 	bool bWasCancelled = false;
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled); // 능력 종료 및 상태 업데이트
 }
 
 void UPPGA_BossAttackHitCheck::ApplyEffectsToTarget(UAbilitySystemComponent* TargetASC, const FGameplayAbilityTargetDataHandle& TargetDataHandle, int32 Index, const FHitResult& HitResult)
@@ -115,8 +116,6 @@ void UPPGA_BossAttackHitCheck::ApplyEffectsToTarget(UAbilitySystemComponent* Tar
 		CueContextHandle.AddActors(TargetDataHandle.Data[Index]->GetActors(), false);
 		FGameplayCueParameters CueParam;
 		CueParam.EffectContext = CueContextHandle;
-
-		// SourceASC->ExecuteGameplayCue(PPTAG_GAMEPLAYCUE_CHARACTER_ATTACKHIT, CueParam);
 	}
 
 	FGameplayEffectSpecHandle BuffEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackBuffEffect);

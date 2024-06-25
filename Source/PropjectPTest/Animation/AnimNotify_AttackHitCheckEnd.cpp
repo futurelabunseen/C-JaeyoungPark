@@ -30,7 +30,7 @@ void UAnimNotify_AttackHitCheckEnd::Notify(USkeletalMeshComponent* MeshComp, UAn
 		return;
 	}
 
-	// Get the ability system component
+	// 어빌리티 시스템 컴포넌트 가져오기
 	UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerActor);
 	if (!AbilitySystemComponent)
 	{
@@ -38,12 +38,12 @@ void UAnimNotify_AttackHitCheckEnd::Notify(USkeletalMeshComponent* MeshComp, UAn
 		return;
 	}
 
-	// Add the block attack tag
+	// 블록 공격 태그 추가
 	FGameplayTag BlockTag = FGameplayTag::RequestGameplayTag(FName("Event.Boss.BlockAttack"));
 	AbilitySystemComponent->AddLooseGameplayTag(BlockTag);
 	UE_LOG(LogTemp, Warning, TEXT("Block tag added: %s"), *BlockTag.ToString());
 
-	// Remove the block attack tag after a delay (e.g., to simulate the end of the attack hit check)
+	// 지연 후 블록 공격 태그 제거 (예: 공격 히트 체크 종료를 시뮬레이트하기 위해)
 	FTimerHandle TimerHandle;
 	OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [AbilitySystemComponent, BlockTag]()
 		{
@@ -52,5 +52,5 @@ void UAnimNotify_AttackHitCheckEnd::Notify(USkeletalMeshComponent* MeshComp, UAn
 				AbilitySystemComponent->RemoveLooseGameplayTag(BlockTag);
 				UE_LOG(LogTemp, Warning, TEXT("Block tag removed: %s"), *BlockTag.ToString());
 			}
-		}, 1.0f, false); // Change 2.0f to the desired delay
+		}, 1.0f, false);
 }

@@ -33,22 +33,22 @@ void UAnimNotify_AttackHitCheckStart::Notify(USkeletalMeshComponent* MeshComp, U
 		AActor* OwnerActor = MeshComp->GetOwner();
 		if (OwnerActor)
 		{
-			// Stop any existing timer before setting a new one
+			// 새로운 타이머를 설정하기 전에 기존의 타이머를 중지
 			StopTimer(OwnerActor);
 
 			FGameplayEventData PayloadData;
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggerGameplayTag, PayloadData);
 
-			// Start a timer to periodically check for hits
+			// 주기적으로 히트를 체크하기 위한 타이머 시작
 			bTimerSet = true;
 			OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [OwnerActor, this, PayloadData]()
 				{
 					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggerGameplayTag, PayloadData);
 					UE_LOG(LogTemp, Warning, TEXT("Attack hit check triggered: %s"), *TriggerGameplayTag.ToString());
 
-					// Reset the timer flag after execution
+					// 실행 후 타이머 플래그를 재설정
 					bTimerSet = false;
-				}, 0.2f, false); // Single execution timer
+				}, 0.2f, false); // 단일 실행 타이머
 		}
 	}
 }

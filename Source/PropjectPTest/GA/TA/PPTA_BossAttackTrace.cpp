@@ -34,7 +34,6 @@ void APPTA_BossAttackTrace::ConfirmTargetingAndContinue()
 FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
 {
     APPGASCharacterNonPlayer* NonPlayerCharacter = CastChecked<APPGASCharacterNonPlayer>(SourceActor);
-
     if (!NonPlayerCharacter)
     {
         PPGAS_LOG(LogPPGAS, Error, TEXT("SourceActor is not a Character!"));
@@ -49,7 +48,6 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
     }
 
     const UBossAttributeSet* BossAttributeSet = ASC->GetSet<UBossAttributeSet>();
-
     if (!BossAttributeSet)
     {
         PPGAS_LOG(LogPPGAS, Error, TEXT("BossAttributeSet not found!"));
@@ -58,7 +56,6 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
 
     const FVector Start = NonPlayerCharacter->GetActorLocation();
     const FVector Forward = NonPlayerCharacter->GetActorForwardVector();
-
     TArray<FHitResult> OutHitResults;
 
     if (AttackAngle > 0.0f)
@@ -66,13 +63,13 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
         // 부채꼴 모양 공격
         FCollisionQueryParams Params_Boss(SCENE_QUERY_STAT(UPPTA_BossAttackTrace), false, NonPlayerCharacter);
 
-        // 바닥에 붙어있는 라인 트레이스를 생성하기 위해 약간 아래쪽으로 오프셋을 추가
-        // 높이를 올리기 위해 추가 값을 더함
-        float HeightOffset = NonPlayerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - 60.0f; // 60.0f 만큼 더 올림
+        // 바닥에 붙어있는 라인 트레이스를 생성
+        float HeightOffset = NonPlayerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - 60.0f; // 높이 60.0f 만큼 더 올림
         FVector StartOffset = Start - FVector(0, 0, HeightOffset);
 
         // 부채꼴 영역을 기준으로 스위핑
-        GetWorld()->SweepMultiByChannel(OutHitResults, StartOffset, StartOffset + Forward * AttackRadius, FQuat::Identity, CCHANNEL_PPACTION, FCollisionShape::MakeSphere(AttackRadius), Params_Boss);
+        GetWorld()->SweepMultiByChannel(OutHitResults, StartOffset, StartOffset + Forward * AttackRadius,
+            FQuat::Identity, CCHANNEL_PPACTION, FCollisionShape::MakeSphere(AttackRadius), Params_Boss);
 
         // 부채꼴 영역 내에서 실제 부채꼴에 해당하는 충돌 객체를 필터링
         TArray<FHitResult> FilteredHitResults;
@@ -86,7 +83,6 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
                 FilteredHitResults.Add(HitResult);
             }
         }
-
 #if ENABLE_DRAW_DEBUG
         if (bShowDebug)
         {
@@ -94,7 +90,6 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
             DrawDebugFan(GetWorld(), StartOffset, Forward, AttackRadius, AttackAngle, FColor::Green, 5.0f);
         }
 #endif
-
         OutHitResults = FilteredHitResults;
     }
     else
@@ -106,7 +101,6 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
 
         FCollisionQueryParams Params_Boss(SCENE_QUERY_STAT(UPPTA_BossAttackTrace), false, NonPlayerCharacter);
         GetWorld()->SweepMultiByChannel(OutHitResults, Start, End_Boss, FQuat::Identity, CCHANNEL_PPACTION, CollisionShape_Boss, Params_Boss);
-
 #if ENABLE_DRAW_DEBUG
         if (bShowDebug)
         {
@@ -121,7 +115,6 @@ FGameplayAbilityTargetDataHandle APPTA_BossAttackTrace::MakeTargetData() const
         FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit(HitResult);
         DataHandle.Add(TargetData);
     }
-
     return DataHandle;
 }
 

@@ -25,16 +25,6 @@ ABoss_Mermaid::ABoss_Mermaid()
 
 	BossAttributeSet = CreateDefaultSubobject<UBossAttributeSet>(TEXT("BossAttributeSet"));
 
-	//DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	//DetectionSphere->SetupAttachment(GetMesh());
-	//DetectionSphere->SetSphereRadius(1000.0f); // Set the detection radius
-	//DetectionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	//// DetectionSphere->SetCollisionObjectType(ECollisionChannel::CPROFILE_PPTRIGGER);
-	//DetectionSphere->SetCollisionProfileName(CPROFILE_PPTRIGGER);
-	//DetectionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	//DetectionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	//DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABoss_Mermaid::OnOverlapBegin);
-
 	DamageText = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("DamageTextWidget"));
 	DamageText->SetupAttachment(GetMesh());
 	static ConstructorHelpers::FClassFinder<UUserWidget> DamageTextWidgetRef(TEXT("/Game/UI/WBP_DamageText.WBP_DamageText_C"));
@@ -59,17 +49,47 @@ void ABoss_Mermaid::OnOutOfHealth()
 	Super::OnOutOfHealth();
 
 	// 5초 후에 서버 연결을 끊는 함수 호출
-	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
+	// GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABoss_Mermaid::DisconnectAndReset, 5.0f, false);
 }
 
-void ABoss_Mermaid::DisconnectFromServer()
+//void ABoss_Mermaid::DisconnectFromServer()
+//{
+//	// 서버 연결 끊기 로직 구현
+//	/*if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+//	{
+//		PC->ClientTravel("/Game/Maps/Demonstration_Village.Demonstration_Village", TRAVEL_Absolute);
+//	}*/
+//}
+
+//void ABoss_Mermaid::OnBossDefeated()
+//{
+//	// 5초 후에 DisconnectAndReset 함수 호출
+//	FTimerHandle TimerHandle;
+//	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABoss_Mermaid::DisconnectAndReset, 5.0f, false);
+//}
+
+void ABoss_Mermaid::DisconnectAndReset()
 {
-	// 서버 연결 끊기 로직 구현
-	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	// 모든 플레이어 컨트롤러에 대해 새 맵으로 이동 명령
+	for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
 	{
-		PC->ClientTravel("/Game/Maps/Demonstration_Village.Demonstration_Village'", TRAVEL_Absolute);
+		APlayerController* PC = It->Get();
+		if (PC)
+		{
+			PC->ClientTravel("/Game/Maps/Demonstration_Village.Demonstration_Village", TRAVEL_Absolute);
+		}
 	}
+
+	// 서버 초기화를 위한 맵 재시작 또는 새 맵 로드
+	World->ServerTravel("/Game/Maps/ElvenRuins.ElvenRuins?listen");
 }
+
 
 float ABoss_Mermaid::GetAIPatrolRadius()
 {
@@ -103,39 +123,3 @@ void ABoss_Mermaid::AttackByAI()
 	// 캐릭터 베이스에서 구조 변경 후 적용
 
 }
-
-//void ABoss_Mermaid::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-//{
-//	if (OtherActor && OtherActor != this)
-//	{
-//		// OtherActor가 플레이어 캐릭터인지 확인합니다.
-//		APawn* PlayerPawn = Cast<APawn>(OtherActor);
-//		if (PlayerPawn)
-//		{
-//			APlayerController* PlayerController = Cast<APlayerController>(PlayerPawn->GetController());
-//			if (PlayerController)
-//			{
-//				APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD());
-//				if (PlayerHUD)
-//				{
-//					PlayerHUD->ShowBossHealthBar(this);
-//					
-//					// Server에서 DetectionSphere 반지름 줄이기 호출
-//					/*if (HasAuthority())
-//					{
-//						ReduceDetectionRadiusMulticastRPC();
-//					}*/
-//				}
-//			}
-//		}
-//	}
-//}
-
-//void ABoss_Mermaid::ReduceDetectionRadiusMulticastRPC_Implementation()
-//{
-//	UE_LOG(LogTemp, Warning, TEXT("MulticastReduceDetectionRadius called on clients"));
-//	// 모든 클라이언트에서 반지름 줄이기
-//	DetectionSphere->SetSphereRadius(100.0f);
-//	DetectionSphere->UpdateOverlaps();
-//}
-
