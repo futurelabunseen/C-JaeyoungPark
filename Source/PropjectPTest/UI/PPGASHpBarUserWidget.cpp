@@ -29,11 +29,7 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 		ASC->GetGameplayAttributeValueChangeDelegate(UBossAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UBossAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
 		
-		if (PbHpBar)
-		{
-			PbHpBar->SetFillColorAndOpacity(HealthColor);
-		}
-		else
+		if (!PbHpBar)
 		{
 			UE_LOG(LogTemp, Error, TEXT("PbHpBar is not set"));
 		}
@@ -97,7 +93,7 @@ void UPPGASHpBarUserWidget::OnInvinsibleTagChanged(const FGameplayTag CallbackTa
 	}
 	else
 	{
-		PbHpBar->SetFillColorAndOpacity(HealthColor);
+		//PbHpBar->SetFillColorAndOpacity(HealthColor);
 		UpdateHpBar();
 	}
 }

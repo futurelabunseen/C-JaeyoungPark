@@ -30,6 +30,10 @@ public:
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
 	TObjectPtr<class USphereComponent> DetectionSphere;*/
 
+	// 멀티캐스트 RPC 선언
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHidePlayerHUDsRPC();
+
 	// AI Section
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))

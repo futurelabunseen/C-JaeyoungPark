@@ -24,6 +24,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "HUD")
     void SetHUDVisibility(bool bVisible);
 
+	UPROPERTY()
+	TObjectPtr<class UPPGASHpBarUserWidget> BossHpBarWidget;
+
     /*UPROPERTY()
     TObjectPtr<class UPPGASPlayerStatusUserWidget> PlayerStatusUserWidget;*/
 
@@ -44,9 +47,6 @@ protected:
 
     /*UPROPERTY(EditDefaultsOnly, Category = "UI")
     TArray <TSubclassOf<class UPPGASPlayerStatusUserWidget>> GASPlayerWidgetClass;*/
-
-    UPROPERTY()
-    TObjectPtr<class UPPGASHpBarUserWidget> BossHpBarWidget;
 
     UPROPERTY()
     TObjectPtr<class UUserWidget> ExitWidget;

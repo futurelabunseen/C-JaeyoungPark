@@ -17,7 +17,7 @@ APPGASInteractionItem::APPGASInteractionItem()
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 	SphereTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("SphereTrigger"));
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget")); // »óÈ£ÀÛ¿ë UI
+	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget")); // ìƒí˜¸ì‘ìš© UI
 
 	RootComponent = SphereTrigger;
 	Mesh->SetupAttachment(SphereTrigger);
@@ -36,35 +36,35 @@ UAbilitySystemComponent* APPGASInteractionItem::GetAbilitySystemComponent() cons
 	return ASC;
 }
 
-void APPGASInteractionItem::NotifyActorBeginOverlap(AActor* Other) // Ä³¸¯ÅÍ µé¾î¿È
+void APPGASInteractionItem::NotifyActorBeginOverlap(AActor* Other) // ìºë¦­í„° ë“¤ì–´ì˜´
 {
 	Super::NotifyActorBeginOverlap(Other);
 
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(Other);
-	if (!IsValid(TargetCharacter)) return; // µé¾î¿Â Ä³¸¯ÅÍ°¡ ÇÃ·¹ÀÌ¾î°¡ ¾Æ´Ï¸é ¸®ÅÏ, // À¯È¿¼º °Ë»ç
+	if (!IsValid(TargetCharacter)) return; // ë“¤ì–´ì˜¨ ìºë¦­í„°ê°€ í”Œë ˆì´ì–´ê°€ ì•„ë‹ˆë©´ ë¦¬í„´, // ìœ íš¨ì„± ê²€ì‚¬
 
-	TargetCharacterASC = TargetCharacter->GetAbilitySystemComponent(); // ÇÃ·¹ÀÌ¾îÀÇ ASC °¡Á®¿È
-	if (!TargetCharacterASC) return; // ASC°¡ ¾øÀ¸¸é ¸®ÅÏ, // À¯È¿¼º °Ë»ç
+	TargetCharacterASC = TargetCharacter->GetAbilitySystemComponent(); // í”Œë ˆì´ì–´ì˜ ASC ê°€ì ¸ì˜´
+	if (!TargetCharacterASC) return; // ASCê°€ ì—†ìœ¼ë©´ ë¦¬í„´, // ìœ íš¨ì„± ê²€ì‚¬
 
-	TargetCharacter->InteractableItem = this; // Ä³¸¯ÅÍ¿¡°Ô ¾ÆÀÌÅÛ Àü´Ş
-	Widget->SetVisibility(true); // À§Á¬ ÄÑ±â
+	TargetCharacter->InteractableItem = this; // ìºë¦­í„°ì—ê²Œ ì•„ì´í…œ ì „ë‹¬
+	Widget->SetVisibility(true); // ìœ„ì ¯ ì¼œê¸°
 
-	// À§Á¬ÀÌ ÄÑÁ®ÀÖ°í, »óÈ£ÀÛ¿ë ¾ÆÀÌÅÛ Ä­ÀÌ ºñ¾îÀÖÁö ¾Ê´Ù¸é, // À¯È¿¼º °Ë»ç
+	// ìœ„ì ¯ì´ ì¼œì ¸ìˆê³ , ìƒí˜¸ì‘ìš© ì•„ì´í…œ ì¹¸ì´ ë¹„ì–´ìˆì§€ ì•Šë‹¤ë©´, // ìœ íš¨ì„± ê²€ì‚¬
 	if (Widget->IsVisible() && TargetCharacter->InteractableItem)
 	{
-		TargetCharacterASC->AddLooseGameplayTag(PPTAG_CHARACTER_CANINTERACTION); // »óÈ£ÀÛ¿ë °¡´É ÅÂ±× ºÙÀÌ±â
+		TargetCharacterASC->AddLooseGameplayTag(PPTAG_CHARACTER_CANINTERACTION); // ìƒí˜¸ì‘ìš© ê°€ëŠ¥ íƒœê·¸ ë¶™ì´ê¸°
 	}
 }
 
-void APPGASInteractionItem::NotifyActorEndOverlap(AActor* Other) // Ä³¸¯ÅÍ°¡ ¹üÀ§¸¦ ¹ş¾î³ª¸é
+void APPGASInteractionItem::NotifyActorEndOverlap(AActor* Other) // ìºë¦­í„°ê°€ ë²”ìœ„ë¥¼ ë²—ì–´ë‚˜ë©´
 {
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(Other);
 
-	if (!IsValid(TargetCharacter)) return; // ÇÃ·¹ÀÌ¾î ¾Æ´Ï¸é ¸®ÅÏ
+	if (!IsValid(TargetCharacter)) return; // í”Œë ˆì´ì–´ ì•„ë‹ˆë©´ ë¦¬í„´
 
-	TargetCharacter->InteractableItem = NULL; // Ä³¸¯ÅÍ ¾ÆÀÌÅÛ »èÁ¦
-	Widget->SetVisibility(false); // À§Á¬ ¾ø¾Ö±â
-	TargetCharacter->GetAbilitySystemComponent()->RemoveLooseGameplayTag(PPTAG_CHARACTER_CANINTERACTION); // ÅÂ±× ¾ø¾Ö±â
+	TargetCharacter->InteractableItem = NULL; // ìºë¦­í„° ì•„ì´í…œ ì‚­ì œ
+	Widget->SetVisibility(false); // ìœ„ì ¯ ì—†ì• ê¸°
+	TargetCharacter->GetAbilitySystemComponent()->RemoveLooseGameplayTag(PPTAG_CHARACTER_CANINTERACTION); // íƒœê·¸ ì—†ì• ê¸°
 }
 
 void APPGASInteractionItem::PostInitializeComponents()

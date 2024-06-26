@@ -9,17 +9,22 @@
 // Sets default values
 AChaosRock::AChaosRock()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
 
 	RockMesh = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("RockMesh"));
 	SetRootComponent(RockMesh);
 
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = false;
-
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	BoxCollision->SetupAttachment(RockMesh);
 	BoxCollision->SetGenerateOverlapEvents(true);
+
+	DestructionSound = CreateDefaultSubobject<UAudioComponent>(TEXT("DestructionSound"));
+	DestructionSound->SetupAttachment(RockMesh);
+	DestructionSound->bAutoActivate = false;
+
+	FadeOutDuration = 5.0f;  // 소리가 점점 작아지는 시간 (초)
+	InitialVolume = 1.0f;    // 초기 볼륨
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +43,29 @@ void AChaosRock::NotifyActorBeginOverlap(AActor* Other)
 	{
 		RockMesh->SetSimulatePhysics(true);
 		SetLifeSpan(10.0f);
+
+		if (DestructionSoundCue)
+		{
+			DestructionSound->SetSound(DestructionSoundCue);
+			DestructionSound->Play();
+			GetWorldTimerManager().SetTimer(FadeOutTimerHandle, this, &AChaosRock::FadeOutSound, 0.1f, true);
+		}
+	}
+}
+
+void AChaosRock::FadeOutSound()
+{
+	float CurrentVolume = DestructionSound->VolumeMultiplier;
+	float NewVolume = FMath::Max(CurrentVolume - (InitialVolume / (FadeOutDuration * 10)), 0.0f);
+
+	if (NewVolume <= 0.0f)
+	{
+		DestructionSound->Stop();
+		GetWorldTimerManager().ClearTimer(FadeOutTimerHandle);
+	}
+	else
+	{
+		DestructionSound->SetVolumeMultiplier(NewVolume);
 	}
 }
 
@@ -59,4 +87,3 @@ void AChaosRock::NotifyActorBeginOverlap(AActor* Other)
 //{
 //	
 //}
-

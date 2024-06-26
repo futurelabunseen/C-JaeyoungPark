@@ -34,6 +34,6 @@ protected:
 	float CurrentHealth = 0.0f;
 	float CurrentMaxHealth = 0.1f;
 	
-	FLinearColor HealthColor = FLinearColor::Red;
+	// FLinearColor HealthColor = FLinearColor::Red;
 	FLinearColor InvinsibleColor = FLinearColor::Blue;
 };

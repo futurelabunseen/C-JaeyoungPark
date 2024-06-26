@@ -89,10 +89,10 @@ void APPHUD::BeginPlay()
             if (MinimapWidget)
             {
                 MinimapWidget->AddToViewport();
-                MinimapWidget->SetVisibility(ESlateVisibility::Hidden); // ÃÊ±â »óÅÂ´Â ¼û±è
+                MinimapWidget->SetVisibility(ESlateVisibility::Hidden); // ì´ˆê¸° ìƒíƒœëŠ” ìˆ¨ê¹€
                 MinimapWidget->InitializeMinimap(VolumeOrigin, VolumeExtent, MinimapSize);
 
-                // MinimapWidget Å©±â ·Î±× Ãß°¡
+                // MinimapWidget í¬ê¸° ë¡œê·¸ ì¶”ê°€
                 FVector2D WidgetSize = MinimapWidget->GetDesiredSize();
                 UE_LOG(LogTemp, Log, TEXT("MinimapWidget Size: X=%f, Y=%f"), WidgetSize.X, WidgetSize.Y);
             }
@@ -113,9 +113,9 @@ void APPHUD::BeginPlay()
         PlayerController->InputComponent->BindAction("ToggleMinimap", IE_Pressed, this, &APPHUD::ToggleMinimap);
     }
 
-    UE_LOG(LogTemp, Log, TEXT("Volume Origin: X=%f, Y=%f, Z=%f"), VolumeOrigin.X, VolumeOrigin.Y, VolumeOrigin.Z);
-    UE_LOG(LogTemp, Log, TEXT("Volume Extent: X=%f, Y=%f, Z=%f"), VolumeExtent.X, VolumeExtent.Y, VolumeExtent.Z);
-    UE_LOG(LogTemp, Log, TEXT("Minimap Size: X=%f, Y=%f"), MinimapSize.X, MinimapSize.Y);
+    //UE_LOG(LogTemp, Log, TEXT("Volume Origin: X=%f, Y=%f, Z=%f"), VolumeOrigin.X, VolumeOrigin.Y, VolumeOrigin.Z);
+    //UE_LOG(LogTemp, Log, TEXT("Volume Extent: X=%f, Y=%f, Z=%f"), VolumeExtent.X, VolumeExtent.Y, VolumeExtent.Z);
+    //UE_LOG(LogTemp, Log, TEXT("Minimap Size: X=%f, Y=%f"), MinimapSize.X, MinimapSize.Y);
 }
 
 

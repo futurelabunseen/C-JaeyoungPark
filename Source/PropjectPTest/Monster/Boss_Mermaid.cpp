@@ -12,6 +12,8 @@
 #include "TimerManager.h"
 #include "Player/PPPlayerController.h"
 #include "Physics/PPCollision.h"
+#include "Net/UnrealNetwork.h"
+// #include "Engine/World.h"
 
 
 // Sets default values
@@ -51,6 +53,11 @@ void ABoss_Mermaid::OnOutOfHealth()
 	// 5초 후에 서버 연결을 끊는 함수 호출
 	// GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
 
+	if (HasAuthority())
+	{
+		MulticastHidePlayerHUDsRPC();
+	}
+
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABoss_Mermaid::DisconnectAndReset, 5.0f, false);
 }
@@ -76,18 +83,28 @@ void ABoss_Mermaid::DisconnectAndReset()
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	// 모든 플레이어 컨트롤러에 대해 새 맵으로 이동 명령
-	for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
+	// 서버 초기화를 위한 맵 재시작 또는 새 맵 로드
+	if (HasAuthority())
+	{
+		World->ServerTravel("/Game/Maps/Demonstration_Village.Demonstration_Village?listen");
+	}
+}
+
+void ABoss_Mermaid::MulticastHidePlayerHUDsRPC_Implementation()
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		APlayerController* PC = It->Get();
 		if (PC)
 		{
-			PC->ClientTravel("/Game/Maps/Demonstration_Village.Demonstration_Village", TRAVEL_Absolute);
+			APPHUD* PlayerHUD = Cast<APPHUD>(PC->GetHUD());
+			if (PlayerHUD)
+			{
+				// 모든 클라이언트에서 HUD 가시성 변경
+				PlayerHUD->BossHpBarWidget->SetVisibility(ESlateVisibility::Hidden);
+			}
 		}
 	}
-
-	// 서버 초기화를 위한 맵 재시작 또는 새 맵 로드
-	World->ServerTravel("/Game/Maps/ElvenRuins.ElvenRuins?listen");
 }
 
 
