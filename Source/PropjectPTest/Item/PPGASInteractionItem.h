@@ -33,6 +33,9 @@ public:
 	UPROPERTY()
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	USoundBase* InteractionSound;
+
 protected:
 	virtual void PostInitializeComponents() override;
 

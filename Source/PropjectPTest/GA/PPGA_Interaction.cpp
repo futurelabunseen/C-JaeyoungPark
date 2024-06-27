@@ -12,6 +12,7 @@
 #include "Item/PPGASInteractionItem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Engine/World.h"
 
 
 UPPGA_Interaction::UPPGA_Interaction()
@@ -66,6 +67,17 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		// 파티클 생성
 		SpawnParticleEffect(GetWorld(), TargetCharacter->GetActorLocation(), TargetCharacter->GetActorRotation(), InteractableItem->ParticleSystem);
+		
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			// 사운드 재생
+			if (InteractableItem->InteractionSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(World, InteractableItem->InteractionSound, TargetCharacter->GetActorLocation());
+			}
+		}
 
 		// 액터 없애기
 		InteractableItem->Mesh->SetHiddenInGame(true);
