@@ -56,37 +56,20 @@ void ABoss_Mermaid::OnOutOfHealth()
 	if (HasAuthority())
 	{
 		MulticastHidePlayerHUDsRPC();
+		FTimerHandle DeadMonsterTimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(DeadMonsterTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
 	}
-
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABoss_Mermaid::DisconnectAndReset, 5.0f, false);
 }
 
-//void ABoss_Mermaid::DisconnectFromServer()
-//{
-//	// 서버 연결 끊기 로직 구현
-//	/*if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
-//	{
-//		PC->ClientTravel("/Game/Maps/Demonstration_Village.Demonstration_Village", TRAVEL_Absolute);
-//	}*/
-//}
-
-//void ABoss_Mermaid::OnBossDefeated()
-//{
-//	// 5초 후에 DisconnectAndReset 함수 호출
-//	FTimerHandle TimerHandle;
-//	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABoss_Mermaid::DisconnectAndReset, 5.0f, false);
-//}
-
-void ABoss_Mermaid::DisconnectAndReset()
+void ABoss_Mermaid::DisconnectFromServer()
 {
-	UWorld* World = GetWorld();
-	if (!World) return;
-
-	// 서버 초기화를 위한 맵 재시작 또는 새 맵 로드
-	if (HasAuthority())
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
-		World->ServerTravel("/Game/Maps/Demonstration_Village.Demonstration_Village?listen");
+		APlayerController* PC = It->Get();
+		if (PC)
+		{
+			PC->ConsoleCommand("disconnect");
+		}
 	}
 }
 

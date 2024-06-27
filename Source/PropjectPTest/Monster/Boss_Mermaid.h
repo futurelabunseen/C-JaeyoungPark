@@ -21,11 +21,7 @@ public:
 
 	virtual void OnOutOfHealth() override;
 
-	// void DisconnectFromServer();
-
-	// void OnBossDefeated();
-
-	void DisconnectAndReset();
+	void DisconnectFromServer();
 
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
 	TObjectPtr<class USphereComponent> DetectionSphere;*/

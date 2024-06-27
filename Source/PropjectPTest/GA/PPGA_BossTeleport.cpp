@@ -25,16 +25,16 @@ void UPPGA_BossTeleport::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	// 공격 실행 태스크
-	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayMonsterAttack"), ActionMontage, 1.0f);
+	UAbilityTask_PlayMontageAndWait* PlayTeleportTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayTeleport"), ActionMontage, 1.0f);
 
 	// 어택 태스크가 완료되었을 때
-	PlayAttackTask->OnCompleted.AddDynamic(this, &UPPGA_BossTeleport::OnCompletedCallBack);
+	PlayTeleportTask->OnCompleted.AddDynamic(this, &UPPGA_BossTeleport::OnCompletedCallBack);
 
 	// 어택 태스크가 방해받았을 때
-	PlayAttackTask->OnInterrupted.AddDynamic(this, &UPPGA_BossTeleport::OnInterruptedCallBack);
+	PlayTeleportTask->OnInterrupted.AddDynamic(this, &UPPGA_BossTeleport::OnInterruptedCallBack);
 
 	// 어택 태스크 활성화 준비 완료
-	PlayAttackTask->ReadyForActivation();
+	PlayTeleportTask->ReadyForActivation();
 }
 
 void UPPGA_BossTeleport::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
