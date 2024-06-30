@@ -276,6 +276,11 @@ void APPGASCharacter::ZoomOut()
 
 void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 {
+
+	/*UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->StopAllMontages(0.0f);
+	AnimInstance->Montage_Play(GameStartMontage);*/
+
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	SetActorEnableCollision(true);
 

@@ -33,7 +33,7 @@ public:
 	void ZoomIn();
 	void ZoomOut();
 
-	//ÇÃ·¹ÀÌ¾î ÀÔ·Â Á¤ÀÇ
+	//í”Œë ˆì´ì–´ ì…ë ¥ ì •ì˜
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -85,6 +85,9 @@ protected:
 
 	// Character Section
 
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> GameStartMontage;*/
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> SkillActionMontage;
 
@@ -130,7 +133,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> CameraBoom;
 
-	//½ºÇÁ¸µ¾Ï ±æÀÌ ¸ñÇ¥°ª
+	//ìŠ¤í”„ë§ì•” ê¸¸ì´ ëª©í‘œê°’
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = SpringArm, meta = (AllowPrivateAccess = "true"))
 	float ExpectedSpringArmLength = 800.0f;
 

@@ -63,12 +63,21 @@ void ABoss_Mermaid::OnOutOfHealth()
 
 void ABoss_Mermaid::DisconnectFromServer()
 {
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	UWorld* World = GetWorld();
+	if (World)
 	{
-		APlayerController* PC = It->Get();
-		if (PC)
+		// 모든 플레이어 컨트롤러를 순회하면서 레벨을 변경합니다.
+		for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
 		{
-			PC->ConsoleCommand("disconnect");
+			APlayerController* PC = It->Get();
+			if (PC)
+			{
+				// 새로운 맵의 이름을 설정합니다.
+				FName NewLevelName = TEXT("Demonstration_Village"); // 원하는 맵 이름으로 변경
+
+				// 모든 클라이언트를 새로운 맵으로 이동시킵니다.
+				PC->ClientTravel(NewLevelName.ToString(), TRAVEL_Absolute);
+			}
 		}
 	}
 }
