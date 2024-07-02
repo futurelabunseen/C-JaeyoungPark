@@ -14,7 +14,6 @@ class PROPJECTPTEST_API ABoss_Mermaid : public APPGASCharacterNonPlayer, public 
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ABoss_Mermaid();
 
 	virtual void PossessedBy(AController* NewController) override;
@@ -22,9 +21,6 @@ public:
 	virtual void OnOutOfHealth() override;
 
 	void DisconnectFromServer();
-
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
-	TObjectPtr<class USphereComponent> DetectionSphere;*/
 
 	// 멀티캐스트 RPC 선언
 	UFUNCTION(NetMulticast, Unreliable)
@@ -39,20 +35,4 @@ protected:
 	virtual float GetAIDetectRange() override;
 	virtual float GetAIAttackRange() override;
 	virtual float GetAITurnSpeed() override;
-
-	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
-	virtual void AttackByAI() override;
-
-	// Multicast to sync the detection sphere radius on all clients
-	/*UFUNCTION(NetMulticast, Unreliable)
-	void ReduceDetectionRadiusMulticastRPC();*/
-
-	// void Tick(float DeltaTime) override;
-
-	FAICharacterAttackFinished OnAttackFinished;
-
-	// virtual void NotifyComboActionEnd() override;
-
-	/*UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);*/
 };

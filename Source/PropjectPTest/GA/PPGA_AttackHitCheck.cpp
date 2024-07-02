@@ -23,8 +23,11 @@ void UPPGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	CurrentLevel = TriggerEventData->EventMagnitude;
 
 	UPPAT_Trace* AttackTraceTask = UPPAT_Trace::CreateTask(this, TargetActorClass); // 공격 추적 작업 생성
-	AttackTraceTask->OnComplete.AddDynamic(this, &UPPGA_AttackHitCheck::OnTraceResultCallback); // 추적 결과 콜백 함수 등록
-	AttackTraceTask->ReadyForActivation(); // 추적 작업 활성화 준비
+	if (IsValid(AttackTraceTask))
+	{
+		AttackTraceTask->OnComplete.AddDynamic(this, &UPPGA_AttackHitCheck::OnTraceResultCallback); // 추적 결과 콜백 함수 등록
+		AttackTraceTask->ReadyForActivation(); // 추적 작업 활성화 준비
+	}
 }
 
 // 추적 결과 콜백 함수
@@ -42,7 +45,7 @@ void UPPGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 
 			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor()); // 타겟의 어빌리티 시스템 컴포넌트 가져오기
 
-			if (TargetASC)
+			if (IsValid(TargetASC))
 			{
 				bHitDetected = true; // 히트 감지 설정
 				ApplyEffectsToTarget(TargetASC, TargetDataHandle, i, HitResult); // 타겟에 효과 적용
@@ -51,18 +54,20 @@ void UPPGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 		else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, i)) // 타겟 데이터에 액터가 있는지 확인
 		{
 			UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked(); // 소스 어빌리티 시스템 컴포넌트 가져오기
-
-			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel); // 공격 데미지 효과 사양 생성
-			if (EffectSpecHandle.IsValid())
+			if (IsValid(SourceASC))
 			{
-				ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle); // 타겟에 효과 적용
+				FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel); // 공격 데미지 효과 사양 생성
+				if (EffectSpecHandle.IsValid())
+				{
+					ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle); // 타겟에 효과 적용
 
-				FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle); // 효과 컨텍스트 핸들 가져오기
-				CueContextHandle.AddActors(TargetDataHandle.Data[i].Get()->GetActors(), false); // 타겟 데이터의 액터 추가
-				FGameplayCueParameters CueParam; // 게임플레이 큐 파라미터
-				CueParam.EffectContext = CueContextHandle; // 큐 파라미터에 효과 컨텍스트 핸들 설정
+					FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle); // 효과 컨텍스트 핸들 가져오기
+					CueContextHandle.AddActors(TargetDataHandle.Data[i].Get()->GetActors(), false); // 타겟 데이터의 액터 추가
+					FGameplayCueParameters CueParam; // 게임플레이 큐 파라미터
+					CueParam.EffectContext = CueContextHandle; // 큐 파라미터에 효과 컨텍스트 핸들 설정
 
-				SourceASC->ExecuteGameplayCue(PPTAG_GAMEPLAYCUE_CHARACTER_ATTACKHIT, CueParam); // 공격 히트 큐 실행
+					SourceASC->ExecuteGameplayCue(PPTAG_GAMEPLAYCUE_CHARACTER_ATTACKHIT, CueParam); // 공격 히트 큐 실행
+				}
 			}
 		}
 	}
@@ -81,7 +86,7 @@ void UPPGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 void UPPGA_AttackHitCheck::ApplyEffectsToTarget(UAbilitySystemComponent* TargetASC, const FGameplayAbilityTargetDataHandle& TargetDataHandle, int32 Index, const FHitResult& HitResult)
 {
 	UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked(); // 소스 어빌리티 시스템 컴포넌트 가져오기
-	if (!SourceASC || !TargetASC) // 소스 또는 타겟 ASC가 없는 경우
+	if (!IsValid(SourceASC) || !IsValid(TargetASC)) // 소스 또는 타겟 ASC가 없는 경우
 	{
 		UE_LOG(LogTemp, Log, TEXT("ASC Not Found!")); // 로그 출력: ASC를 찾을 수 없음
 		return;

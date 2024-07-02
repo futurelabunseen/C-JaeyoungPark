@@ -16,25 +16,29 @@ void UPPGA_BossTeleport::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	APPGASCharacterNonPlayer* PPGASCharacterNonPlayer = CastChecked<APPGASCharacterNonPlayer>(ActorInfo->AvatarActor.Get());
+	if (IsValid(PPGASCharacterNonPlayer))
+	{
+		// 캐릭터 움직임 모드 정의 -> 움직임 없음
+		PPGASCharacterNonPlayer->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
-	// 캐릭터 움직임 모드 정의 -> 움직임 없음
-	PPGASCharacterNonPlayer->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+		// 시전 중 회전 고정
+		PPGASCharacterNonPlayer->bUseControllerRotationYaw = false;
+		PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
 
-	// 시전 중 회전 고정
-	PPGASCharacterNonPlayer->bUseControllerRotationYaw = false;
-	PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
+		// 공격 실행 태스크
+		UAbilityTask_PlayMontageAndWait* PlayTeleportTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayTeleport"), ActionMontage, 1.0f);
+		if (IsValid(PlayTeleportTask))
+		{
+			// 어택 태스크가 완료되었을 때
+			PlayTeleportTask->OnCompleted.AddDynamic(this, &UPPGA_BossTeleport::OnCompletedCallBack);
 
-	// 공격 실행 태스크
-	UAbilityTask_PlayMontageAndWait* PlayTeleportTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayTeleport"), ActionMontage, 1.0f);
+			// 어택 태스크가 방해받았을 때
+			PlayTeleportTask->OnInterrupted.AddDynamic(this, &UPPGA_BossTeleport::OnInterruptedCallBack);
 
-	// 어택 태스크가 완료되었을 때
-	PlayTeleportTask->OnCompleted.AddDynamic(this, &UPPGA_BossTeleport::OnCompletedCallBack);
-
-	// 어택 태스크가 방해받았을 때
-	PlayTeleportTask->OnInterrupted.AddDynamic(this, &UPPGA_BossTeleport::OnInterruptedCallBack);
-
-	// 어택 태스크 활성화 준비 완료
-	PlayTeleportTask->ReadyForActivation();
+			// 어택 태스크 활성화 준비 완료
+			PlayTeleportTask->ReadyForActivation();
+		}
+	}
 }
 
 void UPPGA_BossTeleport::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -42,13 +46,15 @@ void UPPGA_BossTeleport::EndAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	APPGASCharacterNonPlayer* PPGASCharacterNonPlayer = CastChecked<APPGASCharacterNonPlayer>(ActorInfo->AvatarActor.Get());
+	if (IsValid(PPGASCharacterNonPlayer))
+	{
+		// 캐릭터 움직임 모드 정의 -> 움직임
+		PPGASCharacterNonPlayer->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 
-	// 캐릭터 움직임 모드 정의 -> 움직임
-	PPGASCharacterNonPlayer->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-
-	// 회전 잠금 해제
-	PPGASCharacterNonPlayer->bUseControllerRotationYaw = true;
-	PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = true;
+		// 회전 잠금 해제
+		PPGASCharacterNonPlayer->bUseControllerRotationYaw = true;
+		PPGASCharacterNonPlayer->GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
 }
 
 void UPPGA_BossTeleport::OnCompletedCallBack()

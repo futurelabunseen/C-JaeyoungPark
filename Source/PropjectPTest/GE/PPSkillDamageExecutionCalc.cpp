@@ -15,12 +15,12 @@ void UPPSkillDamageExecutionCalc::Execute_Implementation(const FGameplayEffectCu
 	UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 
-	if (SourceASC && TargetASC)
+	if (IsValid(SourceASC) && IsValid(TargetASC))
 	{
 		AActor* SourceActor = SourceASC->GetAvatarActor();
 		AActor* TargetActor = TargetASC->GetAvatarActor();
 
-		if (SourceActor && TargetActor)
+		if (IsValid(SourceActor) && IsValid(TargetActor))
 		{
 			const float MaxDamageRange = SourceASC->GetNumericAttributeBase(UPPCharacterSkillAttributeSet::GetSkillRangeAttribute());
 			const float MaxDamage = SourceASC->GetNumericAttributeBase(UPPCharacterSkillAttributeSet::GetSkillAttackRateAttribute());

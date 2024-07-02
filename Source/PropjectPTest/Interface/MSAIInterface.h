@@ -6,7 +6,6 @@
 #include "UObject/Interface.h"
 #include "MSAIInterface.generated.h"
 
-// This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UMSAIInterface : public UInterface
 {
@@ -28,7 +27,4 @@ public:
 	virtual float GetAIDetectRange() = 0;
 	virtual float GetAIAttackRange() = 0;
 	virtual float GetAITurnSpeed() = 0;
-
-	/*virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) = 0;
-	virtual void AttackByAI() = 0;*/
 };

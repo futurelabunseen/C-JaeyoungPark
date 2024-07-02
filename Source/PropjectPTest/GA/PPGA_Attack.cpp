@@ -17,27 +17,31 @@ void UPPGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	APPGASCharacter* PPGASCharacter = CastChecked<APPGASCharacter>(ActorInfo->AvatarActor.Get());
+	if (IsValid(PPGASCharacter))
+	{
+		// 현재 콤보 데이터 가져오기
+		CurrentComboData = PPGASCharacter->GetComboActionData();
 
-	// 현재 콤보 데이터 가져오기
-	CurrentComboData = PPGASCharacter->GetComboActionData();
+		// 캐릭터 움직임 모드 정의 -> 움직임 없음
+		PPGASCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
-	// 캐릭터 움직임 모드 정의 -> 움직임 없음
-	PPGASCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+		// 공격 실행 태스크
+		UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), ActionMontage, 1.0f, GetNextSection());
+		if (IsValid(PlayAttackTask))
+		{
+			// 어택 태스크가 완료되었을 때
+			PlayAttackTask->OnCompleted.AddDynamic(this, &UPPGA_Attack::OnCompletedCallBack);
 
-	// 공격 실행 태스크
-	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), ActionMontage, 1.0f, GetNextSection());
-	
-	// 어택 태스크가 완료되었을 때
-	PlayAttackTask->OnCompleted.AddDynamic(this, &UPPGA_Attack::OnCompletedCallBack);
-	
-	// 어택 태스크가 방해받았을 때
-	PlayAttackTask->OnInterrupted.AddDynamic(this, &UPPGA_Attack::OnInterruptedCallBack);
-	
-	// 어택 태스크 활성화 준비 완료
-	PlayAttackTask->ReadyForActivation();
+			// 어택 태스크가 방해받았을 때
+			PlayAttackTask->OnInterrupted.AddDynamic(this, &UPPGA_Attack::OnInterruptedCallBack);
 
-	// 콤보 타이머 시작
-	StartComboTimer();
+			// 어택 태스크 활성화 준비 완료
+			PlayAttackTask->ReadyForActivation();
+
+			// 콤보 타이머 시작
+			StartComboTimer();
+		}
+	}
 }
 
 void UPPGA_Attack::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
@@ -65,14 +69,16 @@ void UPPGA_Attack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	APPCharacter* PPCharacter = CastChecked<APPCharacter>(ActorInfo->AvatarActor.Get());
+	if (IsValid(PPCharacter))
+	{
+		// 캐릭터 움직임 모드 정의 -> 걷기 움직임
+		PPCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 
-	// 캐릭터 움직임 모드 정의 -> 걷기 움직임
-	PPCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-
-	// 콤보 데이터 비우기
-	CurrentComboData = nullptr;
-	CurrentCombo = 0;
-	HasNextComboInput = false;
+		// 콤보 데이터 비우기
+		CurrentComboData = nullptr;
+		CurrentCombo = 0;
+		HasNextComboInput = false;
+	}
 }
 
 void UPPGA_Attack::OnCompletedCallBack()

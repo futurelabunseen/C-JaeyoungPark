@@ -13,13 +13,10 @@
 #include "Player/PPPlayerController.h"
 #include "Physics/PPCollision.h"
 #include "Net/UnrealNetwork.h"
-// #include "Engine/World.h"
 
 
-// Sets default values
 ABoss_Mermaid::ABoss_Mermaid()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Boss AI Setting
@@ -51,13 +48,12 @@ void ABoss_Mermaid::OnOutOfHealth()
 	Super::OnOutOfHealth();
 
 	// 5초 후에 서버 연결을 끊는 함수 호출
-	// GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
-
 	if (HasAuthority())
 	{
 		MulticastHidePlayerHUDsRPC();
 		FTimerHandle DeadMonsterTimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(DeadMonsterTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
+		UE_LOG(LogTemp, Warning, TEXT("OnOutOfHealth: Timer set for DisconnectFromServer"));
 	}
 }
 
@@ -66,19 +62,29 @@ void ABoss_Mermaid::DisconnectFromServer()
 	UWorld* World = GetWorld();
 	if (World)
 	{
+
 		// 모든 플레이어 컨트롤러를 순회하면서 레벨을 변경합니다.
 		for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
 		{
 			APlayerController* PC = It->Get();
-			if (PC)
+			if (IsValid(PC))
 			{
 				// 새로운 맵의 이름을 설정합니다.
 				FName NewLevelName = TEXT("Demonstration_Village"); // 원하는 맵 이름으로 변경
 
 				// 모든 클라이언트를 새로운 맵으로 이동시킵니다.
 				PC->ClientTravel(NewLevelName.ToString(), TRAVEL_Absolute);
+				UE_LOG(LogTemp, Warning, TEXT("DisconnectFromServer: ClientTravel called for PC %s"), *PC->GetName());
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("DisconnectFromServer: Invalid PlayerController found"));
 			}
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("DisconnectFromServer: World is not valid"));
 	}
 }
 
@@ -87,14 +93,23 @@ void ABoss_Mermaid::MulticastHidePlayerHUDsRPC_Implementation()
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		APlayerController* PC = It->Get();
-		if (PC)
+		if (IsValid(PC))
 		{
 			APPHUD* PlayerHUD = Cast<APPHUD>(PC->GetHUD());
-			if (PlayerHUD)
+			if (IsValid(PlayerHUD))
 			{
 				// 모든 클라이언트에서 HUD 가시성 변경
 				PlayerHUD->BossHpBarWidget->SetVisibility(ESlateVisibility::Hidden);
+				UE_LOG(LogTemp, Warning, TEXT("MulticastHidePlayerHUDsRPC: Hidden BossHpBarWidget for PC %s"), *PC->GetName());
 			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: Invalid PlayerHUD for PC %s"), *PC->GetName());
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: Invalid PlayerController found"));
 		}
 	}
 }
@@ -118,17 +133,4 @@ float ABoss_Mermaid::GetAIAttackRange()
 float ABoss_Mermaid::GetAITurnSpeed()
 {
 	return 2.0f; // 어트리뷰트 세트로 변경 예정
-}
-
-void ABoss_Mermaid::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
-{
-	OnAttackFinished = InOnAttackFinished;
-}
-
-void ABoss_Mermaid::AttackByAI()
-{
-	//PlayAnimMontage(AttackMontage);
-	// 예제와 구조가 다름
-	// 캐릭터 베이스에서 구조 변경 후 적용
-
 }
