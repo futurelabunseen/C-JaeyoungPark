@@ -24,7 +24,7 @@ void UAnimNotify_AttackHitCheckEnd::Notify(USkeletalMeshComponent* MeshComp, UAn
 	}
 
 	AActor* OwnerActor = MeshComp->GetOwner();
-	if (!OwnerActor)
+	if (!IsValid(OwnerActor))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OwnerActor is null"));
 		return;
@@ -32,7 +32,7 @@ void UAnimNotify_AttackHitCheckEnd::Notify(USkeletalMeshComponent* MeshComp, UAn
 
 	// 어빌리티 시스템 컴포넌트 가져오기
 	UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerActor);
-	if (!AbilitySystemComponent)
+	if (!IsValid(AbilitySystemComponent))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AbilitySystemComponent is null"));
 		return;
@@ -47,7 +47,7 @@ void UAnimNotify_AttackHitCheckEnd::Notify(USkeletalMeshComponent* MeshComp, UAn
 	FTimerHandle TimerHandle;
 	OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [AbilitySystemComponent, BlockTag]()
 		{
-			if (AbilitySystemComponent)
+			if (IsValid(AbilitySystemComponent))
 			{
 				AbilitySystemComponent->RemoveLooseGameplayTag(BlockTag);
 				UE_LOG(LogTemp, Warning, TEXT("Block tag removed: %s"), *BlockTag.ToString());

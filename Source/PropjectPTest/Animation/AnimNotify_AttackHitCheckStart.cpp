@@ -31,7 +31,7 @@ void UAnimNotify_AttackHitCheckStart::Notify(USkeletalMeshComponent* MeshComp, U
 	if (MeshComp)
 	{
 		AActor* OwnerActor = MeshComp->GetOwner();
-		if (OwnerActor)
+		if (IsValid(OwnerActor))
 		{
 			// 새로운 타이머를 설정하기 전에 기존의 타이머를 중지
 			StopTimer(OwnerActor);

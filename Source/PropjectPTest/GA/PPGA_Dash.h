@@ -29,6 +29,9 @@ protected:
 	UFUNCTION()
 	void OnInterruptedCallback();
 
+	UFUNCTION()
+	void OnCancelledCallback();
+
 protected:
 	UPROPERTY()
 	TObjectPtr<class UAnimMontage> ActiveDashActionMontage;

@@ -87,7 +87,7 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	APPGASPlayerState* GASPS = GetPlayerState<APPGASPlayerState>();
-	if (GASPS)
+	if (IsValid(GASPS))
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
@@ -95,7 +95,7 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 
 		// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("00000"));
 		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
-		if (CurrentAttributeSet)
+		if (IsValid(CurrentAttributeSet))
 		{
 			CurrentAttributeSet->OnOutOfHealth_Player.AddDynamic(this, &ThisClass::OnOutOfHealth);
 		}
@@ -128,7 +128,7 @@ void APPGASCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	APPGASPlayerState* GASPS = GetPlayerState<APPGASPlayerState>();
-	if (GASPS)
+	if (IsValid(GASPS))
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
@@ -142,51 +142,6 @@ void APPGASCharacter::OnRep_PlayerState()
 		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));
 	}*/
 }
-
-//void APPGASCharacter::OnRep_Controller()
-//{
-//	Super::OnRep_Controller();
-//
-//	if (HasAuthority())
-//	{
-//		return;
-//	}
-//
-//	// GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APPGASCharacter::InitializeAbilitySystemComponent);
-//
-//	GetWorld()->GetTimerManager().SetTimerForNextTick([&]()
-//	{
-//		//ASC 붙이는 코드
-//		if (APPPlayerController* PlayerController = GetController<APPPlayerController>())
-//		{
-//			UE_LOG(LogTemp, Warning, TEXT("PlayerController is valid"));
-//
-//			if (APPHUD* PlayerHUD = Cast<APPHUD>(PlayerController->GetHUD()))
-//			{
-//				UE_LOG(LogTemp, Warning, TEXT("PlayerHUD is valid"));
-//
-//				if (IsValid(PlayerHUD->PlayerStatusUserWidget))
-//				{
-//					UE_LOG(LogTemp, Warning, TEXT("PlayerStatusUserWidget is valid"));
-//
-//					PlayerHUD->PlayerStatusUserWidget->SetAbilitySystemComponent(this);
-//				}
-//				else
-//				{
-//					UE_LOG(LogTemp, Error, TEXT("PlayerStatusUserWidget is null"));
-//				}
-//			}
-//			else
-//			{
-//				UE_LOG(LogTemp, Error, TEXT("PlayerHUD is null"));
-//			}
-//		}
-//		else
-//		{
-//			UE_LOG(LogTemp, Error, TEXT("PlayerController is null"));
-//		}
-//	});
-//}
 
 
 void APPGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -207,7 +162,7 @@ void APPGASCharacter::SetupGASInputComponent()
 	//{
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
-	if (EnhancedInputComponent)
+	if (IsValid(EnhancedInputComponent))
 	{
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 0);
 		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 1);
@@ -276,11 +231,6 @@ void APPGASCharacter::ZoomOut()
 
 void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 {
-
-	/*UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	AnimInstance->StopAllMontages(0.0f);
-	AnimInstance->Montage_Play(GameStartMontage);*/
-
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	SetActorEnableCollision(true);
 
@@ -294,7 +244,7 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 	}
 
 	APPGASGameMode* PPGASGameMode = GetWorld()->GetAuthGameMode<APPGASGameMode>();
-	if (PPGASGameMode)
+	if (IsValid(PPGASGameMode))
 	{
 		FTransform NewTransform = PPGASGameMode->GetRandomStartTransform();
 		TeleportTo(NewTransform.GetLocation(), NewTransform.GetRotation().Rotator());

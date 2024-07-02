@@ -21,7 +21,7 @@ void UAnimNotify_GASAttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAn
 	if (MeshComp)
 	{
 		AActor* OwnerActor = MeshComp->GetOwner();
-		if (OwnerActor)
+		if (IsValid(OwnerActor))
 		{
 			FGameplayEventData PayloadData;
 			PayloadData.EventMagnitude = ComboAttackLevel;

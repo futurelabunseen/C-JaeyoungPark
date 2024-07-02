@@ -17,13 +17,13 @@ void UPPGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get());
-	if (!TargetCharacter)
+	if (!IsValid(TargetCharacter))
 	{
 		return;
 	}
 
 	ActiveDashActionMontage = TargetCharacter->GetDashActionMontage();
-	if (!ActiveDashActionMontage)
+	if (!IsValid(ActiveDashActionMontage))
 	{
 		return;
 	}
@@ -31,11 +31,14 @@ void UPPGA_Dash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 	TargetCharacter->GetCharacterMovement()->AddImpulse(TargetCharacter->GetActorForwardVector() * DashMoveImpulse, true);
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("DashMontage"), ActiveDashActionMontage, 1.0f);
-	PlayMontageTask->OnCompleted.AddDynamic(this, &UPPGA_Dash::OnCompleteCallback);
-	PlayMontageTask->OnInterrupted.AddDynamic(this, &UPPGA_Dash::OnInterruptedCallback);
-	// PlayMontageTask->OnCancelled.AddDynamic(this, &UPPGA_Dash::OnInterruptedCallback);
+	if (IsValid(PlayMontageTask))
+	{
+		PlayMontageTask->OnCompleted.AddDynamic(this, &UPPGA_Dash::OnCompleteCallback);
+		PlayMontageTask->OnInterrupted.AddDynamic(this, &UPPGA_Dash::OnInterruptedCallback);
+		PlayMontageTask->OnCancelled.AddDynamic(this, &UPPGA_Dash::OnCancelledCallback);
 
-	PlayMontageTask->ReadyForActivation();
+		PlayMontageTask->ReadyForActivation();
+	}
 }
 
 void UPPGA_Dash::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
@@ -47,7 +50,7 @@ void UPPGA_Dash::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGame
 {
 
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get());
-	if (TargetCharacter)
+	if (IsValid(TargetCharacter))
 	{
 		TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}
@@ -63,6 +66,13 @@ void UPPGA_Dash::OnCompleteCallback()
 }
 
 void UPPGA_Dash::OnInterruptedCallback()
+{
+	bool bReplicatedEndAbility = true;
+	bool bWasCancelled = true;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
+}
+
+void UPPGA_Dash::OnCancelledCallback()
 {
 	bool bReplicatedEndAbility = true;
 	bool bWasCancelled = true;

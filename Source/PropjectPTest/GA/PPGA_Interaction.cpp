@@ -37,7 +37,7 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 
 	ActiveInteractionMontage = TargetCharacter->GetInteractionMontage();
-	if (!ActiveInteractionMontage) // 유효성 검사
+	if (!IsValid(ActiveInteractionMontage)) // 유효성 검사
 	{
 		return;
 	}
@@ -53,7 +53,7 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 
 	TargetCharacterASC = TargetCharacter->GetAbilitySystemComponent(); // 플레이어 ASC
-	if (!TargetCharacterASC) // 유효성 검사
+	if (!IsValid(TargetCharacterASC)) // 유효성 검사
 	{
 		return;
 	}
@@ -70,10 +70,10 @@ void UPPGA_Interaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		
 
 		UWorld* World = GetWorld();
-		if (World)
+		if (IsValid(World))
 		{
 			// 사운드 재생
-			if (InteractableItem->InteractionSound)
+			if (IsValid(InteractableItem->InteractionSound))
 			{
 				UGameplayStatics::PlaySoundAtLocation(World, InteractableItem->InteractionSound, TargetCharacter->GetActorLocation());
 			}
@@ -135,9 +135,10 @@ void UPPGA_Interaction::ApplyEffectToTarget(const FGameplayAbilityActorInfo* Act
 		{
 
 			// 애니메이션 몽타주 중지 코드 추가
-			if (UAnimInstance* AnimInstance = TargetCharacter->GetMesh()->GetAnimInstance())
+			UAnimInstance* AnimInstance = TargetCharacter->GetMesh()->GetAnimInstance();
+			if (IsValid(AnimInstance))
 			{
-				if (ActiveInteractionMontage)
+				if (IsValid(ActiveInteractionMontage))
 				{
 					AnimInstance->Montage_Stop(0.2f, ActiveInteractionMontage);
 					UE_LOG(LogTemp, Warning, TEXT("Interaction Montage Stopped"));

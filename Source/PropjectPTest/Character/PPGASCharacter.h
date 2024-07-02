@@ -40,7 +40,6 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void OnRep_PlayerState() override;
-	// virtual void OnRep_Controller() override;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class AActor> InteractableItem;
@@ -84,10 +83,6 @@ protected:
 	// --------------------------------------------------------------
 
 	// Character Section
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimMontage> GameStartMontage;*/
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> SkillActionMontage;
 

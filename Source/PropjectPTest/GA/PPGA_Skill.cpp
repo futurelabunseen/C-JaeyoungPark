@@ -17,13 +17,13 @@ void UPPGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get());
-	if (!TargetCharacter)
+	if (!IsValid(TargetCharacter))
 	{
 		return;
 	}
 
 	ActiveSkillActionMontage = TargetCharacter->GetSkillActionMontage();
-	if (!ActiveSkillActionMontage)
+	if (!IsValid(ActiveSkillActionMontage))
 	{
 		return;
 	}
@@ -45,7 +45,7 @@ void UPPGA_Skill::InputPressed(const FGameplayAbilitySpecHandle Handle, const FG
 void UPPGA_Skill::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	APPGASCharacter* TargetCharacter = Cast<APPGASCharacter>(ActorInfo->AvatarActor.Get());
-	if (TargetCharacter)
+	if (IsValid(TargetCharacter))
 	{
 		TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}

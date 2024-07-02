@@ -35,6 +35,9 @@ void APPCharacter::DeadMulticastRPC_Implementation()
 void APPCharacter::PlayDeadAnimation()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	AnimInstance->StopAllMontages(0.0f);
-	AnimInstance->Montage_Play(DeadMontage);
+	if (IsValid(AnimInstance))
+	{
+		AnimInstance->StopAllMontages(0.0f);
+		AnimInstance->Montage_Play(DeadMontage);
+	}
 }
