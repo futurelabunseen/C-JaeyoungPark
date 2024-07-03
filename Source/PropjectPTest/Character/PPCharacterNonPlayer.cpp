@@ -15,7 +15,7 @@ void APPCharacterNonPlayer::SetDead()
 
     // AI 중지 코드 추가
     AAIController* AIController = Cast<AAIController>(GetController());
-    if (AIController)
+    if (IsValid(AIController))
     {
         AIController->StopMovement();
         AIController->UnPossess();
