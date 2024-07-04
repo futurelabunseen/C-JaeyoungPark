@@ -52,13 +52,15 @@ void ABoss_Mermaid::OnOutOfHealth()
 	{
 		MulticastHidePlayerHUDsRPC();
 		FTimerHandle DeadMonsterTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(DeadMonsterTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(DeadMonsterTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 3.0f, false);
 		UE_LOG(LogTemp, Warning, TEXT("OnOutOfHealth: Timer set for DisconnectFromServer"));
 	}
 }
 
 void ABoss_Mermaid::DisconnectFromServer()
 {
+	UE_LOG(LogTemp, Warning, TEXT("DisconnectFromServer: Called"));
+
 	UWorld* World = GetWorld();
 	if (World)
 	{
