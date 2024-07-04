@@ -19,6 +19,13 @@ void APPCharacter::BeginPlay()
 void APPCharacter::SetDead()
 {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (IsValid(PlayerController))
+	{
+		DisableInput(PlayerController);
+		PlayerController->StopMovement();
+	}
+
 	DeadMulticastRPC();
 	SetActorEnableCollision(false);
 	IsDeadFlag = true;
@@ -29,13 +36,6 @@ void APPCharacter::DeadMulticastRPC_Implementation()
 	if (!HasAuthority())
 	{
 		PlayDeadAnimation();
-
-		APlayerController* PlayerController = Cast<APlayerController>(GetController());
-		if (IsValid(PlayerController))
-		{
-			DisableInput(PlayerController);
-			PlayerController->StopMovement();
-		}
 	}
 }
 

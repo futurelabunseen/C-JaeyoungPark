@@ -149,9 +149,11 @@ void APPGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-
-	EnhancedInputComponent->BindAction(ZoomInAction, ETriggerEvent::Triggered, this, &APPGASCharacter::ZoomIn);
-	EnhancedInputComponent->BindAction(ZoomOutAction, ETriggerEvent::Triggered, this, &APPGASCharacter::ZoomOut);
+	if (IsValid(EnhancedInputComponent))
+	{
+		EnhancedInputComponent->BindAction(ZoomInAction, ETriggerEvent::Triggered, this, &APPGASCharacter::ZoomIn);
+		EnhancedInputComponent->BindAction(ZoomOutAction, ETriggerEvent::Triggered, this, &APPGASCharacter::ZoomOut);
+	}
 
 	SetupGASInputComponent();
 }
@@ -161,7 +163,6 @@ void APPGASCharacter::SetupGASInputComponent()
 	//if (IsValid(ASC) && IsValid(InputComponent))
 	//{
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-
 	if (IsValid(EnhancedInputComponent))
 	{
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 0);
@@ -231,6 +232,7 @@ void APPGASCharacter::ZoomOut()
 
 void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 {
+	// SetupGASInputComponent();
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	SetActorEnableCollision(true);
 
