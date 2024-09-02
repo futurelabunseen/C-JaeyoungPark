@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "EngineUtils.h"
 
 // Player Setting Header
 #include "Character/PPGASCharacter.h"
@@ -11,6 +12,8 @@
 #include "Net/UnrealNetwork.h"
 #include "PropjectPTest/Game/PPGASGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "Monster/MS_Golem.h"
+#include "AI/MS/MSAIController.h"
 
 // GAS Header
 #include "AbilitySystemComponent.h"
@@ -74,6 +77,8 @@ APPGASCharacter::APPGASCharacter()
 		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	DetectionRadius = 300.0f; // 기본 탐지 반경 설정
 }
 
 UAbilitySystemComponent* APPGASCharacter::GetAbilitySystemComponent() const
@@ -143,6 +148,13 @@ void APPGASCharacter::OnRep_PlayerState()
 	}*/
 }
 
+void APPGASCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// 전체 액터 탐색이 아닌, 범위 탐색을 위한 타이머 설정
+	// GetWorldTimerManager().SetTimer(MemberTimerHandle, this, &APPGASCharacter::DetectMonstersInRadius, 1.0f, true, 1.0f);
+}
 
 void APPGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -254,6 +266,46 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 
 	IsDeadFlag = false;
 }
+
+//void APPGASCharacter::DetectMonstersInRadius()
+//{
+//	// 범위 내 AI 몬스터 탐지 및 BT 실행
+//	TArray<AActor*> OverlappingActors;
+//	GetOverlappingActors(OverlappingActors, AMS_Golem::StaticClass());
+//
+//	for (AActor* Actor : OverlappingActors)
+//	{
+//		if (FVector::Dist(Actor->GetActorLocation(), GetActorLocation()) <= DetectionRadius)
+//		{
+//			AMS_Golem* MS_Golem = Cast<AMS_Golem>(Actor);
+//			if (MS_Golem)
+//			{
+//				AMSAIController* AIController = Cast<AMSAIController>(MS_Golem->GetController());
+//				if (AIController && !AIController->IsBehaviorTreeActive())
+//				{
+//					AIController->RunAI();
+//				}
+//			}
+//		}
+//	}
+//
+//	// 범위 밖 AI 몬스터 탐지 및 BT 중지
+//	for (TActorIterator<AMS_Golem> It(GetWorld()); It; ++It)
+//	{
+//		AMS_Golem* MS_Golem = *It;
+//		if (MS_Golem)
+//		{
+//			AMSAIController* AIController = Cast<AMSAIController>(MS_Golem->GetController());
+//			if (AIController && AIController->IsBehaviorTreeActive())
+//			{
+//				if (FVector::Dist(MS_Golem->GetActorLocation(), GetActorLocation()) > DetectionRadius)
+//				{
+//					AIController->StopAI();
+//				}
+//			}
+//		}
+//	}
+//}
 
 
 //void APPGASCharacter::MoveToStreamingLevel(const bool IsPlayerDeath)

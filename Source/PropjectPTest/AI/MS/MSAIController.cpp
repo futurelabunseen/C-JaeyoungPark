@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// AMSAIController.cpp
 
 #include "AI/MS/MSAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -9,43 +8,50 @@
 
 AMSAIController::AMSAIController()
 {
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Script/AIModule.BlackboardData'/Game/AI/BB_NormalMonster.BB_NormalMonster'"));
-	if (nullptr != BBAssetRef.Object)
-	{
-		BBAsset = BBAssetRef.Object;
-	}
+    static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Game/AI/BB_NormalMonster.BB_NormalMonster"));
+    if (BBAssetRef.Succeeded())
+    {
+        BBAsset = BBAssetRef.Object;
+    }
 
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Script/AIModule.BehaviorTree'/Game/AI/BT_NormalMonster.BT_NormalMonster'"));
-	if (nullptr != BTAssetRef.Object)
-	{
-		BTAsset = BTAssetRef.Object;
-	}
+    static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Game/AI/BT_NormalMonster.BT_NormalMonster"));
+    if (BTAssetRef.Succeeded())
+    {
+        BTAsset = BTAssetRef.Object;
+    }
 }
 
 void AMSAIController::RunAI()
 {
-	UBlackboardComponent* BlackboardPtr = Blackboard.Get();
+    UBlackboardComponent* BlackboardPtr = Blackboard.Get();
 
-	if (UseBlackboard(BBAsset, BlackboardPtr))
-	{
-		Blackboard->SetValueAsVector(BBKEY_HOMEPOS, GetPawn()->GetActorLocation());
+    if (UseBlackboard(BBAsset, BlackboardPtr))
+    {
+        Blackboard->SetValueAsVector(FName("HomePos"), GetPawn()->GetActorLocation());
 
-		bool RunResult = RunBehaviorTree(BTAsset);
-		ensure(RunResult);
-	}
+        bool RunResult = RunBehaviorTree(BTAsset);
+        ensure(RunResult);
+    }
 }
 
 void AMSAIController::StopAI()
 {
-	UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
-	if (BTComponent)
-	{
-		BTComponent->StopTree();
-	}
+    UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
+    if (BTComponent)
+    {
+        BTComponent->StopTree(EBTStopMode::Safe);
+    }
 }
 
 void AMSAIController::OnPossess(APawn* InPawn)
 {
-	Super::OnPossess(InPawn);
-	RunAI();
+    Super::OnPossess(InPawn);
+    RunAI();
 }
+
+//// Behavior Tree 활성화 상태 확인 메서드 추가
+//bool AMSAIController::IsBehaviorTreeActive() const
+//{
+//    UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
+//    return BTComponent && BTComponent->IsRunning();
+//}

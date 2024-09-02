@@ -10,6 +10,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "UI/PPGASWidgetComponent.h"
 #include "UI/PPGASUserWidget.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 
 // Sets default values

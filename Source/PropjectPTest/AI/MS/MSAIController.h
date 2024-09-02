@@ -20,6 +20,8 @@ public:
 	void RunAI();
 	void StopAI();
 
+	// bool IsBehaviorTreeActive() const;
+
 protected:
 
 

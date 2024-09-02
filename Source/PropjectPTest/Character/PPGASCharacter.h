@@ -40,14 +40,26 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void OnRep_PlayerState() override;
+	void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class AActor> InteractableItem;
 
 	void ResetPlayer();
 
+	// void DetectMonstersInRadius();
+
 	FTimerHandle DeadTimerHandle;
 	FTimerHandle InitializationTimerHandle;
+	// FTimerHandle MemberTimerHandle;
+
+	// 범위 설정 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Detection")
+	float DetectionRadius;
+
+	// 범위 내에 있는 몬스터들을 저장할 배열
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
+	TArray<AActor*> DetectedMonsters;
 
 protected:
 	void SetupGASInputComponent();
