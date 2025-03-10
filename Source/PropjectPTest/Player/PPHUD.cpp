@@ -144,6 +144,17 @@ void APPHUD::ShowBossHealthBar(AActor* BossActor)
     }
 }
 
+void APPHUD::HideBossHealthBar(AActor* BossActor)
+{
+    if (BossHpBarWidget)
+    {
+        BossHpBarWidget->SetVisibility(ESlateVisibility::Hidden);
+        BossHpBarWidget->RemoveFromParent();
+        UE_LOG(LogTemp, Warning, TEXT("HideBossHealthBar: BossHpBarWidget removed from parent!"));
+        // BossHpBarWidget->SetAbilitySystemComponent(BossActor);
+    }
+}
+
 void APPHUD::SetHUDVisibility(bool bVisible)
 {
     ESlateVisibility NewVisibility = bVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;

@@ -47,15 +47,25 @@ void ABoss_Mermaid::OnOutOfHealth()
 {
 	Super::OnOutOfHealth();
 
+	// 서버에서 실행되는지 확인
+	if (!HasAuthority())
+	{
+		UE_LOG(LogTemp, Error, TEXT("OnOutOfHealth: This function was called on a client, not the server!"));
+		return;
+	}
+
 	// 5초 후에 서버 연결을 끊는 함수 호출
 	if (HasAuthority())
 	{
 		MulticastHidePlayerHUDsRPC();
+		// ServerOnOutOfHealthRPC();
+
 		FTimerHandle DeadMonsterTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(DeadMonsterTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 3.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(DeadMonsterTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
 		UE_LOG(LogTemp, Warning, TEXT("OnOutOfHealth: Timer set for DisconnectFromServer"));
 	}
 }
+
 
 void ABoss_Mermaid::DisconnectFromServer()
 {
@@ -92,30 +102,67 @@ void ABoss_Mermaid::DisconnectFromServer()
 
 void ABoss_Mermaid::MulticastHidePlayerHUDsRPC_Implementation()
 {
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	if (!HasAuthority())
 	{
-		APlayerController* PC = It->Get();
-		if (IsValid(PC))
+		UE_LOG(LogTemp, Warning, TEXT("MulticastHidePlayerHUDsRPC called on a non-server instance"));
+		return;
+	}
+
+	if (HasAuthority())
+	{
+		for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 		{
-			APPHUD* PlayerHUD = Cast<APPHUD>(PC->GetHUD());
-			if (IsValid(PlayerHUD))
+			APlayerController* PC = It->Get();
+			if (!IsValid(PC))
 			{
-				// 모든 클라이언트에서 HUD 가시성 변경
-				PlayerHUD->BossHpBarWidget->SetVisibility(ESlateVisibility::Hidden);
+				UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: Invalid PlayerController found"));
+				continue;
+			}
+
+			// HUD가 제대로 할당되어 있는지 확인
+			AHUD* RawHUD = PC->GetHUD();
+			if (!IsValid(RawHUD))
+			{
+				UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: PC %s has no HUD assigned"), *PC->GetName());
+				continue;
+			}
+
+			// APPHUD로 캐스팅 시도
+			APPHUD* PlayerHUD = Cast<APPHUD>(PC->GetHUD());
+			if (!IsValid(PlayerHUD))
+			{
+				UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: PlayerHUD cast failed for PC %s (HUD Class: %s)"),
+					*PC->GetName(), *RawHUD->GetClass()->GetName());
+				continue;
+			}
+
+			// BossHpBarWidget이 유효한지 확인 후 숨기기
+			if (IsValid(PlayerHUD->BossHpBarWidget))
+			{
+				PlayerHUD->HideBossHealthBar(this);
 				UE_LOG(LogTemp, Warning, TEXT("MulticastHidePlayerHUDsRPC: Hidden BossHpBarWidget for PC %s"), *PC->GetName());
 			}
 			else
 			{
-				UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: Invalid PlayerHUD for PC %s"), *PC->GetName());
+				UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: BossHpBarWidget is nullptr for PC %s"), *PC->GetName());
 			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: Invalid PlayerController found"));
+
+			//if (PC)
+			//{
+			//	APPHUD* PlayerHUD = Cast<APPHUD>(PC->GetHUD()); 
+			//	if (PlayerHUD)
+			//	{
+			//		// 현재 클래스가 ABoss_Mermaid이므로 this를 사용하여 전달
+			//		PlayerHUD->HideBossHealthBar(this);
+			//	}
+			//}
 		}
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MulticastHidePlayerHUDsRPC called on a non-server instance"));
+	}
 }
-
 
 float ABoss_Mermaid::GetAIPatrolRadius()
 {

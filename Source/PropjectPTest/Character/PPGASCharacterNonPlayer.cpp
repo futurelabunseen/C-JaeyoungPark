@@ -25,6 +25,9 @@ void APPGASCharacterNonPlayer::PossessedBy(AController* NewController)
 	ASC->InitAbilityActorInfo(this, this);
 	// UE_LOG(LogTemp, Error, TEXT("%s Monster"), *ASC->GetOwner()->GetName());
 
+	const FGameplayTag EnemyTag = FGameplayTag::RequestGameplayTag(FName("Character.Enemy"));
+	ASC->AddLooseGameplayTag(EnemyTag);
+
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 	FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitStatEffect, Level, EffectContextHandle);

@@ -12,30 +12,32 @@
 UCLASS()
 class PROPJECTPTEST_API UPPGA_BossAttackHitCheck : public UGameplayAbility
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UPPGA_BossAttackHitCheck();
+    UPPGA_BossAttackHitCheck();
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+    virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 protected:
+    UFUNCTION()
+    void OnTraceResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 
-	UFUNCTION()
-	void OnTraceResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+    void ApplyEffectsToTarget(UAbilitySystemComponent* TargetASC, const FGameplayAbilityTargetDataHandle& TargetDataHandle, int32 Index, const FHitResult& HitResult);
 
-	void ApplyEffectsToTarget(UAbilitySystemComponent* TargetASC, const FGameplayAbilityTargetDataHandle& TargetDataHandle, int32 Index, const FHitResult& HitResult);
+    void ApplyEffectsToTarget(UAbilitySystemComponent* TargetASC, const FGameplayAbilityTargetDataHandle& TargetDataHandle, int32 Index);
 
-	void ApplyEffectsToTarget(UAbilitySystemComponent* TargetASC, const FGameplayAbilityTargetDataHandle& TargetDataHandle, int32 Index);
+    UPROPERTY(EditAnywhere, Category = "GAS")
+    TSubclassOf<class UGameplayEffect> AttackDamageEffect;
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<class UGameplayEffect> AttackDamageEffect;
+    UPROPERTY(EditAnywhere, Category = "GAS")
+    TSubclassOf<class UGameplayEffect> AttackBuffEffect;
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<class UGameplayEffect> AttackBuffEffect;
+    float CurrentLevel;
 
-	float CurrentLevel;
+    UPROPERTY(EditAnywhere, Category = "GAS")
+    TSubclassOf<class APPTA_BossAttackTrace> TargetActorClass;
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<class APPTA_BossAttackTrace> TargetActorClass;
+private:
+    TSet<AActor*> UniqueHitActors; // 멤버 변수로 선언
 };

@@ -26,6 +26,9 @@ public:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHidePlayerHUDsRPC();
 
+	/*UFUNCTION(Server, Reliable)
+	void ServerOnOutOfHealthRPC();*/
+
 	// AI Section
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = "true"))

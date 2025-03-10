@@ -18,7 +18,7 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
     void ShowBossHealthBar(AActor* BossActor);
-    // void DeleteBossHealthBar(AActor* BossActor);
+    void HideBossHealthBar(AActor* BossActor);
     // void ShowStatus(AActor* PlayerActor);
 
     UFUNCTION(BlueprintCallable, Category = "HUD")

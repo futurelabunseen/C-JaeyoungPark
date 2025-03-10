@@ -1,7 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-#include "EngineUtils.h"
-
 // Player Setting Header
 #include "Character/PPGASCharacter.h"
 #include "Camera/CameraComponent.h"
@@ -14,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Monster/MS_Golem.h"
 #include "AI/MS/MSAIController.h"
+#include "EngineUtils.h"
 
 // GAS Header
 #include "AbilitySystemComponent.h"
@@ -97,6 +94,10 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
 		// UE_LOG(LogTemp, Error, TEXT("%s Player"), *ASC->GetOwner()->GetName());
+
+		const FGameplayTag PlayerTag = FGameplayTag::RequestGameplayTag(FName("Character.Player"));
+		ASC->AddLooseGameplayTag(PlayerTag);
+
 
 		// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("00000"));
 		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
