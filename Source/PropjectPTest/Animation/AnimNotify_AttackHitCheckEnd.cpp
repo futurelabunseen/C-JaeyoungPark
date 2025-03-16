@@ -5,6 +5,7 @@
 #include "Engine/World.h"
 
 UAnimNotify_AttackHitCheckEnd::UAnimNotify_AttackHitCheckEnd()
+	: HitCheckEndInterval(1.0f)
 {
 }
 
@@ -52,5 +53,5 @@ void UAnimNotify_AttackHitCheckEnd::Notify(USkeletalMeshComponent* MeshComp, UAn
 				AbilitySystemComponent->RemoveLooseGameplayTag(BlockTag);
 				UE_LOG(LogTemp, Warning, TEXT("Block tag removed: %s"), *BlockTag.ToString());
 			}
-		}, 1.0f, false);
+		}, HitCheckEndInterval, false);
 }

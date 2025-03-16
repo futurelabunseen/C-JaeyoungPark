@@ -7,6 +7,7 @@
 bool UAnimNotify_AttackHitCheckStart::bTimerSet = false; // Initialize the static variable
 
 UAnimNotify_AttackHitCheckStart::UAnimNotify_AttackHitCheckStart()
+	: HitCheckStartInterval(0.2f) // 기본 타이머 간격 설정
 {
 }
 
@@ -48,7 +49,7 @@ void UAnimNotify_AttackHitCheckStart::Notify(USkeletalMeshComponent* MeshComp, U
 
 					// 실행 후 타이머 플래그를 재설정
 					bTimerSet = false;
-				}, 0.2f, false); // 단일 실행 타이머
+				}, HitCheckStartInterval, false); // 단일 실행 타이머
 		}
 	}
 }

@@ -18,9 +18,13 @@ public:
 	virtual FString GetNotifyName_Implementation() const override;
 
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	FGameplayTag TriggerGameplayTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float HitCheckStartInterval;
 
 private:
 	void StopTimer(AActor* OwnerActor);
