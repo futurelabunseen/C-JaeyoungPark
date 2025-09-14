@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,34 +8,32 @@
 UCLASS()
 class PROPJECTPTEST_API ALevelStreamerActor : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ALevelStreamerActor();
+    GENERATED_BODY()
 
-	// 게임 시작 또는 스폰 시 호출됨
-	virtual void BeginPlay() override;
-
-	// 프레임마다 호출됨
-	virtual void Tick(float DeltaSeconds) override;
+public:
+    ALevelStreamerActor();
 
 protected:
-	UFUNCTION()
-	void OverlapBegins(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
-	UFUNCTION()
-	void MovePlayerToStart();
+    UPROPERTY(VisibleAnywhere)
+    UBoxComponent* TriggerBox;
 
-	UFUNCTION()
-	void OnLevelLoaded();
+    UPROPERTY(EditAnywhere)
+    FName DungeonLevelName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<class UBoxComponent> OverlapVolume;
+    UPROPERTY(EditAnywhere)
+    FName BossLevelName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
-	FName LevelToLoad = "_mansion_";
+    UPROPERTY(EditAnywhere)
+    FVector BossStartLocation;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
-	FName LevelToUnLoad;*/
+    UFUNCTION()
+    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+        bool bFromSweep, const FHitResult& SweepResult);
+
+    UFUNCTION()
+    void OnBossLevelLoaded();
+
+    UFUNCTION(NetMulticast, Reliable)
+    void MulticastMovePlayers();
 };

@@ -140,6 +140,22 @@ void APPGASGameMode::StartPlay() // 게임 시작 -> 플레이어 스타트 초기화
 	{
 		PlayerStartArray.Add(PlayerStart);
 	}
+
+	// 불필요한 Tick 제거
+	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if (Actor && !Actor->PrimaryActorTick.bCanEverTick)
+		{
+			Actor->SetActorTickEnabled(false);
+		}
+	}
+
+	if (HasAuthority())
+	{
+		FLatentActionInfo LatentInfo;
+		UGameplayStatics::LoadStreamLevel(this, "ElvenRuins_Dungeon", true, true, LatentInfo);
+	}
 }
 
 void APPGASGameMode::PostInitializeComponents()

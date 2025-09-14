@@ -1,117 +1,75 @@
-
-#include "Game/LevelStreamerActor.h"
+#include "LevelStreamerActor.h"
+#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "GameFramework/Character.h"
-#include "Engine/LevelStreaming.h"
-#include "Engine/World.h"
-#include "Engine/Engine.h"
-#include "GameFramework/PlayerStart.h"
-#include "TimerManager.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/Character.h"
 
 ALevelStreamerActor::ALevelStreamerActor()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
 
-    OverlapVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapVolume"));
-    RootComponent = OverlapVolume;
+    // 멤버 변수에 바로 할당
+    TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
+    RootComponent = TriggerBox;
+    TriggerBox->SetCollisionProfileName(TEXT("Trigger"));
+    TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ALevelStreamerActor::OnOverlapBegin);
 
-    OverlapVolume->OnComponentBeginOverlap.AddUniqueDynamic(this, &ALevelStreamerActor::OverlapBegins);
+    DungeonLevelName = "ElvenRuins_Dungeon";
+    BossLevelName = "ElvenRuins_Boss";
+    BossStartLocation = FVector(3235.0f, 110.0f, 8637.0f);
 }
 
-void ALevelStreamerActor::BeginPlay()
+void ALevelStreamerActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+    bool bFromSweep, const FHitResult& SweepResult)
 {
-    Super::BeginPlay();
-}
+    if (!HasAuthority()) return; // 서버에서만 실행
 
-void ALevelStreamerActor::Tick(float DeltaSeconds)
-{
-    Super::Tick(DeltaSeconds);
-}
-
-void ALevelStreamerActor::OverlapBegins(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-    ACharacter* MyCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-    if (OtherActor == MyCharacter && LevelToLoad != "")
+    if (OtherActor && OtherActor->ActorHasTag("Player"))
     {
-        UE_LOG(LogTemp, Warning, TEXT("Overlap detected with player character"));
+        // 보스 레벨 로드 완료 후 콜백으로 던전 언로드
+        FLatentActionInfo LoadLatentInfo;
+        LoadLatentInfo.CallbackTarget = this;
+        LoadLatentInfo.ExecutionFunction = FName("OnBossLevelLoaded");
+        LoadLatentInfo.Linkage = 0;
+        LoadLatentInfo.UUID = 1;
 
-        // Load the new level
-        FLatentActionInfo LatentInfo;
-        LatentInfo.CallbackTarget = this;
-        LatentInfo.ExecutionFunction = "OnLevelLoaded";
-        LatentInfo.Linkage = 0;
-        LatentInfo.UUID = FMath::Rand();
-
-        UGameplayStatics::LoadStreamLevel(this, LevelToLoad, true, true, LatentInfo);
-
-        // Unload the old level
-        /*if (LevelToUnLoad != "")
-        {
-            UGameplayStatics::UnloadStreamLevel(this, LevelToUnLoad, LatentInfo, false);
-        }*/
+        UGameplayStatics::LoadStreamLevel(this, BossLevelName, true, true, LoadLatentInfo);
     }
 }
 
-void ALevelStreamerActor::OnLevelLoaded()
+// 보스 레벨 로드 완료 후 호출
+void ALevelStreamerActor::OnBossLevelLoaded()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Level loaded"));
-    MovePlayerToStart();
+    // 던전 레벨 언로드
+    FLatentActionInfo UnloadLatentInfo;
+    UnloadLatentInfo.CallbackTarget = this;
+    UnloadLatentInfo.ExecutionFunction = NAME_None;
+    UnloadLatentInfo.Linkage = 0;
+    UnloadLatentInfo.UUID = 2;
+
+    UGameplayStatics::UnloadStreamLevel(this, DungeonLevelName, UnloadLatentInfo, false);
+
+    // 모든 플레이어 이동
+    MulticastMovePlayers();
 }
 
-void ALevelStreamerActor::MovePlayerToStart()
+// 모든 플레이어 이동
+void ALevelStreamerActor::MulticastMovePlayers_Implementation()
 {
-    ACharacter* MyCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-    if (MyCharacter)
+    UWorld* World = GetWorld();
+    if (!World) return;
+
+    for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Player character is valid"));
-
-        // Ensure LevelToLoad is a FName
-        ULevelStreaming* LoadedLevel = UGameplayStatics::GetStreamingLevel(this, LevelToLoad);
-        if (LoadedLevel && LoadedLevel->IsLevelLoaded())
+        APlayerController* PC = It->Get();
+        if (PC)
         {
-            ULevel* Level = LoadedLevel->GetLoadedLevel();
-            if (Level)
+            APawn* Pawn = PC->GetPawn();
+            if (Pawn)
             {
-                UE_LOG(LogTemp, Warning, TEXT("Level is valid"));
-                FName TargetTag = "BossStart";
-
-                for (AActor* Actor : Level->Actors)
-                {
-                    if (Actor)
-                    {
-                        UE_LOG(LogTemp, Warning, TEXT("Checking Actor: %s"), *Actor->GetName());
-                        APlayerStart* PlayerStart = Cast<APlayerStart>(Actor);
-                        if (PlayerStart)
-                        {
-                            UE_LOG(LogTemp, Warning, TEXT("Found PlayerStart: %s"), *PlayerStart->GetName());
-                            if (PlayerStart->ActorHasTag(TargetTag))
-                            {
-                                UE_LOG(LogTemp, Warning, TEXT("PlayerStart has target tag: %s"), *PlayerStart->GetName());
-                                MyCharacter->TeleportTo(PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
-                                return;
-                            }
-                            else
-                            {
-                                UE_LOG(LogTemp, Warning, TEXT("PlayerStart does not have target tag"));
-                            }
-                        }
-                    }
-                }
-                UE_LOG(LogTemp, Warning, TEXT("No PlayerStart with the specified tag found in the level"));
-            }
-            else
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Loaded level is null"));
+                Pawn->SetActorLocation(BossStartLocation);
             }
         }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Loaded level is not loaded or invalid"));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Player character is null"));
     }
 }
