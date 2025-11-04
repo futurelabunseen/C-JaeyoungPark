@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,9 +7,6 @@
 #include "PPGASCharacter.generated.h"
 
 
-/**
- *
- */
 UCLASS()
 class PROPJECTPTEST_API APPGASCharacter : public APPCharacter, public IAbilitySystemInterface
 {
@@ -41,6 +36,7 @@ public:
 
 	virtual void OnRep_PlayerState() override;
 	void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class AActor> InteractableItem;

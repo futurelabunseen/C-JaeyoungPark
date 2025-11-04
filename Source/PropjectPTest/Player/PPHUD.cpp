@@ -25,6 +25,17 @@ void APPHUD::BeginPlay()
 {
     Super::BeginPlay();
 
+    // ◀◀◀ 1. 소유 플레이어 컨트롤러를 가져옵니다.
+    APlayerController* PlayerController = GetOwningPlayerController();
+
+    // ◀◀◀ 2. 이 HUD가 로컬 플레이어의 것인지 확인합니다. (매우 중요!)
+    // 이 HUD가 서버에 있거나, 다른 클라이언트의 HUD가 (잘못)복제된 것이라면
+    // 위젯을 생성하면 안 됩니다.
+    if (!PlayerController || !PlayerController->IsLocalPlayerController())
+    {
+        return; // 로컬 플레이어의 HUD가 아니므로 아무것도 하지 않습니다.
+    }
+
     FString CurrentLevelName = GetWorld()->GetMapName();
     CurrentLevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
 
@@ -32,7 +43,8 @@ void APPHUD::BeginPlay()
     {
         if (WidgetClass)
         {
-            UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+            // ◀◀◀ 3. CreateWidget에 GetWorld() 대신 PlayerController를 전달합니다.
+            UUserWidget* Widget = CreateWidget<UUserWidget>(PlayerController, WidgetClass);
             if (Widget)
             {
                 Widget->AddToViewport();
@@ -49,7 +61,8 @@ void APPHUD::BeginPlay()
     {
         if (GASWidget)
         {
-            BossHpBarWidget = CreateWidget<UPPGASHpBarUserWidget>(GetWorld(), GASWidget);
+            // ◀◀◀ 3. CreateWidget에 GetWorld() 대신 PlayerController를 전달합니다.
+            BossHpBarWidget = CreateWidget<UPPGASHpBarUserWidget>(PlayerController, GASWidget);
             if (BossHpBarWidget)
             {
                 BossHpBarWidget->AddToViewport();
@@ -66,7 +79,8 @@ void APPHUD::BeginPlay()
     {
         if (ExitWidgetClass)
         {
-            ExitWidget = CreateWidget<UUserWidget>(GetWorld(), ExitWidgetClass);
+            // ◀◀◀ 3. CreateWidget에 GetWorld() 대신 PlayerController를 전달합니다.
+            ExitWidget = CreateWidget<UUserWidget>(PlayerController, ExitWidgetClass);
             if (ExitWidget)
             {
                 ExitWidget->AddToViewport();
@@ -82,7 +96,8 @@ void APPHUD::BeginPlay()
 
     if (MinimapWidgetClass)
     {
-        UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), MinimapWidgetClass);
+        // ◀◀◀ 3. CreateWidget에 GetWorld() 대신 PlayerController를 전달합니다.
+        UUserWidget* Widget = CreateWidget<UUserWidget>(PlayerController, MinimapWidgetClass);
         if (Widget)
         {
             MinimapWidget = Cast<UMinimapWidget>(Widget);
@@ -92,7 +107,6 @@ void APPHUD::BeginPlay()
                 MinimapWidget->SetVisibility(ESlateVisibility::Hidden); // 초기 상태는 숨김
                 MinimapWidget->InitializeMinimap(VolumeOrigin, VolumeExtent, MinimapSize);
 
-                // MinimapWidget 크기 로그 추가
                 FVector2D WidgetSize = MinimapWidget->GetDesiredSize();
                 UE_LOG(LogTemp, Log, TEXT("MinimapWidget Size: X=%f, Y=%f"), WidgetSize.X, WidgetSize.Y);
             }
@@ -107,15 +121,11 @@ void APPHUD::BeginPlay()
         }
     }
 
-    APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-    if (PlayerController)
+    // ◀◀◀ 4. GetFirstPlayerController() 대신 안전하게 PlayerController 변수를 사용합니다.
+    if (PlayerController && PlayerController->InputComponent)
     {
         PlayerController->InputComponent->BindAction("ToggleMinimap", IE_Pressed, this, &APPHUD::ToggleMinimap);
     }
-
-    //UE_LOG(LogTemp, Log, TEXT("Volume Origin: X=%f, Y=%f, Z=%f"), VolumeOrigin.X, VolumeOrigin.Y, VolumeOrigin.Z);
-    //UE_LOG(LogTemp, Log, TEXT("Volume Extent: X=%f, Y=%f, Z=%f"), VolumeExtent.X, VolumeExtent.Y, VolumeExtent.Z);
-    //UE_LOG(LogTemp, Log, TEXT("Minimap Size: X=%f, Y=%f"), MinimapSize.X, MinimapSize.Y);
 }
 
 
@@ -123,10 +133,14 @@ void APPHUD::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+    // ◀◀◀ 1. GetFirstPlayerController() 대신 GetOwningPlayerController()를 사용합니다.
+    APlayerController* PlayerController = GetOwningPlayerController();
+
+    // ◀◀◀ 2. IsLocalPlayerController() 체크를 여기서도 수행합니다 (안전장치).
     if (IsValid(MinimapWidget) && bIsMinimapVisible && PlayerController && PlayerController->IsLocalPlayerController())
     {
-        ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+        // ◀◀◀ 3. GetPlayerCharacter(0) 대신 PlayerController->GetPawn()을 사용합니다.
+        ACharacter* PlayerCharacter = PlayerController->GetPawn<ACharacter>();
         if (PlayerCharacter)
         {
             PlayerLocation = PlayerCharacter->GetActorLocation();

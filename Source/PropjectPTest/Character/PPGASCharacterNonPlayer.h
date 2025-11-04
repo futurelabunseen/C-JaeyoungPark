@@ -5,11 +5,10 @@
 #include "CoreMinimal.h"
 #include "Character/PPCharacterNonPlayer.h"
 #include "AbilitySystemInterface.h"
+#include "InterestManager.h"
 #include "PPGASCharacterNonPlayer.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class PROPJECTPTEST_API APPGASCharacterNonPlayer : public APPCharacterNonPlayer, public IAbilitySystemInterface
 {
@@ -28,6 +27,11 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<class UBossAttributeSet> BossAttributeSet;
+
+	void SetAIState(EAIState NewState);
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "AI")
+	EAIState InitialState;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
@@ -51,4 +55,5 @@ protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
 
+	EAIState CurrentAIState;
 };

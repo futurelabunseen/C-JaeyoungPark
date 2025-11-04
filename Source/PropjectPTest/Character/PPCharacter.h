@@ -26,7 +26,6 @@ protected:
 
 // Dead Section
 protected:
-	virtual void BeginPlay() override;
 
 	virtual void SetDead();
 

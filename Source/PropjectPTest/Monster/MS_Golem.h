@@ -34,6 +34,9 @@ protected:
 
 	void InvokeGameplayCue(AActor* Target);
 
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TSubclassOf<class UGameplayEffect> GameplayEffectClass;
 

@@ -11,11 +11,6 @@ APPCharacter::APPCharacter()
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
-void APPCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void APPCharacter::SetDead()
 {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);

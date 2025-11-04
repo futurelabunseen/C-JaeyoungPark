@@ -11,6 +11,8 @@
 #include "Monster/MS_Golem.h"
 #include "AI/MS/MSAIController.h"
 #include "EngineUtils.h"
+//#include "AI/OctreeManager.h"
+#include "AI/OctreeSubsystem.h"
 
 // GAS Header
 #include "AbilitySystemComponent.h"
@@ -30,6 +32,8 @@ APPGASCharacter::APPGASCharacter()
 {
 	ASC = nullptr; // 플레이어 스테이트에서 이미 하나 생성했기 때문에 의도적으로 null로 설정
 	// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("End"));
+
+	Tags.Add(FName("Player"));
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
@@ -153,8 +157,52 @@ void APPGASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 전체 액터 탐색이 아닌, 범위 탐색을 위한 타이머 설정
-	// GetWorldTimerManager().SetTimer(MemberTimerHandle, this, &APPGASCharacter::DetectMonstersInRadius, 1.0f, true, 1.0f);
+	// ★★★ 이 로그가 뜨는지 확인하는 것이 현재 가장 중요합니다 ★★★
+	UE_LOG(LogTemp, Error, TEXT(">>>>>> PLAYER CHARACTER [%s] BeginPlay HAS BEEN CALLED! <<<<<<"), *this->GetName());
+
+	//AOctreeManager* OctreeManager = Cast<AOctreeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AOctreeManager::StaticClass()));
+	//if (OctreeManager)
+	//{
+	//	OctreeManager->RegisterActor(this);
+	//	UE_LOG(LogTemp, Error, TEXT(">>>>>> PLAYER CHARACTER [%s] Registered with Octree! <<<<<<"), *this->GetName());
+	//}
+	//else
+	//{
+	//	//UE_LOG(LogTemp, Error, TEXT(">>>>>> PLAYER CHARACTER [%s] COULD NOT FIND Octree Manager! <<<<<<"), *this->GetName());
+	//}
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		UOctreeSubsystem* OctreeSubsystem = World->GetSubsystem<UOctreeSubsystem>();
+		if (OctreeSubsystem)
+		{
+			OctreeSubsystem->RegisterActor(this);
+		}
+	}
+}
+
+void APPGASCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason); // 부모 클래스의 EndPlay를 호출합니다.
+
+	// 월드에서 OctreeManager를 찾아 자신을 등록 해제합니다.
+	// 액터가 죽거나 사라질 때 옥트리에서 제거하여 더 이상 탐색되지 않도록 합니다.
+	/*AOctreeManager* OctreeManager = Cast<AOctreeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AOctreeManager::StaticClass()));
+	if (OctreeManager)
+	{
+		OctreeManager->UnregisterActor(this);
+	}*/
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		UOctreeSubsystem* OctreeSubsystem = World->GetSubsystem<UOctreeSubsystem>();
+		if (OctreeSubsystem)
+		{
+			OctreeSubsystem->UnregisterActor(this);
+		}
+	}
 }
 
 void APPGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -267,69 +315,3 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 
 	IsDeadFlag = false;
 }
-
-//void APPGASCharacter::DetectMonstersInRadius()
-//{
-//	// 범위 내 AI 몬스터 탐지 및 BT 실행
-//	TArray<AActor*> OverlappingActors;
-//	GetOverlappingActors(OverlappingActors, AMS_Golem::StaticClass());
-//
-//	for (AActor* Actor : OverlappingActors)
-//	{
-//		if (FVector::Dist(Actor->GetActorLocation(), GetActorLocation()) <= DetectionRadius)
-//		{
-//			AMS_Golem* MS_Golem = Cast<AMS_Golem>(Actor);
-//			if (MS_Golem)
-//			{
-//				AMSAIController* AIController = Cast<AMSAIController>(MS_Golem->GetController());
-//				if (AIController && !AIController->IsBehaviorTreeActive())
-//				{
-//					AIController->RunAI();
-//				}
-//			}
-//		}
-//	}
-//
-//	// 범위 밖 AI 몬스터 탐지 및 BT 중지
-//	for (TActorIterator<AMS_Golem> It(GetWorld()); It; ++It)
-//	{
-//		AMS_Golem* MS_Golem = *It;
-//		if (MS_Golem)
-//		{
-//			AMSAIController* AIController = Cast<AMSAIController>(MS_Golem->GetController());
-//			if (AIController && AIController->IsBehaviorTreeActive())
-//			{
-//				if (FVector::Dist(MS_Golem->GetActorLocation(), GetActorLocation()) > DetectionRadius)
-//				{
-//					AIController->StopAI();
-//				}
-//			}
-//		}
-//	}
-//}
-
-
-//void APPGASCharacter::MoveToStreamingLevel(const bool IsPlayerDeath)
-//{
-//	if (IsLocallyControlled())
-//	{
-//		const FName DungeonLevelName = FName("ElvenRuins");
-//		const FName BossLevelName = FName("_mansion_");
-//		const FName OnLevelLoadFinishedFunc = FName("OnStreamingLevelLoadFinished");
-//		FLatentActionInfo LoadLatentInfo;
-//		LoadLatentInfo.CallbackTarget = this;
-//		LoadLatentInfo.Linkage = 0;
-//		LoadLatentInfo.ExecutionFunction = OnLevelLoadFinishedFunc;
-//
-//		UnloadMultipleStreamingLevels(DungeonLevelName); // 던전 레벨 언로드
-//		UGameplayStatics::LoadStreamLevel(this, BossLevelName, true, true, LoadLatentInfo); // 보스 레벨 로드
-//	}
-//}
-
-//void APPGASCharacter::UnloadMultipleStreamingLevels(const FName& LevelName)
-//{
-//	if (LevelName != NAME_None)
-//	{
-//		UGameplayStatics::UnloadStreamLevel(this, LevelName, FLatentActionInfo(), false);
-//	}
-//}

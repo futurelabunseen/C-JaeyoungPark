@@ -12,14 +12,14 @@
 #include "UI/PPGASUserWidget.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "AI/OctreeSubsystem.h" 
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
 AMS_Golem::AMS_Golem()
 {
-
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	Tags.Add(FName("Monster"));
 
 	// Simple Monster AI Setting
 	AIControllerClass = AMSAIController::StaticClass();
@@ -37,6 +37,36 @@ AMS_Golem::AMS_Golem()
 		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
 		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+void AMS_Golem::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		UOctreeSubsystem* OctreeSubsystem = World->GetSubsystem<UOctreeSubsystem>();
+		if (OctreeSubsystem)
+		{
+			OctreeSubsystem->RegisterActor(this);
+		}
+	}
+}
+
+void AMS_Golem::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason); // 부모 클래스의 EndPlay를 호출합니다.
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		UOctreeSubsystem* OctreeSubsystem = World->GetSubsystem<UOctreeSubsystem>();
+		if (OctreeSubsystem)
+		{
+			OctreeSubsystem->UnregisterActor(this);
+		}
 	}
 }
 
