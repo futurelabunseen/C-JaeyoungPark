@@ -11,8 +11,8 @@
 #include "Monster/MS_Golem.h"
 #include "AI/MS/MSAIController.h"
 #include "EngineUtils.h"
-//#include "AI/OctreeManager.h"
 #include "AI/OctreeSubsystem.h"
+#include "UI/PPGASPlayerStatusUserWidget.h"
 
 // GAS Header
 #include "AbilitySystemComponent.h"
@@ -31,7 +31,6 @@
 APPGASCharacter::APPGASCharacter()
 {
 	ASC = nullptr; // 플레이어 스테이트에서 이미 하나 생성했기 때문에 의도적으로 null로 설정
-	// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("End"));
 
 	Tags.Add(FName("Player"));
 
@@ -67,16 +66,10 @@ APPGASCharacter::APPGASCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-	HpBar = CreateDefaultSubobject<UPPGASWidgetComponent>(TEXT("Widget"));
-	HpBar->SetupAttachment(GetMesh());
-	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
-	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/UI/WBP_HpBar.WBP_HpBar_C"));
-	if (HpBarWidgetRef.Class)
+	static ConstructorHelpers::FClassFinder<UUserWidget> HUDWidgetRef(TEXT("/Game/UI/WBP_PlayerStatus.WBP_PlayerStatus_C"));
+	if (HUDWidgetRef.Class)
 	{
-		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
-		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
-		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
-		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		HUDWidgetClass = HUDWidgetRef.Class;
 	}
 
 	DetectionRadius = 300.0f; // 기본 탐지 반경 설정
@@ -142,7 +135,8 @@ void APPGASCharacter::OnRep_PlayerState()
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
-		HpBar->InitWidget();
+		//HpBar->InitWidget();
+		InitializeHUD();
 	}
 
 	// 어빌리티 시스템 디버그 용
@@ -156,20 +150,7 @@ void APPGASCharacter::OnRep_PlayerState()
 void APPGASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ★★★ 이 로그가 뜨는지 확인하는 것이 현재 가장 중요합니다 ★★★
-	UE_LOG(LogTemp, Error, TEXT(">>>>>> PLAYER CHARACTER [%s] BeginPlay HAS BEEN CALLED! <<<<<<"), *this->GetName());
-
-	//AOctreeManager* OctreeManager = Cast<AOctreeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AOctreeManager::StaticClass()));
-	//if (OctreeManager)
-	//{
-	//	OctreeManager->RegisterActor(this);
-	//	UE_LOG(LogTemp, Error, TEXT(">>>>>> PLAYER CHARACTER [%s] Registered with Octree! <<<<<<"), *this->GetName());
-	//}
-	//else
-	//{
-	//	//UE_LOG(LogTemp, Error, TEXT(">>>>>> PLAYER CHARACTER [%s] COULD NOT FIND Octree Manager! <<<<<<"), *this->GetName());
-	//}
+	// UE_LOG(LogTemp, Error, TEXT(">>>>>> PLAYER CHARACTER [%s] BeginPlay HAS BEEN CALLED! <<<<<<"), *this->GetName());
 
 	UWorld* World = GetWorld();
 	if (World)
@@ -184,24 +165,13 @@ void APPGASCharacter::BeginPlay()
 
 void APPGASCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason); // 부모 클래스의 EndPlay를 호출합니다.
+	Super::EndPlay(EndPlayReason);
 
-	// 월드에서 OctreeManager를 찾아 자신을 등록 해제합니다.
-	// 액터가 죽거나 사라질 때 옥트리에서 제거하여 더 이상 탐색되지 않도록 합니다.
-	/*AOctreeManager* OctreeManager = Cast<AOctreeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AOctreeManager::StaticClass()));
-	if (OctreeManager)
+	// 위젯 제거
+	if (HUDWidget)
 	{
-		OctreeManager->UnregisterActor(this);
-	}*/
-
-	UWorld* World = GetWorld();
-	if (World)
-	{
-		UOctreeSubsystem* OctreeSubsystem = World->GetSubsystem<UOctreeSubsystem>();
-		if (OctreeSubsystem)
-		{
-			OctreeSubsystem->UnregisterActor(this);
-		}
+		HUDWidget->RemoveFromParent();
+		HUDWidget = nullptr;
 	}
 }
 
@@ -266,7 +236,15 @@ void APPGASCharacter::GASInputReleased(int32 InputId)
 
 void APPGASCharacter::OnOutOfHealth()
 {
-	HpBar->SetHiddenInGame(true);
+	if (HUDWidget)
+	{
+		// 화면에서 HUD를 숨깁니다.
+		HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+
+		// 혹은 아예 제거하고 싶다면 아래 코드를 사용:
+		// HUDWidget->RemoveFromParent();
+	}
+
 	SetDead();
 	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPGASCharacter::ResetPlayer, 3.0f, false);
 }
@@ -314,4 +292,76 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 	}
 
 	IsDeadFlag = false;
+}
+
+// [추가] UI 생성 및 초기화 전용 함수
+void APPGASCharacter::InitializeHUD()
+{
+	// 1. 내 캐릭터가 로컬 플레이어(내 화면)인지 확인합니다. (AI나 다른 플레이어 머리 위에 뜨면 안 되니까!)
+	if (IsLocallyControlled() && IsValid(HUDWidgetClass))
+	{
+		// 2. 이미 생성된 게 없다면 새로 만듭니다.
+		if (!IsValid(HUDWidget))
+		{
+			APlayerController* PC = Cast<APlayerController>(GetController());
+			if (PC)
+			{
+				HUDWidget = CreateWidget<UPPGASPlayerStatusUserWidget>(PC, HUDWidgetClass);
+
+				if (HUDWidget)
+				{
+					// 3. 화면(Viewport)에 띄웁니다.
+					HUDWidget->AddToViewport();
+
+					// 4. ASC를 연결해서 체력/마나 업데이트를 시작합니다.
+					HUDWidget->SetAbilitySystemComponent(ASC->GetOwner());
+				}
+			}
+		}
+	}
+}
+
+void APPGASCharacter::LevelUp()
+{
+	// 1. 레벨 증가
+	Level++;
+	UE_LOG(LogTemp, Warning, TEXT("Level Up! New Level: %d"), Level);
+
+	// 2. 최대 스탯(Max) 증가 적용
+	if (IsValid(ASC) && IsValid(InitStatEffect))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+		// 변경된 Level 변수를 넣어주어 MaxHealth, MaxMana 등을 늘려줍니다.
+		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitStatEffect, Level, EffectContextHandle);
+
+		if (EffectSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+		}
+	}
+
+	// 3. [추가] 체력/마나 완전 회복 (Max가 늘어난 상태에서 채워줍니다)
+	if (IsValid(ASC) && IsValid(LevelUpHealEffect))
+	{
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+
+		// 레벨은 상관없으므로 1.0f로 적용
+		FGameplayEffectSpecHandle HealSpecHandle = ASC->MakeOutgoingSpec(LevelUpHealEffect, 1.0f, EffectContextHandle);
+
+		if (HealSpecHandle.IsValid())
+		{
+			ASC->BP_ApplyGameplayEffectSpecToSelf(HealSpecHandle);
+			UE_LOG(LogTemp, Log, TEXT("Level Up Heal Applied!"));
+		}
+	}
+}
+
+// [추가] 변수 리플리케이션 등록
+void APPGASCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APPGASCharacter, Level);
 }

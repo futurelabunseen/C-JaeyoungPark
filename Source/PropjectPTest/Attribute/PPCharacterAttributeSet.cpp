@@ -6,22 +6,31 @@
 #include "GameplayEffectExtension.h"
 #include "Tag/PPGameplayTag.h"
 #include "Net/UnrealNetwork.h"
+#include "Character/PPGASCharacter.h"
 
 UPPCharacterAttributeSet::UPPCharacterAttributeSet() :
-	AttackRange(100.0f), // 공격 범위, OnRep 안해도 됨, 고정값
-	MaxAttackRange(300.0f), // 최대 공격 범위, OnRep 안해도 됨, 고정값
+	AttackRange(100.0f),
+	MaxAttackRange(300.0f),
 
-	AttackRadius(50.f), // 공격 반경, OnRep 안해도 됨, 고정값 -> GE를 통해 변형 (Buff)
-	MaxAttackRadius(150.0f), // 최대 공격 반경, OnRep 안해도 됨, 고정값
+	AttackRadius(50.f),
+	MaxAttackRadius(150.0f),
 
-	AttackRate(30.0f), // 공격 데미지, OnRep 안해도 됨, 고정값 -> GE를 통해 변형 (Buff)
-	MaxAttackRate(100.0f), // 최대 공격 데미지, OnRep 안해도 됨, 고정값
+	AttackRate(30.0f),
+	MaxAttackRate(100.0f),
 
-	Damage(0.0f), // 피격 데미지, OnRep 필요, 수시로 변경, 아마도?
-	Health(100.0f), // 체력, OnRep 필요, 수시로 변경 -> GE를 통해 변형 (Damage, Heal, Regen, Dot 등등)
-	MaxHealth(100.0f) // 최대 체력, OnRep 필요
+	Damage(0.0f),
+	Health(100.0f),
+	MaxHealth(100.0f),
+
+	// 초기화 (New)
+	Mana(0.0f),
+	MaxMana(100.0f),
+	Experience(0.0f),
+	MaxExperience(100.0f)
 {
 	InitHealth(GetMaxHealth());
+	InitMana(GetMaxMana()); // 마나 초기화
+	InitExperience(0.0f);   // 경험치 초기화 (보통 0부터 시작)
 }
 
 void UPPCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -32,6 +41,11 @@ void UPPCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Damage, COND_None, REPNOTIFY_Always);
 
+	// 리플리케이션 등록 (New)
+	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Mana, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Experience, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, MaxExperience, COND_None, REPNOTIFY_Always);
 }
 
 void UPPCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -67,26 +81,64 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	float MinimumHealth = 0.0f;
+	float MinimumValue = 0.0f; // 공통 최소값
 
+	// --- Health Logic ---
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		PPGAS_LOG(LogPPGAS, Warning, TEXT("Direct Health Access : %f"), GetHealth());
-		SetHealth(FMath::Clamp(GetHealth(), MinimumHealth, GetMaxHealth()));
+		SetHealth(FMath::Clamp(GetHealth(), MinimumValue, GetMaxHealth()));
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
 		PPGAS_LOG(LogPPGAS, Log, TEXT("Damage : %f"), GetDamage());
-		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumHealth, GetMaxHealth()));
+		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumValue, GetMaxHealth()));
 		SetDamage(0.0f);
 	}
 
-	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
+	// --- Mana Logic (New) ---
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
-		Data.Target.AddLooseGameplayTag(PPTAG_CHARACTER_ISDEAD);
-		OnOutOfHealth_Player.Broadcast();
+		// 마나는 0 ~ MaxMana 사이로 유지
+		SetMana(FMath::Clamp(GetMana(), MinimumValue, GetMaxMana()));
 	}
-	bOutOfHealth = (GetHealth() <= 0.0f);
+
+	// --- Experience Logic (레벨업 구현) ---
+	if (Data.EvaluatedData.Attribute == GetExperienceAttribute())
+	{
+		float CurrentExp = GetExperience();
+		float MaxExp = GetMaxExperience();
+
+		if (MaxExp > 0.0f && CurrentExp >= MaxExp)
+		{
+			float Remainder = CurrentExp - MaxExp;
+			SetExperience(Remainder);
+
+			// [수정 전] - ASC가 PlayerState에 있어서 GetOwningActor()가 PlayerState를 반환함 -> Cast 실패
+			// APPGASCharacter* OwnerCharacter = Cast<APPGASCharacter>(GetOwningActor());
+
+			// [수정 후] - ASC가 붙어있는 아바타(실제 조종 캐릭터)를 가져와야 함
+			APPGASCharacter* OwnerCharacter = Cast<APPGASCharacter>(GetOwningAbilitySystemComponent()->GetAvatarActor());
+
+			if (OwnerCharacter)
+			{
+				OwnerCharacter->LevelUp();
+			}
+			// 디버깅용 로그 추가 (나중에 잘 되면 삭제)
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("AttributeSet: Failed to cast AvatarActor to APPGASCharacter!"));
+			}
+		}
+
+		// Dead Check
+		if ((GetHealth() <= 0.0f) && !bOutOfHealth)
+		{
+			Data.Target.AddLooseGameplayTag(PPTAG_CHARACTER_ISDEAD);
+			OnOutOfHealth_Player.Broadcast();
+		}
+		bOutOfHealth = (GetHealth() <= 0.0f);
+	}
 }
 
 // -----------------------------------------------
@@ -107,4 +159,25 @@ void UPPCharacterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& Old
 void UPPCharacterAttributeSet::OnRep_Damage(const FGameplayAttributeData& OldDamage)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Damage, OldDamage);
+}
+
+// New OnRep Functions
+void UPPCharacterAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Mana, OldMana);
+}
+
+void UPPCharacterAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, MaxMana, OldMaxMana);
+}
+
+void UPPCharacterAttributeSet::OnRep_Experience(const FGameplayAttributeData& OldExperience)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Experience, OldExperience);
+}
+
+void UPPCharacterAttributeSet::OnRep_MaxExperience(const FGameplayAttributeData& OldMaxExperience)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, MaxExperience, OldMaxExperience);
 }

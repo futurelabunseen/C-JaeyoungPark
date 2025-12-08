@@ -20,7 +20,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	UFUNCTION()
-	virtual void OnOutOfHealth();
+	virtual void OnOutOfHealth(AActor* Killer);
 
 	UPROPERTY()
 	TObjectPtr<class UMonsterAttributeSet> MonsterAttributeSet;

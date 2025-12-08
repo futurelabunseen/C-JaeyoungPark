@@ -4,6 +4,7 @@
 #include "Character/PPCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbilityTypes.h"
+#include "UI/PPGASPlayerStatusUserWidget.h" // 위젯 헤더 포함 필수!
 #include "PPGASCharacter.generated.h"
 
 
@@ -57,6 +58,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
 	TArray<AActor*> DetectedMonsters;
 
+	// [추가] 레벨업 처리를 위한 함수
+	void LevelUp();
+
+	// [추가] 현재 레벨을 가져오는 함수 (AttributeSet에서 필요할 수 있음)
+	int32 GetLevel() const { return Level; }
+
 protected:
 	void SetupGASInputComponent();
 	void GASInputPressed(int32 InputId);
@@ -82,11 +89,20 @@ protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
 
-	UPROPERTY(EditAnywhere, Category = GAS)
+	// [기존] 스탯 초기화용 GE
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GAS, Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class UGameplayEffect> InitStatEffect;
 
-	UPROPERTY(EditAnywhere, Category = GAS)
-	float Level = 1;
+	// [추가] 레벨업 시 완전 회복용 GE
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GAS, Meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UGameplayEffect> LevelUpHealEffect;
+
+	// [추가] 리플리케이션 함수 선언
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	// [수정] 레벨 변수에 Replicated 속성 추가
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Status")
+	int32 Level = 1;
 
 	// --------------------------------------------------------------
 
@@ -143,6 +159,21 @@ private:
 	const float ZoomMinLength = 150.0f;
 	const float ZoomMaxLength = 800.0f;
 
-	UPROPERTY()
-	TObjectPtr<class UPPGASWidgetComponent> HpBar;
+	//UPROPERTY()
+	//TObjectPtr<class UPPGASWidgetComponent> HpBar;
+
+	// [삭제] 더 이상 컴포넌트 방식은 쓰지 않습니다.
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	// class UPPGASWidgetComponent* HpBar;
+
+	// [추가] 화면에 띄울 위젯 클래스 정보 (블루프린트 클래스)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> HUDWidgetClass;
+
+	// [추가] 실제로 화면에 떠 있는 위젯 인스턴스
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPPGASPlayerStatusUserWidget> HUDWidget;
+
+	// [추가] HUD 초기화용 헬퍼 함수
+	void InitializeHUD();
 };

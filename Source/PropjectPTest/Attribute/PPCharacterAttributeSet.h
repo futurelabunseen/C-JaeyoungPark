@@ -16,13 +16,12 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthPlayerDelegate);
 
 /**
- * 
- */
+ * */
 UCLASS()
 class PROPJECTPTEST_API UPPCharacterAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPPCharacterAttributeSet();
 
@@ -32,13 +31,22 @@ public:
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, MaxAttackRadius);
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, AttackRate);
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, MaxAttackRate);
+
+	// Health
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, MaxHealth);
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, Damage);
 
+	// Mana (New)
+	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, Mana);
+	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, MaxMana);
+
+	// Experience (New)
+	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, Experience);
+	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, MaxExperience);
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	// virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual bool PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
@@ -50,7 +58,8 @@ protected:
 
 	friend class UPPGE_AttackDamage;
 
-	UPROPERTY(BlueprintReadOnly, Category="Attack", Meta = (AllowPrivateAccess = true))
+	// --- Attack Attributes ---
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData AttackRange;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
@@ -71,13 +80,28 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_Damage)
 	FGameplayAttributeData Damage;
 
+	// --- Health Attributes ---
 	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true) , ReplicatedUsing = OnRep_MaxHealth)
+	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
 
-// MultiPlay Section
+	// --- Mana Attributes (New) ---
+	UPROPERTY(BlueprintReadOnly, Category = "Mana", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_Mana)
+	FGameplayAttributeData Mana;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Mana", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MaxMana)
+	FGameplayAttributeData MaxMana;
+
+	// --- Experience Attributes (New) ---
+	UPROPERTY(BlueprintReadOnly, Category = "Experience", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_Experience)
+	FGameplayAttributeData Experience;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Experience", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MaxExperience)
+	FGameplayAttributeData MaxExperience;
+
+	// MultiPlay Section
 protected:
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth);
@@ -88,5 +112,16 @@ protected:
 	UFUNCTION()
 	void OnRep_Damage(const FGameplayAttributeData& OldDamage);
 
+	// New OnRep Functions
+	UFUNCTION()
+	void OnRep_Mana(const FGameplayAttributeData& OldMana);
 
+	UFUNCTION()
+	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana);
+
+	UFUNCTION()
+	void OnRep_Experience(const FGameplayAttributeData& OldExperience);
+
+	UFUNCTION()
+	void OnRep_MaxExperience(const FGameplayAttributeData& OldMaxExperience);
 };

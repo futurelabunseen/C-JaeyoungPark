@@ -3,71 +3,113 @@
 
 #include "UI/PPGASPlayerStatusUserWidget.h"
 #include "AbilitySystemComponent.h"
-#include "Attribute/PPCharacterSkillAttributeSet.h"
+#include "Attribute/PPCharacterAttributeSet.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
 void UPPGASPlayerStatusUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 {
+	// 1. 부모 함수 호출 (여기서 체력바가 연결됩니다!)
 	Super::SetAbilitySystemComponent(InOwner);
 
 	if (ASC)
 	{
-		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterSkillAttributeSet::GetSkillEnergyAttribute()).AddUObject(this, &UPPGASPlayerStatusUserWidget::OnSkillEnergyChanged);
-		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterSkillAttributeSet::GetMaxSkillEnergyAttribute()).AddUObject(this, &UPPGASPlayerStatusUserWidget::OnMaxSkillEnergyChanged);
+		// 2. 마나 연결 (기존 로직)
+		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetManaAttribute()).AddUObject(this, &ThisClass::OnManaChanged);
+		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetMaxManaAttribute()).AddUObject(this, &ThisClass::OnMaxManaChanged);
 
+		// 3. [추가] 경험치 연결
+		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetExperienceAttribute()).AddUObject(this, &ThisClass::OnExperienceChanged);
+		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetMaxExperienceAttribute()).AddUObject(this, &ThisClass::OnMaxExperienceChanged);
+
+		// 마나바 색상 설정
 		if (PbMpBar)
 		{
-			PbMpBar->SetFillColorAndOpacity(SkillEnergyColor);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("PbMpBar is not set"));
+			PbMpBar->SetFillColorAndOpacity(ManaColor);
 		}
 
-		const UPPCharacterSkillAttributeSet* CurrentPPCharacterSkillAttributeSet = ASC->GetSet<UPPCharacterSkillAttributeSet>();
-		if (CurrentPPCharacterSkillAttributeSet)
+		// 초기값 설정
+		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
+		if (CurrentAttributeSet)
 		{
-			CurrentSkillEnergy = CurrentPPCharacterSkillAttributeSet->GetSkillEnergy();
-			CurrentMaxSkillEnergy = CurrentPPCharacterSkillAttributeSet->GetMaxSkillEnergy();
+			// 마나 초기값
+			CurrentMana = CurrentAttributeSet->GetMana();
+			CurrentMaxMana = CurrentAttributeSet->GetMaxMana();
 
-			if (CurrentMaxSkillEnergy > 0.0f)
+			// [추가] 경험치 초기값
+			CurrentExperience = CurrentAttributeSet->GetExperience();
+			CurrentMaxExperience = CurrentAttributeSet->GetMaxExperience();
+
+			if (CurrentMaxMana > 0.0f)
 			{
 				UpdateMpBar();
+			}
+
+			// [추가] 경험치바 초기 업데이트
+			if (CurrentMaxExperience > 0.0f)
+			{
+				UpdateExpBar();
 			}
 		}
 	}
 }
 
-void UPPGASPlayerStatusUserWidget::OnSkillEnergyChanged(const FOnAttributeChangeData& ChangeData)
-{
-	CurrentSkillEnergy = ChangeData.NewValue;
-	// const UPPCharacterSkillAttributeSet* CurrentPPCharacterSkillAttributeSet = ASC->GetSet<UPPCharacterSkillAttributeSet>();
-	/*if (CurrentPPCharacterSkillAttributeSet)
-	{
-		UpdateMpBar();
-	}*/
+// --- Mana Implementation ---
 
+void UPPGASPlayerStatusUserWidget::OnManaChanged(const FOnAttributeChangeData& ChangeData)
+{
+	CurrentMana = ChangeData.NewValue;
 	UpdateMpBar();
 }
 
-void UPPGASPlayerStatusUserWidget::OnMaxSkillEnergyChanged(const FOnAttributeChangeData& ChangeData)
+void UPPGASPlayerStatusUserWidget::OnMaxManaChanged(const FOnAttributeChangeData& ChangeData)
 {
-	CurrentMaxSkillEnergy = ChangeData.NewValue;
+	CurrentMaxMana = ChangeData.NewValue;
 	UpdateMpBar();
 }
 
 void UPPGASPlayerStatusUserWidget::UpdateMpBar()
 {
+	if (CurrentMaxMana <= 0.0f) return;
+
 	if (PbMpBar)
 	{
-		PbMpBar->SetPercent(CurrentSkillEnergy / CurrentMaxSkillEnergy);
+		PbMpBar->SetPercent(CurrentMana / CurrentMaxMana);
 	}
 
 	if (TxtMpStat)
 	{
-		TxtMpStat->SetText(FText::FromString(FString::Printf(TEXT("%.0f/%0.f"), CurrentSkillEnergy, CurrentMaxSkillEnergy)));
-		 UE_LOG(LogTemp, Warning, TEXT("CurrentSkillEnergy : %f"), CurrentSkillEnergy);
-		 UE_LOG(LogTemp, Warning, TEXT("CurrentMaxSkillEnergy : %f"), CurrentMaxSkillEnergy);
+		TxtMpStat->SetText(FText::FromString(FString::Printf(TEXT("%.0f/%.0f"), CurrentMana, CurrentMaxMana)));
+	}
+}
+
+// --- Experience Implementation ---
+
+void UPPGASPlayerStatusUserWidget::OnExperienceChanged(const FOnAttributeChangeData& ChangeData)
+{
+	CurrentExperience = ChangeData.NewValue;
+	UpdateExpBar();
+}
+
+void UPPGASPlayerStatusUserWidget::OnMaxExperienceChanged(const FOnAttributeChangeData& ChangeData)
+{
+	CurrentMaxExperience = ChangeData.NewValue;
+	UpdateExpBar();
+}
+
+void UPPGASPlayerStatusUserWidget::UpdateExpBar()
+{
+	if (CurrentMaxExperience <= 0.0f) return;
+
+	if (PbExpBar)
+	{
+		// 경험치 퍼센트 적용
+		PbExpBar->SetPercent(CurrentExperience / CurrentMaxExperience);
+	}
+
+	if (TxtExpStat)
+	{
+		// 텍스트 적용 (예: 50/100)
+		TxtExpStat->SetText(FText::FromString(FString::Printf(TEXT("%.0f/%.0f"), CurrentExperience, CurrentMaxExperience)));
 	}
 }

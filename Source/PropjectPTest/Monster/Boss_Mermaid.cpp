@@ -13,6 +13,8 @@
 #include "Player/PPPlayerController.h"
 #include "Physics/PPCollision.h"
 #include "Net/UnrealNetwork.h"
+#include "AbilitySystemBlueprintLibrary.h" 
+#include "GameplayTagContainer.h"
 
 
 ABoss_Mermaid::ABoss_Mermaid()
@@ -43,27 +45,47 @@ void ABoss_Mermaid::PossessedBy(AController* NewController)
 	BossAttributeSet->OnOutOfHealth_Boss.AddDynamic(this, &ABoss_Mermaid::OnOutOfHealth);
 }
 
-void ABoss_Mermaid::OnOutOfHealth()
+void ABoss_Mermaid::OnOutOfHealth(AActor* Killer)
 {
-	Super::OnOutOfHealth();
+	// 1. 부모의 사망 로직 호출 (충돌 해제 등 기본 처리)
+	Super::OnOutOfHealth(Killer);
 
 	// 서버에서 실행되는지 확인
 	if (!HasAuthority())
 	{
-		UE_LOG(LogTemp, Error, TEXT("OnOutOfHealth: This function was called on a client, not the server!"));
 		return;
 	}
 
-	// 5초 후에 서버 연결을 끊는 함수 호출
-	if (HasAuthority())
+	// 2. [추가] 킬러에게 경험치 보상 지급 로직 (Golem과 동일)
+	if (Killer && ExpRewardEffectClass)
 	{
-		MulticastHidePlayerHUDsRPC();
-		// ServerOnOutOfHealthRPC();
+		UAbilitySystemComponent* KillerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Killer);
+		if (KillerASC)
+		{
+			FGameplayEffectContextHandle EffectContext = KillerASC->MakeEffectContext();
+			EffectContext.AddSourceObject(this);
 
-		FTimerHandle DeadMonsterTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(DeadMonsterTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
-		UE_LOG(LogTemp, Warning, TEXT("OnOutOfHealth: Timer set for DisconnectFromServer"));
+			FGameplayEffectSpecHandle EffectSpecHandle = KillerASC->MakeOutgoingSpec(ExpRewardEffectClass, 1.0f, EffectContext);
+
+			if (EffectSpecHandle.IsValid())
+			{
+				// SetByCaller로 경험치 양 전달 (태그: Data.Reward.Exp)
+				EffectSpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Reward.Exp")), ExpRewardAmount);
+
+				// 적용
+				KillerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+
+				UE_LOG(LogTemp, Warning, TEXT("Boss Reward: Gave %f Exp to %s"), ExpRewardAmount, *Killer->GetName());
+			}
+		}
 	}
+
+	// 3. 기존 보스 사망 처리 (HUD 숨기기, 서버 연결 종료 타이머 등)
+	MulticastHidePlayerHUDsRPC();
+
+	FTimerHandle DeadMonsterTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeadMonsterTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
+	UE_LOG(LogTemp, Warning, TEXT("OnOutOfHealth: Timer set for DisconnectFromServer"));
 }
 
 

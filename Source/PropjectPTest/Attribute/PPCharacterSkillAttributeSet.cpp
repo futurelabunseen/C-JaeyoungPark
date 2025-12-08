@@ -8,23 +8,19 @@
 #include "Net/UnrealNetwork.h"
 
 UPPCharacterSkillAttributeSet::UPPCharacterSkillAttributeSet() :
-	SkillRange(800.0f), // 스킬 반경
-	MaxSkillRange(1200.0f), // 최대 스킬 반경
+	SkillRange(800.0f),
+	MaxSkillRange(1200.0f),
 
-	SkillAttackRate(150.0f), // 스킬 데미지
-	MaxSkillAttackRate(300.0f), // 최대 스킬 데미지
-
-	SkillEnergy(100.0f), // 스킬 마나 소모량
-	MaxSkillEnergy(100.0f) // 최대 스킬 마나 소모량
+	SkillAttackRate(150.0f),
+	MaxSkillAttackRate(300.0f)
+	// SkillEnergy 초기화 삭제
 {
-	InitSkillEnergy(GetMaxSkillEnergy());
+	// InitSkillEnergy 삭제
 }
 
-void UPPCharacterSkillAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterSkillAttributeSet, SkillEnergy, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterSkillAttributeSet, MaxSkillEnergy, COND_None, REPNOTIFY_Always);
-}
+// GetLifetimeReplicatedProps 함수는 리플리케이트 할 변수가 없다면 생략 가능하지만, 
+// 추후 확장을 위해 남겨둔다면 아래처럼 비워두거나 함수 자체를 지워도 됨.
+// 여기서는 리플리케이션 할 변수가 현재 없으므로 함수 자체를 제거해도 무방함.
 
 void UPPCharacterSkillAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
@@ -40,14 +36,4 @@ void UPPCharacterSkillAttributeSet::PreAttributeChange(const FGameplayAttribute&
 	}
 }
 
-void UPPCharacterSkillAttributeSet::OnRep_SkillEnergy(const FGameplayAttributeData& OldSkillEnergy)
-{
-	PPGAS_LOG(LogPPGAS, Warning, TEXT("SkillEnergy : %f"), GetSkillEnergy());
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterSkillAttributeSet, SkillEnergy, OldSkillEnergy);
-}
-
-void UPPCharacterSkillAttributeSet::OnRep_MaxSkillEnergy(const FGameplayAttributeData& OldMaxSkillEnergy)
-{
-	PPGAS_LOG(LogPPGAS, Warning, TEXT("MaxSkillEnergy : %f"), GetMaxSkillEnergy());
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterSkillAttributeSet, MaxSkillEnergy, OldMaxSkillEnergy);
-}
+// OnRep_SkillEnergy 관련 함수들 삭제됨

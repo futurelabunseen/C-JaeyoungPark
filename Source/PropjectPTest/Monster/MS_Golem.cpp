@@ -121,3 +121,45 @@ void AMS_Golem::InvokeGameplayCue(AActor* Target)
 	ASC->ExecuteGameplayCue(GameplayCueTag, Param);
 }
 
+void AMS_Golem::OnOutOfHealth(AActor* Killer)
+{
+	// 1. 이미 죽은 상태 처리 (UI 끄기, 충돌 끄기 등 기존 로직)
+	if (HpBar)
+	{
+		HpBar->SetHiddenInGame(true);
+	}
+	SetActorEnableCollision(false);
+
+	// 2. 킬러에게 경험치 보상 지급
+	if (Killer && ExpRewardEffectClass)
+	{
+		// 킬러의 ASC(어빌리티 시스템) 가져오기
+		UAbilitySystemComponent* KillerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Killer);
+		if (KillerASC)
+		{
+			// 이펙트 컨텍스트 및 스펙 생성
+			FGameplayEffectContextHandle EffectContext = KillerASC->MakeEffectContext();
+			EffectContext.AddSourceObject(this);
+
+			FGameplayEffectSpecHandle EffectSpecHandle = KillerASC->MakeOutgoingSpec(ExpRewardEffectClass, 1.0f, EffectContext);
+
+			if (EffectSpecHandle.IsValid())
+			{
+				// ★ 중요: SetByCaller를 통해 경험치 양을 동적으로 설정
+				// "Data.Reward.Exp" 태그는 BPGE_ExpReward에서 설정한 Data Tag와 일치해야 합니다.
+				EffectSpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Reward.Exp")), ExpRewardAmount);
+
+				// 킬러에게 적용
+				KillerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
+			}
+		}
+	}
+
+	// 3. 사망 처리 (파괴 혹은 래그돌)
+	// 예시: 3초 뒤 액터 제거
+	SetLifeSpan(3.0f);
+
+	// 만약 부모 클래스(APPGASCharacterNonPlayer)에 OnOutOfHealth 로직이 있다면 호출 필요할 수 있음
+	// Super::OnOutOfHealth(); // (구조에 따라 필요시 추가)
+}
+

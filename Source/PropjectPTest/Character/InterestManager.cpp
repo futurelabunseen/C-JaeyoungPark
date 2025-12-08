@@ -183,7 +183,7 @@ void AInterestManager::UpdateMonstersState()
             {
                 if (HorizontalDistanceSq < FMath::Square(ActiveRadius))
                 {
-                    DesiredState = EAIState::Active; // 하나라도 Active 안에 들어오면 Active
+                    DesiredState = EAIState::Active;
                     break; // 이미 Active이므로 더 이상 다른 플레이어와 비교할 필요 없음
                 }
                 else if (HorizontalDistanceSq < FMath::Square(RelevantRadius))
@@ -191,7 +191,7 @@ void AInterestManager::UpdateMonstersState()
                     // Active가 아닌 경우에만 Relevant로 설정 (이미 Active이면 유지)
                     if (DesiredState != EAIState::Active)
                     {
-                        DesiredState = EAIState::Relevant; // 하나라도 Relevant 안에 들어오면 Relevant
+                        DesiredState = EAIState::Relevant;
                     }
                 }
             }

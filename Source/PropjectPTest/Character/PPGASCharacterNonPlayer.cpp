@@ -54,7 +54,7 @@ void APPGASCharacterNonPlayer::PossessedBy(AController* NewController)
 	}
 }
 
-void APPGASCharacterNonPlayer::OnOutOfHealth()
+void APPGASCharacterNonPlayer::OnOutOfHealth(AActor* Killer)
 {
 	SetDead();
 }

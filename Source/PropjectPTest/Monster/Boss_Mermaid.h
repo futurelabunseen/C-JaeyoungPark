@@ -18,7 +18,7 @@ public:
 
 	virtual void PossessedBy(AController* NewController) override;
 
-	virtual void OnOutOfHealth() override;
+	virtual void OnOutOfHealth(AActor* Killer) override;
 
 	void DisconnectFromServer();
 
@@ -38,4 +38,12 @@ protected:
 	virtual float GetAIDetectRange() override;
 	virtual float GetAIAttackRange() override;
 	virtual float GetAITurnSpeed() override;
+
+	// [추가] 경험치 보상용 GE 클래스
+	UPROPERTY(EditAnywhere, Category = "GAS|Reward")
+	TSubclassOf<class UGameplayEffect> ExpRewardEffectClass;
+
+	// [추가] 보스가 주는 경험치 양 (보스니까 많이 주겠죠?)
+	UPROPERTY(EditAnywhere, Category = "GAS|Reward")
+	float ExpRewardAmount = 1000.0f;
 };

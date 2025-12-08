@@ -84,10 +84,10 @@ void UMonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCal
 
 	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
 	{
-		Data.Target.AddLooseGameplayTag(PPTAG_CHARACTER_ISDEAD);
-		OnOutOfHealth_Monster.Broadcast();
+		// ★ 중요: 죽음을 알릴 때, 효과를 가한 가해자(Instigator)를 같이 보냅니다.
+		AActor* Killer = Data.EffectSpec.GetEffectContext().GetInstigator();
+		OnOutOfHealth_Monster.Broadcast(Killer);
 	}
-
 	bOutOfHealth = (GetHealth() <= 0.0f);
 }
 

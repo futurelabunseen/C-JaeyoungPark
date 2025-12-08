@@ -13,7 +13,9 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthMonsterDelegate);
+// DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthMonsterDelegate);
+// 기존 델리게이트 선언을 아래처럼 변경 (AActor* Instigator 추가)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOutOfHealthMonsterDelegate, AActor*, InstigatorActor);
 
 /**
  * 
@@ -38,7 +40,6 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual bool PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 

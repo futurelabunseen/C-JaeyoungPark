@@ -84,10 +84,10 @@ void UBossAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
 	{
-		Data.Target.AddLooseGameplayTag(PPTAG_CHARACTER_ISDEAD);
-		OnOutOfHealth_Boss.Broadcast();
+		// [수정] 죽었을 때 때린 사람(Killer) 정보를 가져와서 방송합니다.
+		AActor* Killer = Data.EffectSpec.GetEffectContext().GetInstigator();
+		OnOutOfHealth_Boss.Broadcast(Killer);
 	}
-
 	bOutOfHealth = (GetHealth() <= 0.0f);
 }
 

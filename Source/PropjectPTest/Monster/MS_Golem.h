@@ -42,4 +42,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
 	FGameplayTag GameplayCueTag;
+	virtual void OnOutOfHealth(AActor* Killer) override;
+
+	// [추가] 경험치 보상용 GE 클래스
+	UPROPERTY(EditAnywhere, Category = "GAS|Reward")
+	TSubclassOf<class UGameplayEffect> ExpRewardEffectClass;
+
+	// [추가] 이 몬스터가 주는 경험치 양
+	UPROPERTY(EditAnywhere, Category = "GAS|Reward")
+	float ExpRewardAmount = 10.0f;
 };
