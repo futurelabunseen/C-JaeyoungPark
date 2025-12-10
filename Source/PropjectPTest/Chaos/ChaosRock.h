@@ -1,72 +1,70 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "Components/AudioComponent.h"
-#include "Sound/SoundCue.h"
+#include "Chaos/CacheManagerActor.h" // 부모 클래스 변경
 #include "ChaosRock.generated.h"
 
-// DECLARE_DYNAMIC_DELEGATE_OneParam(FRockDestruct, FVector, RockLocation);
+class UGeometryCollectionComponent;
+class UBoxComponent;
+class UStaticMeshComponent;
+class UAudioComponent;
+class USoundBase;
 
+/**
+ * AChaosRock
+ * 스스로 캐시 매니저 역할을 하며, 플레이어 접촉 시 캐시된 파괴 효과를 재생하는 액터
+ */
 UCLASS()
-class PROPJECTPTEST_API AChaosRock : public AActor
+class PROPJECTPTEST_API AChaosRock : public AChaosCacheManager
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AChaosRock();
+    GENERATED_BODY()
 
-	// Called every frame
-	// virtual void Tick(float DeltaTime) override;
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FRockDestruct RockDestroyDele;*/
+public:
+    AChaosRock();
 
 protected:
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
+    virtual void OnConstruction(const FTransform& Transform) override;
 
-	// Rock mesh component
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<class UGeometryCollectionComponent> RockMesh;
+public:
+    // 트리거 감지 (박스 콜리전)
+    UFUNCTION()
+    void NotifyActorBeginOverlap(AActor* Other) override;
 
-	// Box collision component
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<class UBoxComponent> BoxCollision;
+    // 파괴 실행 함수
+    UFUNCTION(BlueprintCallable, Category = "Destruction")
+    void TriggerDestruction();
 
-	// Audio component for destruction sound
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<class UAudioComponent> DestructionSound;
-
-	// Sound cue for the destruction sound
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
-	TObjectPtr<class USoundCue> DestructionSoundCue;
+    //virtual void Tick(float DeltaTime) override;
 
 protected:
+    // 1. 카오스 메시 (파괴될 지오메트리 컬렉션)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Destruction")
+    UGeometryCollectionComponent* RockMesh;
 
-	//UPROPERTY(EditAnywhere)
-	//TObjectPtr<class UBoxComponent> BoxCollision;
+    // 2. 스태틱 메시 (파괴 전 깔끔한 외형 + 최적화용)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Destruction")
+    UStaticMeshComponent* RockStaticMesh;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	//TObjectPtr<class UGeometryCollectionComponent> RockMesh;
+    // 3. 트리거 박스
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Destruction")
+    UBoxComponent* BoxCollision;
 
-	virtual void NotifyActorBeginOverlap(class AActor* Other) override;
+    // 4. 사운드 컴포넌트
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+    UAudioComponent* DestructionSound;
 
-	/*UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);*/
+    // 파괴 시 재생할 사운드 큐
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+    USoundBase* DestructionSoundCue;
 
 private:
-	// Function to handle the sound fading out
-	void FadeOutSound();
+    // 이미 파괴되었는지 체크하는 플래그
+    bool bHasTriggered;
 
-	FTimerHandle FadeOutTimerHandle;
-	float FadeOutDuration;
-	float InitialVolume;
+    // 사운드 페이드 아웃 시간
+    float FadeOutDuration;
 
+    float RunningTime;
 };

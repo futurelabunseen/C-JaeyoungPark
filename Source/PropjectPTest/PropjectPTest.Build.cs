@@ -20,7 +20,9 @@ public class PropjectPTest : ModuleRules
             "Niagara",
             "EnhancedInput",
             "UMG",
-            "GeometryCollectionEngine"
+            "GeometryCollectionEngine", // 지오메트리 컬렉션용
+            "ChaosCaching",             // 캐시 매니저용
+            "ChaosSolverEngine"         // 카오스 솔버용
         });
 
         // GAS로 사용할 것들 정의
