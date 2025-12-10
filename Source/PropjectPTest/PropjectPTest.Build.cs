@@ -22,7 +22,9 @@ public class PropjectPTest : ModuleRules
             "UMG",
             "GeometryCollectionEngine", // 지오메트리 컬렉션용
             "ChaosCaching",             // 캐시 매니저용
-            "ChaosSolverEngine"         // 카오스 솔버용
+            "ChaosSolverEngine",         // 카오스 솔버용
+            "LevelSequence",
+            "MovieScene"
         });
 
         // GAS로 사용할 것들 정의
