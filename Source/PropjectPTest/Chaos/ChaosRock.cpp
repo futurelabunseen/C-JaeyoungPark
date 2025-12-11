@@ -1,13 +1,11 @@
 #include "ChaosRock.h"
-#include "Chaos/ChaosCache.h" 
 #include "Character/PPGASCharacter.h" 
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "GeometryCollection/GeometryCollectionCache.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "LevelSequenceActor.h" 
-#include "LevelSequencePlayer.h" 
+//#include "LevelSequencePlayer.h" 
 #include "Sound/SoundBase.h"
 
 AChaosRock::AChaosRock()
@@ -38,6 +36,9 @@ AChaosRock::AChaosRock()
     // 변수 초기화
     FadeOutDuration = 3.0f;
     bHasTriggered = false;
+
+    CacheMode = ECacheMode::None;
+    StartMode = EStartMode::Triggered;
 }
 
 void AChaosRock::OnConstruction(const FTransform& Transform)
@@ -131,20 +132,12 @@ void AChaosRock::TriggerDestruction()
     }
 
     // 4. 레벨 시퀀스 재생
-    if (DestructionSequence)
+    if (LinkedSequenceActor) // 레벨에서 지정한 액터가 있다면
     {
-        ALevelSequenceActor* OutActor = nullptr;
-        SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(
-            GetWorld(),
-            DestructionSequence,
-            SequenceSettings,
-            OutActor
-        );
-
-        if (SequencePlayer)
+        if (LinkedSequenceActor->GetSequencePlayer())
         {
-            SequencePlayer->OnFinished.AddDynamic(this, &AChaosRock::OnSequenceFinished);
-            SequencePlayer->Play();
+            LinkedSequenceActor->GetSequencePlayer()->Play();
+            LinkedSequenceActor->GetSequencePlayer()->OnFinished.AddDynamic(this, &AChaosRock::OnSequenceFinished);
         }
     }
     else
