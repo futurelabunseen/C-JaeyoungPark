@@ -34,18 +34,17 @@ protected:
 
 	FTimerHandle DissolveTimerHandle;
 
-	// 머티리얼 파라미터 컬렉션 인스턴스
-	// UMaterialParameterCollectionInstance* ParameterCollectionInstance;
-
-	// 디졸브 효과를 위한 머티리얼 파라미터 컬렉션
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	UMaterialParameterCollection* MyMaterialParameterCollection;
-
-	void TriggerDissolveEffect();
-
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
-	//// 디졸브 머티리얼 참조를 위한 변수 (블루프린트에서 설정 가능)
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Materials", meta = (AllowPrivateAccess = "true"))
-	//UMaterialInterface* DissolveMaterial;
+	// [추가] 디졸브 진행 속도
+	float DissolveSpeed = 2.0f; // 값이 클수록 빨리 사라짐
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_StartDissolve();
+
+	void StartDissolveTimeline();
+	void UpdateDissolveMaterial();
+
+	FTimerHandle DissolveTimelineTimerHandle;
+	float CurrentDissolveValue = 0.0f;
 };

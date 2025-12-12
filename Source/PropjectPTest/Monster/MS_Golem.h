@@ -51,4 +51,16 @@ protected:
 	// [추가] 이 몬스터가 주는 경험치 양
 	UPROPERTY(EditAnywhere, Category = "GAS|Reward")
 	float ExpRewardAmount = 10.0f;
+
+
+	// 애니메이션 종료 대기용 타이머 핸들
+	/*UPROPERTY()
+	FTimerHandle DeadAnimTimerHandle;*/
+
+	// 애니메이션이 끝나면 실행될 함수 (디졸브 시작)
+	//void StartDissolveSequence();
+
+	// 서버에서 모든 클라이언트에게 "즉시 죽어라" 명령을 내리는 함수
+	/*UFUNCTION(NetMulticast, Reliable)
+	void Multicast_StartDeath();*/
 };
