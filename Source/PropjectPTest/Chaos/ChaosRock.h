@@ -2,8 +2,6 @@
 
 #include "Chaos/CacheManagerActor.h"
 #include "CoreMinimal.h"
-#include "LevelSequence.h"
-#include "LevelSequencePlayer.h"
 #include "ChaosRock.generated.h"
 
 class UGeometryCollectionComponent;
@@ -11,6 +9,7 @@ class UBoxComponent;
 class UStaticMeshComponent;
 class UAudioComponent;
 class USoundBase;
+class ALevelSequenceActor;
 
 
 UCLASS()

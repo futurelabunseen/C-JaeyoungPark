@@ -5,7 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "LevelSequenceActor.h" 
-//#include "LevelSequencePlayer.h" 
+#include "LevelSequencePlayer.h"
 #include "Sound/SoundBase.h"
 
 AChaosRock::AChaosRock()
