@@ -2,40 +2,32 @@
 #include "AIController.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
-#include "NiagaraFunctionLibrary.h"
 #include "GameFramework/Actor.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "Net/UnrealNetwork.h" // For networking functions
-#include "NiagaraComponent.h"
+#include "Net/UnrealNetwork.h"
+
+// 불필요해진 나이아가라 헤더들은 제거했습니다.
+// #include "NiagaraFunctionLibrary.h" 
+// #include "NiagaraComponent.h"
+// #include "UObject/ConstructorHelpers.h" (만약 다른 에셋 로드에 안 쓴다면 제거 가능)
 
 APPCharacterNonPlayer::APPCharacterNonPlayer()
 {
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-    // 나이아가라 이펙트를 로드할 수 있도록 준비
-    static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DissolveEffectFinder(TEXT("/Game/Material/NS_EdgeDissolve.NS_EdgeDissolve"));
-    if (DissolveEffectFinder.Succeeded())
-    {
-        DissolveEffect = DissolveEffectFinder.Object;
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Niagara Effect is Not Set"));
-    }
+    // [삭제됨] 나이아가라 이펙트 로드 부분
+    // 이제 머티리얼이 스스로 빛나므로 별도의 파티클 에셋을 로드할 필요가 없습니다.
 }
 
 void APPCharacterNonPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-    // 여기에 필요한 변수를 추가로 등록할 수 있습니다.
 }
 
 void APPCharacterNonPlayer::SetDead()
 {
-    // 1. 상위 클래스(APPCharacter)의 SetDead 호출 -> 애니메이션 재생 및 상태 플래그 변경
+    // 1. 상위 클래스(APPCharacter)의 SetDead 호출
     Super::SetDead();
 
     // 2. AI 및 움직임 정지
@@ -49,19 +41,16 @@ void APPCharacterNonPlayer::SetDead()
     if (HasAuthority())
     {
         // 3. 타이머 시간 계산
-        float AnimLength = 1.5f; // 애니메이션이 없을 경우를 대비한 기본값
+        float AnimLength = 1.5f;
         if (GetDeadMontage())
         {
-            // 몽타주 길이 가져오기 (0.1초 정도 여유를 두어 끊김 방지)
             AnimLength = GetDeadMontage()->GetPlayLength() - 0.1f;
         }
 
-        // [타이머 1] 애니메이션이 끝날 때쯤 -> 디졸브 시작 (Multicast 호출)
+        // [타이머 1] 애니메이션 끝날 때쯤 -> 디졸브 시작 (Multicast)
         GetWorld()->GetTimerManager().SetTimer(DissolveTimerHandle, this, &APPCharacterNonPlayer::Multicast_StartDissolve, AnimLength, false);
 
         // [타이머 2] 파괴 예약
-        // 중요: "애니메이션 시간(AnimLength)" + "디졸브 보여줄 시간(DeadEventDelayTime)" 후에 파괴합니다.
-        // 이렇게 하면 애니메이션 도중 사라지는 문제를 100% 방지할 수 있습니다.
         float TotalDestroyDelay = AnimLength + DeadEventDelayTime;
 
         GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
@@ -75,20 +64,10 @@ void APPCharacterNonPlayer::SetDead()
 
 void APPCharacterNonPlayer::Multicast_StartDissolve_Implementation()
 {
-    // 1. 나이아가라 이펙트(파티클) 실행
-    if (DissolveEffect)
-    {
-        UNiagaraFunctionLibrary::SpawnSystemAttached(
-            DissolveEffect,
-            GetMesh(),
-            NAME_None,
-            FVector::ZeroVector,
-            FRotator::ZeroRotator,
-            EAttachLocation::KeepRelativeOffset,
-            true);
-    }
+    // [삭제됨] 나이아가라 이펙트 스폰 부분
+    // 이제 파티클을 소환하지 않고, 바로 몸체를 녹이는 함수만 호출합니다.
 
-    // 2. 몬스터 몸체(Mesh) 녹이기 시작
+    // 1. 몬스터 몸체(Mesh) 녹이기 시작
     StartDissolveTimeline();
 }
 
@@ -111,7 +90,6 @@ void APPCharacterNonPlayer::StartDissolveTimeline()
 void APPCharacterNonPlayer::UpdateDissolveMaterial()
 {
     // DeadEventDelayTime 동안 0에서 1로 변하도록 속도 계산
-    // 예: DelayTime이 5초면, 1초에 0.2씩 증가해야 함 (1.0 / 5.0 = 0.2)
     DissolveSpeed = (DeadEventDelayTime > 0.0f) ? (1.0f / DeadEventDelayTime) : 1.0f;
 
     // 0.02초 간격이므로 그만큼 보정
@@ -127,5 +105,7 @@ void APPCharacterNonPlayer::UpdateDissolveMaterial()
     }
 
     // 머티리얼 파라미터 업데이트 (이름: "Dissolve")
+    // 이제 이 값에 따라 머티리얼 내부에서 1-x 계산과 Step 분기를 통해
+    // 스스로 불타는 효과와 투명화를 동시에 처리합니다.
     GetMesh()->SetScalarParameterValueOnMaterials(FName("Dissolve"), CurrentDissolveValue);
 }
