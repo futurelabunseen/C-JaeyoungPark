@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Attribute/PPCharacterAttributeSet.h"
 #include "PropjectPTest.h"
 #include "GameplayEffectExtension.h"
@@ -22,7 +19,7 @@ UPPCharacterAttributeSet::UPPCharacterAttributeSet() :
 	Health(100.0f),
 	MaxHealth(100.0f),
 
-	// 초기화 (New)
+	// 초기화
 	Mana(0.0f),
 	MaxMana(100.0f),
 	Experience(0.0f),
@@ -40,8 +37,6 @@ void UPPCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Damage, COND_None, REPNOTIFY_Always);
-
-	// 리플리케이션 등록 (New)
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPPCharacterAttributeSet, Experience, COND_None, REPNOTIFY_Always);
@@ -86,24 +81,24 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	// --- Health Logic ---
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		PPGAS_LOG(LogPPGAS, Warning, TEXT("Direct Health Access : %f"), GetHealth());
+		//PPGAS_LOG(LogPPGAS, Warning, TEXT("Direct Health Access : %f"), GetHealth());
 		SetHealth(FMath::Clamp(GetHealth(), MinimumValue, GetMaxHealth()));
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		PPGAS_LOG(LogPPGAS, Log, TEXT("Damage : %f"), GetDamage());
+		//PPGAS_LOG(LogPPGAS, Log, TEXT("Damage : %f"), GetDamage());
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumValue, GetMaxHealth()));
 		SetDamage(0.0f);
 	}
 
-	// --- Mana Logic (New) ---
+	// --- Mana Logic ---
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		// 마나는 0 ~ MaxMana 사이로 유지
 		SetMana(FMath::Clamp(GetMana(), MinimumValue, GetMaxMana()));
 	}
 
-	// --- Experience Logic (레벨업 구현) ---
+	// --- Experience Logic ---
 	if (Data.EvaluatedData.Attribute == GetExperienceAttribute())
 	{
 		float CurrentExp = GetExperience();
@@ -114,21 +109,10 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 			float Remainder = CurrentExp - MaxExp;
 			SetExperience(Remainder);
 
-			// [수정 전] - ASC가 PlayerState에 있어서 GetOwningActor()가 PlayerState를 반환함 -> Cast 실패
-			// APPGASCharacter* OwnerCharacter = Cast<APPGASCharacter>(GetOwningActor());
-
-			// [수정 후] - ASC가 붙어있는 아바타(실제 조종 캐릭터)를 가져와야 함
+			// ASC가 붙어있는 아바타(실제 조종 캐릭터)를 가져와야 함
 			APPGASCharacter* OwnerCharacter = Cast<APPGASCharacter>(GetOwningAbilitySystemComponent()->GetAvatarActor());
 
-			if (OwnerCharacter)
-			{
-				OwnerCharacter->LevelUp();
-			}
-			// 디버깅용 로그 추가 (나중에 잘 되면 삭제)
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("AttributeSet: Failed to cast AvatarActor to APPGASCharacter!"));
-			}
+			if (OwnerCharacter) OwnerCharacter->LevelUp();
 		}
 	}
 
@@ -146,13 +130,13 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 // OnRep Section
 void UPPCharacterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
-	PPGAS_LOG(LogPPGAS, Warning, TEXT("Health : %f"), GetHealth());
+	//PPGAS_LOG(LogPPGAS, Warning, TEXT("Health : %f"), GetHealth());
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Health, OldHealth);
 }
 
 void UPPCharacterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
 {
-	PPGAS_LOG(LogPPGAS, Warning, TEXT("MaxHealth : %f"), GetMaxHealth());
+	//PPGAS_LOG(LogPPGAS, Warning, TEXT("MaxHealth : %f"), GetMaxHealth());
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, MaxHealth, OldMaxHealth);
 }
 
@@ -161,7 +145,6 @@ void UPPCharacterAttributeSet::OnRep_Damage(const FGameplayAttributeData& OldDam
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Damage, OldDamage);
 }
 
-// New OnRep Functions
 void UPPCharacterAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPPCharacterAttributeSet, Mana, OldMana);

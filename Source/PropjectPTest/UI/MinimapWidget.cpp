@@ -54,7 +54,7 @@ FVector2D UMinimapWidget::ConvertWorldLocationToMinimap(FVector WorldLocation)
 {
     if (VolumeExtent.X == 0 || VolumeExtent.Y == 0)
     {
-        UE_LOG(LogTemp, Error, TEXT("VolumeExtent has zero dimension"));
+        //UE_LOG(LogTemp, Error, TEXT("VolumeExtent has zero dimension"));
         return FVector2D(0, 0);
     }
 

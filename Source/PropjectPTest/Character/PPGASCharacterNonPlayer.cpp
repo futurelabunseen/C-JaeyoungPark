@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Character/PPGASCharacterNonPlayer.h"
 #include "AbilitySystemComponent.h"
 #include "Monster/Boss_Mermaid.h"
@@ -87,7 +84,7 @@ void APPGASCharacterNonPlayer::SetAIState(EAIState NewState)
                 SkeletalMesh->bPauseAnims = false;
                 SkeletalMesh->SetComponentTickEnabled(true);
             }
-            UE_LOG(LogTemp, Warning, TEXT("%s state changed to ACTIVE"), *GetName());
+            //UE_LOG(LogTemp, Warning, TEXT("%s state changed to ACTIVE"), *GetName());
             break;
 
         case EAIState::Relevant:
@@ -102,7 +99,7 @@ void APPGASCharacterNonPlayer::SetAIState(EAIState NewState)
                 SkeletalMesh->bPauseAnims = true;
                 SkeletalMesh->SetComponentTickEnabled(false);
             }
-            UE_LOG(LogTemp, Log, TEXT("%s state changed to RELEVANT"), *GetName());
+            //UE_LOG(LogTemp, Log, TEXT("%s state changed to RELEVANT"), *GetName());
             break;
 
         case EAIState::Dormant:
@@ -117,11 +114,11 @@ void APPGASCharacterNonPlayer::SetAIState(EAIState NewState)
                 SkeletalMesh->bPauseAnims = true;
                 SkeletalMesh->SetComponentTickEnabled(false);
             }
-            UE_LOG(LogTemp, Warning, TEXT("%s state changed to DORMANT"), *GetName());
+            //UE_LOG(LogTemp, Warning, TEXT("%s state changed to DORMANT"), *GetName());
             break;
         }
     }
-    else {
+    /*else {
         UE_LOG(LogTemp, Error, TEXT("SetAIState: Failed to cast Controller to AMSAIController for %s"), *GetName());
-    }
+    }*/
 }

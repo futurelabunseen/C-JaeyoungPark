@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -15,9 +14,6 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOutOfHealthBossDelegate, AActor*, InstigatorActor);
 
-/**
- * 
- */
 UCLASS()
 class PROPJECTPTEST_API UBossAttributeSet : public UAttributeSet
 {
@@ -38,7 +34,6 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual bool PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 

@@ -1,16 +1,13 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
-#include "InputActionValue.h"
-#include "Components/SphereComponent.h" // USphereComponent Æ÷ÇÔ
 #include "PPPlayerController.generated.h"
 
-/** Forward declaration to improve compiling times */
 class UNiagaraSystem;
+class UInputMappingContext;
+class UInputAction;
 
 UCLASS()
 class PROPJECTPTEST_API APPPlayerController : public APlayerController
@@ -48,7 +45,6 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay();
-	// void Tick(float DeltaTime) override;
 
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();

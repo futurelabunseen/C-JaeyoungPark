@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -15,8 +14,6 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthPlayerDelegate);
 
-/**
- * */
 UCLASS()
 class PROPJECTPTEST_API UPPCharacterAttributeSet : public UAttributeSet
 {
@@ -37,11 +34,11 @@ public:
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, MaxHealth);
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, Damage);
 
-	// Mana (New)
+	// Mana
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, Mana);
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, MaxMana);
 
-	// Experience (New)
+	// Experience
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, Experience);
 	ATTRIBUTE_ACCESSORS(UPPCharacterAttributeSet, MaxExperience);
 
@@ -87,21 +84,21 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
 
-	// --- Mana Attributes (New) ---
+	// --- Mana Attributes ---
 	UPROPERTY(BlueprintReadOnly, Category = "Mana", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_Mana)
 	FGameplayAttributeData Mana;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Mana", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MaxMana)
 	FGameplayAttributeData MaxMana;
 
-	// --- Experience Attributes (New) ---
+	// --- Experience Attributes ---
 	UPROPERTY(BlueprintReadOnly, Category = "Experience", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_Experience)
 	FGameplayAttributeData Experience;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Experience", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MaxExperience)
 	FGameplayAttributeData MaxExperience;
 
-	// MultiPlay Section
+	// OnRep Section
 protected:
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth);
@@ -112,7 +109,6 @@ protected:
 	UFUNCTION()
 	void OnRep_Damage(const FGameplayAttributeData& OldDamage);
 
-	// New OnRep Functions
 	UFUNCTION()
 	void OnRep_Mana(const FGameplayAttributeData& OldMana);
 

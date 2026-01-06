@@ -4,9 +4,9 @@
 #include "Character/PPCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbilityTypes.h"
-#include "UI/PPGASPlayerStatusUserWidget.h" // 위젯 헤더 포함 필수!
 #include "PPGASCharacter.generated.h"
 
+class UPPGASPlayerStatusUserWidget;
 
 UCLASS()
 class PROPJECTPTEST_API APPGASCharacter : public APPCharacter, public IAbilitySystemInterface
@@ -20,10 +20,7 @@ public:
 	FORCEINLINE virtual class UAnimMontage* GetComboActionMontage() const { return ComboActionMontage; }
 	FORCEINLINE virtual class UAnimMontage* GetInteractionMontage() const { return InteractionMontage; }
 	FORCEINLINE class UPPComboActionData* GetComboActionData() const { return ComboActionData; }
-
-	/** Returns TopDownCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
-	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 	void ZoomIn();
@@ -55,10 +52,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Detection")
 	TArray<AActor*> DetectedMonsters;
 
-	// [추가] 레벨업 처리를 위한 함수
+	// 레벨업 처리를 위한 함수
 	void LevelUp();
 
-	// [추가] 현재 레벨을 가져오는 함수 (AttributeSet에서 필요할 수 있음)
+	// 현재 레벨을 가져오는 함수 (AttributeSet에서 필요할 수 있음)
 	int32 GetLevel() const { return Level; }
 
 protected:
@@ -83,18 +80,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
 
-	// [기존] 스탯 초기화용 GE
+	// 스탯 초기화용 GE
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GAS, Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class UGameplayEffect> InitStatEffect;
 
-	// [추가] 레벨업 시 완전 회복용 GE
+	// 레벨업 시 완전 회복용 GE
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GAS, Meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class UGameplayEffect> LevelUpHealEffect;
 
-	// [추가] 리플리케이션 함수 선언
+	// 리플리케이션 함수 선언
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	// [수정] 레벨 변수에 Replicated 속성 추가
+	// 레벨 변수에 Replicated 속성 추가
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Status")
 	int32 Level = 1;
 
@@ -146,21 +143,21 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> CameraBoom;
 
-	//스프링암 길이 목표값
+	// 스프링암 길이 목표값
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = SpringArm, meta = (AllowPrivateAccess = "true"))
 	float ExpectedSpringArmLength = 800.0f;
 
 	const float ZoomMinLength = 150.0f;
 	const float ZoomMaxLength = 800.0f;
 
-	// [추가] 화면에 띄울 위젯 클래스 정보 (블루프린트 클래스)
+	// 화면에 띄울 위젯 클래스 정보 (블루프린트 클래스)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UUserWidget> HUDWidgetClass;
 
-	// [추가] 실제로 화면에 떠 있는 위젯 인스턴스
+	// 실제로 화면에 떠 있는 위젯 인스턴스
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPPGASPlayerStatusUserWidget> HUDWidget;
 
-	// [추가] HUD 초기화용 헬퍼 함수
+	// HUD 초기화용 헬퍼 함수
 	void InitializeHUD();
 };

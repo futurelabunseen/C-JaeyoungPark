@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Attribute/BossAttributeSet.h"
 #include "PropjectPTest.h"
 #include "GameplayEffectExtension.h"
@@ -72,19 +69,19 @@ void UBossAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		PPGAS_LOG(LogPPGAS, Warning, TEXT("Direct Health Access : %f"), GetHealth());
+		//PPGAS_LOG(LogPPGAS, Warning, TEXT("Direct Health Access : %f"), GetHealth());
 		SetHealth(FMath::Clamp(GetHealth(), MinimumHealth, GetMaxHealth()));
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		PPGAS_LOG(LogPPGAS, Log, TEXT("Damage : %f"), GetDamage());
+		//PPGAS_LOG(LogPPGAS, Log, TEXT("Damage : %f"), GetDamage());
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumHealth, GetMaxHealth()));
 		SetDamage(0.0f);
 	}
 
 	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
 	{
-		// [수정] 죽었을 때 때린 사람(Killer) 정보를 가져와서 방송합니다.
+		// 죽었을 때 때린 사람(Killer) 정보를 가져와서 방송합니다.
 		AActor* Killer = Data.EffectSpec.GetEffectContext().GetInstigator();
 		OnOutOfHealth_Boss.Broadcast(Killer);
 	}

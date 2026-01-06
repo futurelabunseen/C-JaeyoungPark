@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +5,6 @@
 #include "AIController.h"
 #include "MSAIController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROPJECTPTEST_API AMSAIController : public AAIController
 {
@@ -19,8 +15,6 @@ public:
 
 	void RunAI();
 	void StopAI();
-
-	// bool IsBehaviorTreeActive() const;
 
 protected:
 

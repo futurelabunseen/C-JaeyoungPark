@@ -1,5 +1,3 @@
-// AMSAIController.cpp
-
 #include "AI/MS/MSAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
@@ -30,24 +28,24 @@ void AMSAIController::RunAI()
         Blackboard->SetValueAsVector(FName("HomePos"), GetPawn()->GetActorLocation());
 
         // 여기에 RunBehaviorTree 호출 전후 로그 추가
-        UE_LOG(LogTemp, Error, TEXT("%s attempting to RunBehaviorTree for %s"), *GetName(), *GetPawn()->GetName());
+        //UE_LOG(LogTemp, Error, TEXT("%s attempting to RunBehaviorTree for %s"), *GetName(), *GetPawn()->GetName());
 
         bool RunResult = RunBehaviorTree(BTAsset);
         ensure(RunResult);
 
-        if (RunResult)
+        /*if (RunResult)
         {
             UE_LOG(LogTemp, Error, TEXT("%s SUCCESSFULLY ran BehaviorTree for %s"), *GetName(), *GetPawn()->GetName());
         }
         else
         {
             UE_LOG(LogTemp, Error, TEXT("%s FAILED to run BehaviorTree for %s"), *GetName(), *GetPawn()->GetName());
-        }
+        }*/
     }
-    else
+    /*else
     {
         UE_LOG(LogTemp, Error, TEXT("%s FAILED to use Blackboard for %s"), *GetName(), *GetPawn()->GetName());
-    }
+    }*/
 }
 
 void AMSAIController::StopAI()
@@ -64,18 +62,11 @@ void AMSAIController::OnPossess(APawn* InPawn)
     Super::OnPossess(InPawn);
     if (InPawn)
     {
-        UE_LOG(LogTemp, Error, TEXT("AMSAIController::OnPossess called for: %s (ID: %d)"), *InPawn->GetName(), InPawn->GetUniqueID()); // GetUniqueID로 고유 ID 확인
+        //UE_LOG(LogTemp, Error, TEXT("AMSAIController::OnPossess called for: %s (ID: %d)"), *InPawn->GetName(), InPawn->GetUniqueID()); // GetUniqueID로 고유 ID 확인
         RunAI();
     }
-    else
+    /*else
     {
         UE_LOG(LogTemp, Error, TEXT("AMSAIController::OnPossess called with NULL Pawn!"));
-    }
+    }*/
 }
-
-//// Behavior Tree 활성화 상태 확인 메서드 추가
-//bool AMSAIController::IsBehaviorTreeActive() const
-//{
-//    UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
-//    return BTComponent && BTComponent->IsRunning();
-//}

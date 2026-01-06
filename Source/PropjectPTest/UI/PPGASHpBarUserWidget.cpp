@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/PPGASHpBarUserWidget.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/PPCharacterAttributeSet.h"
@@ -17,7 +14,7 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 
 	if (ASC)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *ASC->GetOwner()->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("%s"), *ASC->GetOwner()->GetName());
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
 
@@ -29,10 +26,10 @@ void UPPGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 		ASC->GetGameplayAttributeValueChangeDelegate(UBossAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UBossAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UPPGASHpBarUserWidget::OnMaxHealthChanged);
 		
-		if (!PbHpBar)
+		/*if (!PbHpBar)
 		{
 			UE_LOG(LogTemp, Error, TEXT("PbHpBar is not set"));
-		}
+		}*/
 
 		const UPPCharacterAttributeSet* CurrentPPCharacterAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 		if (CurrentPPCharacterAttributeSet)

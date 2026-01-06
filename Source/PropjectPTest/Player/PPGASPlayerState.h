@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,6 @@
 #include "AbilitySystemInterface.h"
 #include "PPGASPlayerState.generated.h"
 
-/**
- *
- */
 UCLASS()
 class PROPJECTPTEST_API APPGASPlayerState : public APlayerState, public IAbilitySystemInterface
 {

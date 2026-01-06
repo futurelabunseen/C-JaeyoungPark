@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/PPGASPlayerStatusUserWidget.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/PPCharacterAttributeSet.h"
@@ -9,16 +6,16 @@
 
 void UPPGASPlayerStatusUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 {
-	// 1. 부모 함수 호출 (여기서 체력바가 연결됩니다!)
+	// 부모 함수 호출 (여기서 체력바가 연결됩니다!)
 	Super::SetAbilitySystemComponent(InOwner);
 
 	if (ASC)
 	{
-		// 2. 마나 연결 (기존 로직)
+		// 마나 연결 (기존 로직)
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetManaAttribute()).AddUObject(this, &ThisClass::OnManaChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetMaxManaAttribute()).AddUObject(this, &ThisClass::OnMaxManaChanged);
 
-		// 3. [추가] 경험치 연결
+		// 경험치 연결
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetExperienceAttribute()).AddUObject(this, &ThisClass::OnExperienceChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(UPPCharacterAttributeSet::GetMaxExperienceAttribute()).AddUObject(this, &ThisClass::OnMaxExperienceChanged);
 

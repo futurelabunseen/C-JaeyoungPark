@@ -1,21 +1,11 @@
 #include "Monster/MS_Golem.h"
-#include "AI/MS/MSAIController.h"
-#include "Attribute/MonsterAttributeSet.h"
-#include "Character/PPGASCharacter.h"
-#include "GA/PPGA_Attack.h"
-#include "GE/PPGE_AttackDamage.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "UI/PPGASWidgetComponent.h"
-#include "UI/PPGASUserWidget.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BehaviorTree/BehaviorTree.h"
+#include "AI/MS/MSAIController.h"
 #include "AI/OctreeSubsystem.h" 
+#include "Attribute/MonsterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
-#include "GameFramework/CharacterMovementComponent.h" 
-#include "Components/CapsuleComponent.h"
+#include "UI/PPGASWidgetComponent.h"
 
-
-// Sets default values
 AMS_Golem::AMS_Golem()
 {
 	Tags.Add(FName("Monster"));
@@ -139,5 +129,13 @@ void AMS_Golem::OnOutOfHealth(AActor* Killer)
 				KillerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 			}
 		}
+	}
+
+	if (HasAuthority())
+	{
+		AInterestManager* InterestManager = Cast<AInterestManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AInterestManager::StaticClass()));
+
+		// 매니저에게 "나 죽었어"라고 알리기
+		if (InterestManager) InterestManager->NotifyMonsterKilled(this);
 	}
 }

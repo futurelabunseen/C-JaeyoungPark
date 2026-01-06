@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -13,10 +12,6 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
-/**
- * 스킬 고유의 속성(사거리, 데미지 계수 등)만 관리합니다.
- * 자원 소모(Mana)는 PPCharacterAttributeSet에서 관리합니다.
- */
 UCLASS()
 class PROPJECTPTEST_API UPPCharacterSkillAttributeSet : public UAttributeSet
 {
@@ -29,7 +24,6 @@ public:
 	ATTRIBUTE_ACCESSORS(UPPCharacterSkillAttributeSet, MaxSkillRange);
 	ATTRIBUTE_ACCESSORS(UPPCharacterSkillAttributeSet, SkillAttackRate);
 	ATTRIBUTE_ACCESSORS(UPPCharacterSkillAttributeSet, MaxSkillAttackRate);
-	// SkillEnergy, MaxSkillEnergy 삭제됨
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
@@ -45,6 +39,4 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxSkillAttackRate;
-
-	// SkillEnergy 관련 변수 및 OnRep 함수 삭제됨
 };

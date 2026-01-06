@@ -19,10 +19,10 @@ void APPCharacterNonPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 void APPCharacterNonPlayer::SetDead()
 {
-    // 1. 상위 클래스(APPCharacter)의 SetDead 호출
+    // 상위 클래스(APPCharacter)의 SetDead 호출
     Super::SetDead();
 
-    // 2. AI 및 움직임 정지
+    // AI 및 움직임 정지
     AAIController* AIController = Cast<AAIController>(GetController());
     if (IsValid(AIController))
     {
@@ -32,7 +32,7 @@ void APPCharacterNonPlayer::SetDead()
 
     if (HasAuthority())
     {
-        // 3. 타이머 시간 계산
+        // 타이머 시간 계산
         float AnimLength = 1.5f;
         if (GetDeadMontage())
         {
@@ -56,7 +56,7 @@ void APPCharacterNonPlayer::SetDead()
 
 void APPCharacterNonPlayer::Multicast_StartDissolve_Implementation()
 {
-    // 1. 몬스터 몸체(Mesh) 녹이기 시작
+    // 몬스터 몸체(Mesh) 녹이기 시작
     StartDissolveTimeline();
 }
 
@@ -89,7 +89,7 @@ void APPCharacterNonPlayer::UpdateDissolveMaterial()
         CurrentDissolveValue = 1.0f;
         GetWorld()->GetTimerManager().ClearTimer(DissolveTimelineTimerHandle);
 
-        // (선택) 완전히 투명해지면 메쉬 숨기기
+        // 완전히 투명해지면 메쉬 숨기기
         GetMesh()->SetVisibility(false);
     }
 

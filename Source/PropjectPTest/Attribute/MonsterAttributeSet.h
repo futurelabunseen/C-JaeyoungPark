@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -13,13 +12,8 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
-// DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthMonsterDelegate);
-// 기존 델리게이트 선언을 아래처럼 변경 (AActor* Instigator 추가)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOutOfHealthMonsterDelegate, AActor*, InstigatorActor);
 
-/**
- * 
- */
 UCLASS()
 class PROPJECTPTEST_API UMonsterAttributeSet : public UAttributeSet
 {

@@ -6,9 +6,6 @@
 #include "GameplayEffectTypes.h"
 #include "PPGASDamageTextUserWidget.generated.h"
 
-/**
- *
- */
 UCLASS()
 class PROPJECTPTEST_API UPPGASDamageTextUserWidget : public UPPGASUserWidget
 {

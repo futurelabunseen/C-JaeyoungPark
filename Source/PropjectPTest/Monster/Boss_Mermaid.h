@@ -1,9 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
 #include "Interface/BossAIInterface.h"
 #include "Character/PPGASCharacterNonPlayer.h"
 #include "Boss_Mermaid.generated.h"
@@ -26,9 +24,6 @@ public:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHidePlayerHUDsRPC();
 
-	/*UFUNCTION(Server, Reliable)
-	void ServerOnOutOfHealthRPC();*/
-
 	// AI Section
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = "true"))
@@ -39,11 +34,11 @@ protected:
 	virtual float GetAIAttackRange() override;
 	virtual float GetAITurnSpeed() override;
 
-	// [추가] 경험치 보상용 GE 클래스
+	// 경험치 보상용 GE 클래스
 	UPROPERTY(EditAnywhere, Category = "GAS|Reward")
 	TSubclassOf<class UGameplayEffect> ExpRewardEffectClass;
 
-	// [추가] 보스가 주는 경험치 양 (보스니까 많이 주겠죠?)
+	// 보스가 주는 경험치 양
 	UPROPERTY(EditAnywhere, Category = "GAS|Reward")
 	float ExpRewardAmount = 1000.0f;
 };

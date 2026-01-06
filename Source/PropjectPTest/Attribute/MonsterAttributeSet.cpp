@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Attribute/MonsterAttributeSet.h"
 #include "PropjectPTest.h"
 #include "GameplayEffectExtension.h"
@@ -72,12 +69,12 @@ void UMonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCal
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		PPGAS_LOG(LogPPGAS, Warning, TEXT("Direct Health Access : %f"), GetHealth());
+		//PPGAS_LOG(LogPPGAS, Warning, TEXT("Direct Health Access : %f"), GetHealth());
 		SetHealth(FMath::Clamp(GetHealth(), MinimumHealth, GetMaxHealth()));
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		PPGAS_LOG(LogPPGAS, Log, TEXT("Damage : %f"), GetDamage());
+		//PPGAS_LOG(LogPPGAS, Log, TEXT("Damage : %f"), GetDamage());
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumHealth, GetMaxHealth()));
 		SetDamage(0.0f);
 	}
@@ -96,13 +93,13 @@ void UMonsterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCal
 // OnRep Section
 void UMonsterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
-	PPGAS_LOG(LogPPGAS, Warning, TEXT("Health : %f"), GetHealth());
+	//PPGAS_LOG(LogPPGAS, Warning, TEXT("Health : %f"), GetHealth());
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMonsterAttributeSet, Health, OldHealth);
 }
 
 void UMonsterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
 {
-	PPGAS_LOG(LogPPGAS, Warning, TEXT("Max Health : %f"), GetMaxHealth());
+	//PPGAS_LOG(LogPPGAS, Warning, TEXT("Max Health : %f"), GetMaxHealth());
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMonsterAttributeSet, MaxHealth, OldMaxHealth);
 }
 

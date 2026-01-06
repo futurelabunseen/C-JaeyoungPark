@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +5,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "PPGASGameMode.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROPJECTPTEST_API APPGASGameMode : public AGameModeBase
 {
@@ -17,13 +13,9 @@ public:
 	APPGASGameMode();
 
 	virtual FTransform GetRandomStartTransform() const;
-	virtual void OnPlayerKilled(AController* Killer, AController* KilledPlayer, APawn* KilledPawn);
-	// virtual void BeginPlay() override;
 
 protected:
 	virtual void PostInitializeComponents() override;
-	virtual void DefaultGameTimer();
-	void FinishMatch();
 	virtual void StartPlay() override;
 
 	FTimerHandle GameTimerHandle;

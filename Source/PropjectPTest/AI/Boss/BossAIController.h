@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +5,6 @@
 #include "AIController.h"
 #include "BossAIController.generated.h"
 
-/**
- *
- */
 UCLASS()
 class PROPJECTPTEST_API ABossAIController : public AAIController
 {
@@ -21,8 +17,6 @@ public:
 	void StopAI() const;
 
 protected:
-
-
 	virtual void OnPossess(APawn* InPawn) override;
 
 private:

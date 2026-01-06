@@ -19,16 +19,12 @@ public:
     virtual void Tick(float DeltaTime) override;
     void ShowBossHealthBar(AActor* BossActor);
     void HideBossHealthBar(AActor* BossActor);
-    // void ShowStatus(AActor* PlayerActor);
 
     UFUNCTION(BlueprintCallable, Category = "HUD")
     void SetHUDVisibility(bool bVisible);
 
 	UPROPERTY()
 	TObjectPtr<class UPPGASHpBarUserWidget> BossHpBarWidget;
-
-    /*UPROPERTY()
-    TObjectPtr<class UPPGASPlayerStatusUserWidget> PlayerStatusUserWidget;*/
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -44,9 +40,6 @@ protected:
     TArray<TObjectPtr<class UUserWidget>> CurrentWidgets;
 
     // --------------------------------------
-
-    /*UPROPERTY(EditDefaultsOnly, Category = "UI")
-    TArray <TSubclassOf<class UPPGASPlayerStatusUserWidget>> GASPlayerWidgetClass;*/
 
     UPROPERTY()
     TObjectPtr<class UUserWidget> ExitWidget;

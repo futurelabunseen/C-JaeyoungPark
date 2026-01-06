@@ -34,6 +34,9 @@ struct FMonsterProxyData
     // 스폰된 액터에 대한 포인터 (휴면 상태일 때는 nullptr)
     // TWeakObjectPtr는 액터가 파괴되었을 때 자동으로 nullptr로 바뀌어 안전합니다.
     TWeakObjectPtr<class APPGASCharacterNonPlayer> SpawnedActorPtr;
+
+    UPROPERTY(VisibleAnywhere)
+    bool bIsDead = false;
 };
 
 UCLASS()
@@ -45,7 +48,9 @@ public:
     AInterestManager();
 
     virtual void Tick(float DeltaTime) override;
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; // ◀ 추가
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+    void NotifyMonsterKilled(AActor* KilledMonster);
 
 protected:
     virtual void BeginPlay() override;
@@ -60,7 +65,7 @@ protected:
     void DespawnMonsterToPool(class APPGASCharacterNonPlayer* MonsterToDespawn);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InterestManager|Spawn")
-    float SpawnSearchRadius = 500.0f; // [수정] 스폰 위치를 찾기 위한 탐색 반경입니다.
+    float SpawnSearchRadius = 500.0f; // 스폰 위치를 찾기 위한 탐색 반경입니다.
 
 private:
     // 월드의 모든 몬스터 정보를 담을 배열

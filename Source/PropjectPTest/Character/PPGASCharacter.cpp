@@ -1,32 +1,20 @@
 // Player Setting Header
 #include "Character/PPGASCharacter.h"
+#include "AI/OctreeSubsystem.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Physics/PPCollision.h"
 #include "Net/UnrealNetwork.h"
+#include "Physics/PPCollision.h"
 #include "PropjectPTest/Game/PPGASGameMode.h"
-#include "Kismet/GameplayStatics.h"
-#include "Monster/MS_Golem.h"
-#include "AI/MS/MSAIController.h"
-#include "EngineUtils.h"
-#include "AI/OctreeSubsystem.h"
-#include "UI/PPGASPlayerStatusUserWidget.h"
+#include "EnhancedInputComponent.h"
 
 // GAS Header
 #include "AbilitySystemComponent.h"
-#include "Player/PPGASPlayerState.h"
-#include "EnhancedInputComponent.h"
-#include "UI/PPGASWidgetComponent.h"
-#include "UI/PPGASUserWidget.h"
 #include "Attribute/PPCharacterAttributeSet.h"
-#include "Character/PPComboActionData.h"
-#include "UI/PPGASHpBarUserWidget.h"
-#include "Player/PPHUD.h"
-#include "Player/PPPlayerController.h"
-
-
+#include "Player/PPGASPlayerState.h"
+#include "UI/PPGASPlayerStatusUserWidget.h"
 
 APPGASCharacter::APPGASCharacter()
 {
@@ -34,22 +22,18 @@ APPGASCharacter::APPGASCharacter()
 
 	Tags.Add(FName("Player"));
 
-	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_PPCAPSULE);
 
-	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-	// Create a camera boom...
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true);
@@ -57,12 +41,10 @@ APPGASCharacter::APPGASCharacter()
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
 	CameraBoom->bDoCollisionTest = false;
 
-	// Create a camera...
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false;
 
-	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
@@ -90,13 +72,11 @@ void APPGASCharacter::PossessedBy(AController* NewController)
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
-		// UE_LOG(LogTemp, Error, TEXT("%s Player"), *ASC->GetOwner()->GetName());
 
 		const FGameplayTag PlayerTag = FGameplayTag::RequestGameplayTag(FName("Character.Player"));
 		ASC->AddLooseGameplayTag(PlayerTag);
 
 
-		// PPGAS_LOG(LogPPGASNetwork, Log, TEXT("%s"), TEXT("00000"));
 		const UPPCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UPPCharacterAttributeSet>();
 		if (IsValid(CurrentAttributeSet))
 		{
@@ -158,7 +138,6 @@ void APPGASCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	// 위젯 제거
 	if (HUDWidget)
 	{
 		HUDWidget->RemoveFromParent();
@@ -182,17 +161,17 @@ void APPGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void APPGASCharacter::SetupGASInputComponent()
 {
-	//if (IsValid(ASC) && IsValid(InputComponent))
-	//{
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-	if (IsValid(EnhancedInputComponent))
+	if (IsValid(ASC) && IsValid(InputComponent))
 	{
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 0);
-		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 1);
-		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 2);
-		EnhancedInputComponent->BindAction(Interaction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 3);
+		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+		if (IsValid(EnhancedInputComponent))
+		{
+			EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 0);
+			EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 1);
+			EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 2);
+			EnhancedInputComponent->BindAction(Interaction, ETriggerEvent::Triggered, this, &APPGASCharacter::GASInputPressed, 3);
+		}
 	}
-	//}
 }
 
 void APPGASCharacter::GASInputPressed(int32 InputId)
@@ -229,16 +208,10 @@ void APPGASCharacter::OnOutOfHealth()
 {
 	SetDead();
 
-	if (HUDWidget)
-	{
-		// 화면에서 HUD를 숨깁니다.
-		HUDWidget->SetVisibility(ESlateVisibility::Hidden);
-	}
-
+	if (HUDWidget) HUDWidget->SetVisibility(ESlateVisibility::Hidden);
 	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPGASCharacter::ResetPlayer, 3.0f, false);
 }
 
-//Called every frame
 void APPGASCharacter::Tick(float DeltaTime)
 {
 	//줌 선형보간
@@ -260,7 +233,6 @@ void APPGASCharacter::ZoomOut()
 
 void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 {
-	// SetupGASInputComponent();
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	SetActorEnableCollision(true);
 
@@ -270,7 +242,6 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 	if (EffectSpecHandle.IsValid())
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-		// UE_LOG(LogTemp, Error, EffectSpecHandle.Data->get);
 	}
 
 	APPGASGameMode* PPGASGameMode = GetWorld()->GetAuthGameMode<APPGASGameMode>();
@@ -281,20 +252,14 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 	}
 
 	IsDeadFlag = false;
-
-	if (HUDWidget)
-	{
-		HUDWidget->SetVisibility(ESlateVisibility::Visible);
-	}
+	if (HUDWidget) HUDWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
-// [추가] UI 생성 및 초기화 전용 함수
+// UI 생성 및 초기화 전용 함수
 void APPGASCharacter::InitializeHUD()
 {
-	// 1. 내 캐릭터가 로컬 플레이어(내 화면)인지 확인합니다. (AI나 다른 플레이어 머리 위에 뜨면 안 되니까!)
 	if (IsLocallyControlled() && IsValid(HUDWidgetClass))
 	{
-		// 2. 이미 생성된 게 없다면 새로 만듭니다.
 		if (!IsValid(HUDWidget))
 		{
 			APlayerController* PC = Cast<APlayerController>(GetController());
@@ -304,10 +269,7 @@ void APPGASCharacter::InitializeHUD()
 
 				if (HUDWidget)
 				{
-					// 3. 화면(Viewport)에 띄웁니다.
 					HUDWidget->AddToViewport();
-
-					// 4. ASC를 연결해서 체력/마나 업데이트를 시작합니다.
 					HUDWidget->SetAbilitySystemComponent(ASC->GetOwner());
 				}
 			}
@@ -317,16 +279,13 @@ void APPGASCharacter::InitializeHUD()
 
 void APPGASCharacter::LevelUp()
 {
-	// 1. 레벨 증가
 	Level++;
 	UE_LOG(LogTemp, Warning, TEXT("Level Up! New Level: %d"), Level);
 
-	// 2. 최대 스탯(Max) 증가 적용
 	if (IsValid(ASC) && IsValid(InitStatEffect))
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
-		// 변경된 Level 변수를 넣어주어 MaxHealth, MaxMana 등을 늘려줍니다.
 		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(InitStatEffect, Level, EffectContextHandle);
 
 		if (EffectSpecHandle.IsValid())
@@ -335,13 +294,11 @@ void APPGASCharacter::LevelUp()
 		}
 	}
 
-	// 3. [추가] 체력/마나 완전 회복 (Max가 늘어난 상태에서 채워줍니다)
+	// 체력/마나 완전 회복 (Max가 늘어난 상태에서 채워줍니다)
 	if (IsValid(ASC) && IsValid(LevelUpHealEffect))
 	{
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 		EffectContextHandle.AddSourceObject(this);
-
-		// 레벨은 상관없으므로 1.0f로 적용
 		FGameplayEffectSpecHandle HealSpecHandle = ASC->MakeOutgoingSpec(LevelUpHealEffect, 1.0f, EffectContextHandle);
 
 		if (HealSpecHandle.IsValid())
@@ -352,7 +309,7 @@ void APPGASCharacter::LevelUp()
 	}
 }
 
-// [추가] 변수 리플리케이션 등록
+// 변수 리플리케이션 등록
 void APPGASCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

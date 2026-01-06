@@ -1,4 +1,3 @@
-
 #include "PPHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -50,10 +49,10 @@ void APPHUD::BeginPlay()
                 Widget->AddToViewport();
                 CurrentWidgets.Add(Widget);
             }
-            else
+            /*else
             {
                 UE_LOG(LogTemp, Error, TEXT("Failed to create HUD widget."));
-            }
+            }*/
         }
     }
 
@@ -68,10 +67,10 @@ void APPHUD::BeginPlay()
                 BossHpBarWidget->AddToViewport();
                 BossHpBarWidget->SetVisibility(ESlateVisibility::Hidden);
             }
-            else
+            /*else
             {
                 UE_LOG(LogTemp, Error, TEXT("Failed to create BossHpBarWidget."));
-            }
+            }*/
         }
     }
 
@@ -88,7 +87,7 @@ void APPHUD::BeginPlay()
             }
             else
             {
-                UE_LOG(LogTemp, Error, TEXT("Failed to create ExitWidget."));
+                //UE_LOG(LogTemp, Error, TEXT("Failed to create ExitWidget."));
                 CurrentWidgets.Remove(ExitWidget);
             }
         }
@@ -108,17 +107,17 @@ void APPHUD::BeginPlay()
                 MinimapWidget->InitializeMinimap(VolumeOrigin, VolumeExtent, MinimapSize);
 
                 FVector2D WidgetSize = MinimapWidget->GetDesiredSize();
-                UE_LOG(LogTemp, Log, TEXT("MinimapWidget Size: X=%f, Y=%f"), WidgetSize.X, WidgetSize.Y);
+                //UE_LOG(LogTemp, Log, TEXT("MinimapWidget Size: X=%f, Y=%f"), WidgetSize.X, WidgetSize.Y);
             }
-            else
+            /*else
             {
                 UE_LOG(LogTemp, Error, TEXT("Failed to cast MinimapWidget to UMinimapWidget."));
-            }
+            }*/
         }
-        else
+        /*else
         {
             UE_LOG(LogTemp, Error, TEXT("Failed to create Minimap widget."));
-        }
+        }*/
     }
 
     // ◀◀◀ 4. GetFirstPlayerController() 대신 안전하게 PlayerController 변수를 사용합니다.
@@ -164,7 +163,7 @@ void APPHUD::HideBossHealthBar(AActor* BossActor)
     {
         BossHpBarWidget->SetVisibility(ESlateVisibility::Hidden);
         BossHpBarWidget->RemoveFromParent();
-        UE_LOG(LogTemp, Warning, TEXT("HideBossHealthBar: BossHpBarWidget removed from parent!"));
+        //UE_LOG(LogTemp, Warning, TEXT("HideBossHealthBar: BossHpBarWidget removed from parent!"));
         // BossHpBarWidget->SetAbilitySystemComponent(BossActor);
     }
 }

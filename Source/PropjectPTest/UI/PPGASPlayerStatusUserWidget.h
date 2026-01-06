@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,10 +5,6 @@
 #include "UI/PPGASHpBarUserWidget.h"
 #include "PPGASPlayerStatusUserWidget.generated.h"
 
-/**
- * 부모 클래스(HpBarUserWidget)가 체력을 담당하고,
- * 이 클래스는 마나와 경험치를 추가로 담당합니다.
- */
 UCLASS()
 class PROPJECTPTEST_API UPPGASPlayerStatusUserWidget : public UPPGASHpBarUserWidget
 {
@@ -18,7 +13,7 @@ public:
 	virtual void SetAbilitySystemComponent(AActor* InOwner) override;
 
 	void UpdateMpBar();
-	void UpdateExpBar(); // [추가] 경험치바 업데이트 함수
+	void UpdateExpBar(); // 경험치바 업데이트 함수
 
 protected:
 	// --- Mana Section ---
