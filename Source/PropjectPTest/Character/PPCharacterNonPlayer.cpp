@@ -7,17 +7,9 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Net/UnrealNetwork.h"
 
-// 불필요해진 나이아가라 헤더들은 제거했습니다.
-// #include "NiagaraFunctionLibrary.h" 
-// #include "NiagaraComponent.h"
-// #include "UObject/ConstructorHelpers.h" (만약 다른 에셋 로드에 안 쓴다면 제거 가능)
-
 APPCharacterNonPlayer::APPCharacterNonPlayer()
 {
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
-    // [삭제됨] 나이아가라 이펙트 로드 부분
-    // 이제 머티리얼이 스스로 빛나므로 별도의 파티클 에셋을 로드할 필요가 없습니다.
 }
 
 void APPCharacterNonPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -64,9 +56,6 @@ void APPCharacterNonPlayer::SetDead()
 
 void APPCharacterNonPlayer::Multicast_StartDissolve_Implementation()
 {
-    // [삭제됨] 나이아가라 이펙트 스폰 부분
-    // 이제 파티클을 소환하지 않고, 바로 몸체를 녹이는 함수만 호출합니다.
-
     // 1. 몬스터 몸체(Mesh) 녹이기 시작
     StartDissolveTimeline();
 }
@@ -105,7 +94,6 @@ void APPCharacterNonPlayer::UpdateDissolveMaterial()
     }
 
     // 머티리얼 파라미터 업데이트 (이름: "Dissolve")
-    // 이제 이 값에 따라 머티리얼 내부에서 1-x 계산과 Step 분기를 통해
-    // 스스로 불타는 효과와 투명화를 동시에 처리합니다.
+    // 이제 이 값에 따라 머티리얼 내부에서 1-x 계산과 Step 분기를 통해 스스로 불타는 효과와 투명화를 동시에 처리합니다.
     GetMesh()->SetScalarParameterValueOnMaterials(FName("Dissolve"), CurrentDissolveValue);
 }

@@ -130,15 +130,15 @@ void UPPCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 				UE_LOG(LogTemp, Error, TEXT("AttributeSet: Failed to cast AvatarActor to APPGASCharacter!"));
 			}
 		}
-
-		// Dead Check
-		if ((GetHealth() <= 0.0f) && !bOutOfHealth)
-		{
-			Data.Target.AddLooseGameplayTag(PPTAG_CHARACTER_ISDEAD);
-			OnOutOfHealth_Player.Broadcast();
-		}
-		bOutOfHealth = (GetHealth() <= 0.0f);
 	}
+
+	// Dead Check
+	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
+	{
+		Data.Target.AddLooseGameplayTag(PPTAG_CHARACTER_ISDEAD);
+		OnOutOfHealth_Player.Broadcast();
+	}
+	bOutOfHealth = (GetHealth() <= 0.0f);
 }
 
 // -----------------------------------------------

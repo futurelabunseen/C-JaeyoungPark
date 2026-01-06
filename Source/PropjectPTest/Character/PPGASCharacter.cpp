@@ -135,22 +135,13 @@ void APPGASCharacter::OnRep_PlayerState()
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(GASPS, this);
-		//HpBar->InitWidget();
 		InitializeHUD();
 	}
-
-	// 어빌리티 시스템 디버그 용
-	/*if (IsLocallyControlled() && Controller)
-	{
-		APlayerController* PlayerContorller = CastChecked<APlayerController>(GetController());
-		PlayerContorller->ConsoleCommand(TEXT("showdebug abilitysystem"));
-	}*/
 }
 
 void APPGASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	// UE_LOG(LogTemp, Error, TEXT(">>>>>> PLAYER CHARACTER [%s] BeginPlay HAS BEEN CALLED! <<<<<<"), *this->GetName());
 
 	UWorld* World = GetWorld();
 	if (World)
@@ -236,16 +227,14 @@ void APPGASCharacter::GASInputReleased(int32 InputId)
 
 void APPGASCharacter::OnOutOfHealth()
 {
+	SetDead();
+
 	if (HUDWidget)
 	{
 		// 화면에서 HUD를 숨깁니다.
 		HUDWidget->SetVisibility(ESlateVisibility::Hidden);
-
-		// 혹은 아예 제거하고 싶다면 아래 코드를 사용:
-		// HUDWidget->RemoveFromParent();
 	}
 
-	SetDead();
 	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPGASCharacter::ResetPlayer, 3.0f, false);
 }
 
@@ -292,6 +281,11 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 	}
 
 	IsDeadFlag = false;
+
+	if (HUDWidget)
+	{
+		HUDWidget->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
 // [추가] UI 생성 및 초기화 전용 함수

@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Monster/MS_Golem.h"
 #include "AI/MS/MSAIController.h"
 #include "Attribute/MonsterAttributeSet.h"

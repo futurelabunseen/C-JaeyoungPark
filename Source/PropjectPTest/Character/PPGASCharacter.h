@@ -44,11 +44,8 @@ public:
 
 	void ResetPlayer();
 
-	// void DetectMonstersInRadius();
-
 	FTimerHandle DeadTimerHandle;
 	FTimerHandle InitializationTimerHandle;
-	// FTimerHandle MemberTimerHandle;
 
 	// 범위 설정 변수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Detection")
@@ -73,9 +70,6 @@ protected:
 	virtual void OnOutOfHealth();
 
 	virtual void Tick(float DeltaTime);
-
-	/*void MoveToStreamingLevel(const bool IsPlayerDeath);
-	void UnloadMultipleStreamingLevels(const FName& LevelName);*/
 
 protected:
 
@@ -158,13 +152,6 @@ private:
 
 	const float ZoomMinLength = 150.0f;
 	const float ZoomMaxLength = 800.0f;
-
-	//UPROPERTY()
-	//TObjectPtr<class UPPGASWidgetComponent> HpBar;
-
-	// [삭제] 더 이상 컴포넌트 방식은 쓰지 않습니다.
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
-	// class UPPGASWidgetComponent* HpBar;
 
 	// [추가] 화면에 띄울 위젯 클래스 정보 (블루프린트 클래스)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))

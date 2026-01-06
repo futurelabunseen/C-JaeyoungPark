@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -10,9 +9,7 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "PPCharacterNonPlayer.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class PROPJECTPTEST_API APPCharacterNonPlayer : public APPCharacter
 {
