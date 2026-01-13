@@ -3,8 +3,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "UI/PPGASHpBarUserWidget.h"
-#include "UI/PPGASPlayerStatusUserWidget.h"
 #include "PPHUD.generated.h"
 
 UCLASS()
@@ -34,7 +32,7 @@ protected:
     TArray <TSubclassOf<class UPPGASHpBarUserWidget>> GASWidgetClass;
 
     UPROPERTY(EditDefaultsOnly, Category = "UI")
-    TSubclassOf<UUserWidget> ExitWidgetClass;
+    TSubclassOf<class UUserWidget> ExitWidgetClass;
 
     UPROPERTY()
     TArray<TObjectPtr<class UUserWidget>> CurrentWidgets;

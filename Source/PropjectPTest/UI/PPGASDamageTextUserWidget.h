@@ -15,8 +15,6 @@ public:
 
 protected:
 	virtual void SpawnDamage(const FOnAttributeChangeData& ChangeData);
-
-	// Override NativeConstruct
 	virtual void NativeConstruct() override;
 
 protected:

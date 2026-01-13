@@ -3,7 +3,6 @@
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Pawn.h"
 #include "NiagaraFunctionLibrary.h"
 #include "PropjectPTest.h"
@@ -108,7 +107,7 @@ void APPPlayerController::PostNetInit()
 {
 	Super::PostNetInit();
 
-	UNetDriver* NetDriver = GetNetDriver();
+	//UNetDriver* NetDriver = GetNetDriver();
 }
 
 void APPPlayerController::OnPossess(APawn* InPawn)

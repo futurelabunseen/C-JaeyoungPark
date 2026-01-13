@@ -1,13 +1,10 @@
-
 #include "UI/PPGASDamageTextUserWidget.h"
 #include "Attribute/BossAttributeSet.h"
 #include "Components/TextBlock.h"
-#include "Blueprint/UserWidget.h"
-#include "Kismet/GameplayStatics.h"
+#include "Components/MeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "TimerManager.h"
 #include "Components/CanvasPanelSlot.h"
-#include "Materials/MaterialInstanceDynamic.h"
 
 void UPPGASDamageTextUserWidget::NativeConstruct()
 {
@@ -26,7 +23,7 @@ void UPPGASDamageTextUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 
 	if (ASC)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *ASC->GetOwner()->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("%s"), *ASC->GetOwner()->GetName());
 		ASC->GetGameplayAttributeValueChangeDelegate(UBossAttributeSet::GetHealthAttribute()).AddUObject(this, &UPPGASDamageTextUserWidget::SpawnDamage);
 	}
 }

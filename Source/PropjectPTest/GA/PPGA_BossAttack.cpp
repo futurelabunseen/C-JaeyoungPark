@@ -1,10 +1,6 @@
-
 #include "GA/PPGA_BossAttack.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "PropjectPTest.h"
-#include "GameFramework/Character.h"
-#include "Components/SphereComponent.h"
-#include "GameFramework/Actor.h"
 #include "Character/PPGASCharacterNonPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
