@@ -20,7 +20,7 @@ public:
     virtual void Deinitialize() override;
     virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 
-    // ◀◀◀ OnWorldEndPlay 함수를 완전히 제거합니다.
+    // OnWorldEndPlay 함수를 완전히 제거합니다.
 
     // --- Subsystem의 Tick 함수 ---
     void CustomTick(UWorld* World, ELevelTick TickType, float DeltaTime);

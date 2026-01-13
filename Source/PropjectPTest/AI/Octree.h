@@ -31,7 +31,7 @@ public:
     void Query(const FSphere& QuerySphere, TArray<AActor*>& OutActors) const;
     void DrawDebug(UWorld* World, int32 Depth = 0) const;
 
-    // ◀◀◀ 모든 요소를 재귀적으로 수집하는 함수를 추가합니다.
+    // 모든 요소를 재귀적으로 수집하는 함수를 추가합니다.
     void GetAllElements(TArray<FGameOctreeElement>& OutElements) const;
 
 private:

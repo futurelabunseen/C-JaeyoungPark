@@ -51,7 +51,7 @@ private:
     // 게임 스레드로부터 복사해 온, 처리해야 할 액터 목록
     TArray<AActor*> ActorsToProcess;
 
-    // ◀◀◀ 이전 옥트리(PendingOctree)를 참조하기 위한 SharedPtr 멤버 변수 추가
+    // 이전 옥트리(PendingOctree)를 참조하기 위한 SharedPtr 멤버 변수 추가
     //TSharedPtr<FGameOctree, ESPMode::ThreadSafe> BaseOctreeForBuild;
 
     // 워커 스레드 내부에서 만들고 완성할 옥트리
