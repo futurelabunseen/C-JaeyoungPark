@@ -162,8 +162,8 @@ void AInterestManager::UpdateMonstersState()
     {
         if (Proxy.bIsDead) continue;
 
-        const FVector MonsterLocation = Proxy.SpawnedActorPtr.IsValid() ? Proxy.SpawnedActorPtr->GetActorLocation() : Proxy.LastKnownLocation;
-
+        const FVector MonsterLocation = Proxy.SpawnedActorPtr.IsValid() ?
+             Proxy.SpawnedActorPtr->GetActorLocation() : Proxy.LastKnownLocation;
         EAIState DesiredState = EAIState::Dormant;
 
         // 모든 플레이어와의 거리를 체크하여 몬스터의 최종 상태를 결정
@@ -182,10 +182,7 @@ void AInterestManager::UpdateMonstersState()
                 else if (HorizontalDistanceSq < FMath::Square(RelevantRadius))
                 {
                     // Active가 아닌 경우에만 Relevant로 설정
-                    if (DesiredState != EAIState::Active)
-                    {
-                        DesiredState = EAIState::Relevant;
-                    }
+                    if (DesiredState != EAIState::Active) DesiredState = EAIState::Relevant;
                 }
             }
         }
@@ -211,7 +208,8 @@ void AInterestManager::UpdateMonstersState()
             if (Proxy.SpawnedActorPtr.IsValid())
             {
                 // 몬스터의 틱 활성화/비활성화
-                Proxy.SpawnedActorPtr->SetActorTickEnabled(DesiredState == EAIState::Active || DesiredState == EAIState::Relevant);
+                Proxy.SpawnedActorPtr->SetActorTickEnabled
+                (DesiredState == EAIState::Active || DesiredState == EAIState::Relevant);
             }
             Proxy.CurrentState = DesiredState;
         }

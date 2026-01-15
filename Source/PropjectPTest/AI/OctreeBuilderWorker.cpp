@@ -66,21 +66,13 @@ void FOctreeBuilderWorker::Exit()
 {
 }
 
-// StartWork 함수의 시그니처에 BaseOctree 인자를 추가했습니다.
 void FOctreeBuilderWorker::StartWork(TArray<AActor*> ActorsSnapshot)
 {
     if (bIsWorkDone)
     {
         bIsWorkDone = false; // "작업 중" 상태로 전환
         ActorsToProcess = MoveTemp(ActorsSnapshot); // 스냅샷 데이터의 소유권을 이전받음
-
-        // 전달받은 BaseOctree를 멤버 변수에 저장합니다.
-        // BaseOctreeForBuild = BaseOctree;
-
-        if (WorkEvent)
-        {
-            WorkEvent->Trigger();
-        }
+        if (WorkEvent) WorkEvent->Trigger();
     }
 }
 

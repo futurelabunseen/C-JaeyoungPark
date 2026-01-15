@@ -6,6 +6,7 @@
 #include "TimerManager.h"
 #include "AbilitySystemBlueprintLibrary.h" 
 #include "GameplayTagContainer.h"
+#include "UI/PPGASHpBarUserWidget.h"
 
 ABoss_Mermaid::ABoss_Mermaid()
 {
@@ -41,10 +42,7 @@ void ABoss_Mermaid::OnOutOfHealth(AActor* Killer)
 	Super::OnOutOfHealth(Killer);
 
 	// 서버에서 실행되는지 확인
-	if (!HasAuthority())
-	{
-		return;
-	}
+	if (!HasAuthority()) return;
 
 	// 킬러에게 경험치 보상 지급 로직 (Golem과 동일)
 	if (Killer && ExpRewardEffectClass)
@@ -64,8 +62,6 @@ void ABoss_Mermaid::OnOutOfHealth(AActor* Killer)
 
 				// 적용
 				KillerASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
-
-				//UE_LOG(LogTemp, Warning, TEXT("Boss Reward: Gave %f Exp to %s"), ExpRewardAmount, *Killer->GetName());
 			}
 		}
 	}
@@ -75,18 +71,14 @@ void ABoss_Mermaid::OnOutOfHealth(AActor* Killer)
 
 	FTimerHandle DeadMonsterTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(DeadMonsterTimerHandle, this, &ABoss_Mermaid::DisconnectFromServer, 5.0f, false);
-	//UE_LOG(LogTemp, Warning, TEXT("OnOutOfHealth: Timer set for DisconnectFromServer"));
 }
 
 
 void ABoss_Mermaid::DisconnectFromServer()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("DisconnectFromServer: Called"));
-
 	UWorld* World = GetWorld();
 	if (World)
 	{
-
 		// 모든 플레이어 컨트롤러를 순회하면서 레벨을 변경합니다.
 		for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
 		{
@@ -98,72 +90,25 @@ void ABoss_Mermaid::DisconnectFromServer()
 
 				// 모든 클라이언트를 새로운 맵으로 이동시킵니다.
 				PC->ClientTravel(NewLevelName.ToString(), TRAVEL_Absolute);
-				//UE_LOG(LogTemp, Warning, TEXT("DisconnectFromServer: ClientTravel called for PC %s"), *PC->GetName());
 			}
-			/*else
-			{
-				UE_LOG(LogTemp, Error, TEXT("DisconnectFromServer: Invalid PlayerController found"));
-			}*/
 		}
 	}
-	/*else
-	{
-		UE_LOG(LogTemp, Error, TEXT("DisconnectFromServer: World is not valid"));
-	}*/
 }
 
 void ABoss_Mermaid::MulticastHidePlayerHUDsRPC_Implementation()
 {
-	if (!HasAuthority())
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("MulticastHidePlayerHUDsRPC called on a non-server instance"));
-		return;
-	}
+	// 멀티플레이어 게임에서 각 클라이언트는 자신의 컨트롤러를 인덱스 0으로 가짐
+	APlayerController* LocalPC = GetWorld()->GetFirstPlayerController();
 
-	if (HasAuthority())
+	// 내 컨트롤러의 HUD 가져오기
+	if (APPHUD* LocalHUD = Cast<APPHUD>(LocalPC->GetHUD()))
 	{
-		for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+		// 위젯이 있다면 숨기기 요청
+		if (IsValid(LocalHUD->BossHpBarWidget.Get()))
 		{
-			APlayerController* PC = It->Get();
-			if (!IsValid(PC))
-			{
-				//UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: Invalid PlayerController found"));
-				continue;
-			}
-
-			// HUD가 제대로 할당되어 있는지 확인
-			AHUD* RawHUD = PC->GetHUD();
-			if (!IsValid(RawHUD))
-			{
-				//UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: PC %s has no HUD assigned"), *PC->GetName());
-				continue;
-			}
-
-			// APPHUD로 캐스팅 시도
-			APPHUD* PlayerHUD = Cast<APPHUD>(PC->GetHUD());
-			/*if (!IsValid(PlayerHUD))
-			{
-				UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: PlayerHUD cast failed for PC %s (HUD Class: %s)"),
-					*PC->GetName(), *RawHUD->GetClass()->GetName());
-				continue;
-			}*/
-
-			// BossHpBarWidget이 유효한지 확인 후 숨기기
-			if (IsValid(PlayerHUD->BossHpBarWidget))
-			{
-				PlayerHUD->HideBossHealthBar(this);
-				//UE_LOG(LogTemp, Warning, TEXT("MulticastHidePlayerHUDsRPC: Hidden BossHpBarWidget for PC %s"), *PC->GetName());
-			}
-			/*else
-			{
-				UE_LOG(LogTemp, Error, TEXT("MulticastHidePlayerHUDsRPC: BossHpBarWidget is nullptr for PC %s"), *PC->GetName());
-			}*/
+			LocalHUD->HideBossHealthBar(this);
 		}
 	}
-	/*else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("MulticastHidePlayerHUDsRPC called on a non-server instance"));
-	}*/
 }
 
 float ABoss_Mermaid::GetAIPatrolRadius()

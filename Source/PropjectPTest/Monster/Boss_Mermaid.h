@@ -20,7 +20,9 @@ public:
 
 	void DisconnectFromServer();
 
-	// 멀티캐스트 RPC 선언
+	// 멀티캐스트 
+	// 
+	// 선언
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHidePlayerHUDsRPC();
 

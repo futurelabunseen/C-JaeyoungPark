@@ -26,6 +26,9 @@ protected:
     UPROPERTY(EditAnywhere)
     FVector BossStartLocation;
 
+    // 타이머 핸들 (지연 언로드용)
+    FTimerHandle UnloadTimerHandle;
+
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
@@ -34,6 +37,20 @@ protected:
     UFUNCTION()
     void OnBossLevelLoaded();
 
+    UFUNCTION()
+    void OnBossLevelVisible();
+
     UFUNCTION(NetMulticast, Reliable)
     void MulticastMovePlayers();
+
+    UFUNCTION()
+    void OnLevelUnloaded(); // 빈 껍데기 함수
+
+    // [추가] 언로드 작업을 수행할 함수
+    UFUNCTION()
+    void DelayedUnloadDungeon();
+
+    // [추가] 언로드 완료 콜백 (로그 경고 해결용)
+    UFUNCTION()
+    void OnDungeonUnloaded();
 };
