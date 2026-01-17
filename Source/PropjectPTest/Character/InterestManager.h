@@ -87,7 +87,7 @@ private:
     float VerticalTolerance = 500.0f;
 
     UPROPERTY(EditAnywhere, Category = "Interest Settings")
-    float UpdateInterval = 1.0f; // 상태 업데이트 주기 (초)
+    float UpdateInterval = 0.1f; // 상태 업데이트 주기 (초)
 
     FTimerHandle UpdateTimerHandle;
     FTimerHandle InitTimerHandle; // 초기화를 위한 타이머 핸들 추가
