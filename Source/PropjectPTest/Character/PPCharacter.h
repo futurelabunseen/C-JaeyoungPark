@@ -15,25 +15,26 @@ class PROPJECTPTEST_API APPCharacter : public ACharacter
 public:
 	APPCharacter();
 
-	FORCEINLINE class UAnimMontage* GetDeadMontage() const { return DeadMontage; }
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	bool IsDeadFlag = false;
+	FORCEINLINE class UAnimMontage* GetDeadMontage() const { return DeadMontage; }
 
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> DeadMontage;
 
+	UPROPERTY(ReplicatedUsing = OnRep_IsDeadFlag, BlueprintReadOnly, Category = "State")
+	bool IsDeadFlag = false;
+
+	UFUNCTION()
+	void OnRep_IsDeadFlag();
+
 // Dead Section
 protected:
 
 	virtual void SetDead();
-
-	UFUNCTION(NetMulticast, Unreliable)
-	void DeadMulticastRPC();
-
 	void PlayDeadAnimation();
-
 	float DeadEventDelayTime = 5.0f;
 };
 

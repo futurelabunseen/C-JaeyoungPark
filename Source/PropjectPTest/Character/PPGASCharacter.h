@@ -70,7 +70,8 @@ protected:
 
 protected:
 
-	// GAS Section
+	// -------------------------------------------------------------- GAS Section
+
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
@@ -95,9 +96,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Status")
 	int32 Level = 1;
 
-	// --------------------------------------------------------------
+	// -------------------------------------------------------------- Character Section
 
-	// Character Section
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> SkillActionMontage;
 
@@ -113,9 +113,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Data, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UPPComboActionData> ComboActionData;
 
-	// --------------------------------------------------------------
+	// -------------------------------------------------------------- Action Input Section
 
-	// Action Input Section
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> ZoomInAction;
 
@@ -135,11 +134,9 @@ protected:
 	TObjectPtr<class UInputAction> Interaction;
 
 private:
-	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCameraComponent> TopDownCameraComponent;
 
-	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> CameraBoom;
 

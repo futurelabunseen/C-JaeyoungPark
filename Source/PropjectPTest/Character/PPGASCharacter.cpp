@@ -253,6 +253,7 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 
 	IsDeadFlag = false;
 	if (HUDWidget) HUDWidget->SetVisibility(ESlateVisibility::Visible);
+	OnRep_IsDeadFlag();
 }
 
 // UI 생성 및 초기화 전용 함수
@@ -304,7 +305,7 @@ void APPGASCharacter::LevelUp()
 		if (HealSpecHandle.IsValid())
 		{
 			ASC->BP_ApplyGameplayEffectSpecToSelf(HealSpecHandle);
-			UE_LOG(LogTemp, Log, TEXT("Level Up Heal Applied!"));
+			// UE_LOG(LogTemp, Log, TEXT("Level Up Heal Applied!"));
 		}
 	}
 }
