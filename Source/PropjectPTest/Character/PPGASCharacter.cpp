@@ -15,6 +15,7 @@
 #include "Attribute/PPCharacterAttributeSet.h"
 #include "Player/PPGASPlayerState.h"
 #include "UI/PPGASPlayerStatusUserWidget.h"
+#include "Player/PPHUD.h"
 
 APPGASCharacter::APPGASCharacter()
 {
@@ -257,6 +258,27 @@ void APPGASCharacter::ResetPlayer() // 플레이어 리셋(리스폰)
 }
 
 // UI 생성 및 초기화 전용 함수
+//void APPGASCharacter::InitializeHUD()
+//{
+//	if (IsLocallyControlled() && IsValid(HUDWidgetClass))
+//	{
+//		if (!IsValid(HUDWidget))
+//		{
+//			APlayerController* PC = Cast<APlayerController>(GetController());
+//			if (PC)
+//			{
+//				HUDWidget = CreateWidget<UPPGASPlayerStatusUserWidget>(PC, HUDWidgetClass);
+//
+//				if (HUDWidget)
+//				{
+//					HUDWidget->AddToViewport();
+//					HUDWidget->SetAbilitySystemComponent(ASC->GetOwner());
+//				}
+//			}
+//		}
+//	}
+//}
+
 void APPGASCharacter::InitializeHUD()
 {
 	if (IsLocallyControlled() && IsValid(HUDWidgetClass))
@@ -266,12 +288,20 @@ void APPGASCharacter::InitializeHUD()
 			APlayerController* PC = Cast<APlayerController>(GetController());
 			if (PC)
 			{
+				// 1. 위젯 생성 (기존 코드)
 				HUDWidget = CreateWidget<UPPGASPlayerStatusUserWidget>(PC, HUDWidgetClass);
 
 				if (HUDWidget)
 				{
 					HUDWidget->AddToViewport();
 					HUDWidget->SetAbilitySystemComponent(ASC->GetOwner());
+
+					// 2. [추가] HUD를 찾아가서, 방금 만든 위젯을 리스트에 등록합니다.
+					APPHUD* PPHUD = Cast<APPHUD>(PC->GetHUD());
+					if (IsValid(PPHUD))
+					{
+						PPHUD->RegisterWidgetToHUD(HUDWidget);
+					}
 				}
 			}
 		}

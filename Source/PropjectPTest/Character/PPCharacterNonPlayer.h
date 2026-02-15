@@ -21,6 +21,8 @@ public:
 protected:
 	virtual void SetDead() override;
 
+	virtual void OnRep_IsDeadFlag() override;
+
 	FTimerHandle DeadTimerHandle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Materials")
@@ -35,9 +37,6 @@ protected:
 
 	// 디졸브 진행 속도
 	float DissolveSpeed = 2.0f; // 값이 클수록 빨리 사라짐
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_StartDissolve();
 
 	void StartDissolveTimeline();
 	void UpdateDissolveMaterial();

@@ -28,7 +28,7 @@ protected:
 	bool IsDeadFlag = false;
 
 	UFUNCTION()
-	void OnRep_IsDeadFlag();
+	virtual void OnRep_IsDeadFlag();
 
 // Dead Section
 protected:

@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/PlayerController.h"
 #include "Net/UnrealNetwork.h"
+#include "Components/CapsuleComponent.h"
 
 AInterestManager::AInterestManager()
 {
@@ -30,7 +31,7 @@ void AInterestManager::BeginPlay()
     // 서버에서만 매니저를 초기화하고 몬스터 상태 업데이트 타이머를 설정
     if (HasAuthority())
     {
-        GetWorld()->GetTimerManager().SetTimer(InitTimerHandle, this, &AInterestManager::InitializeManager, 0.2f, false);
+        GetWorld()->GetTimerManager().SetTimer(InitTimerHandle, this, &AInterestManager::InitializeManager, 0.1f, false);
     }
     else
     {
@@ -216,37 +217,102 @@ void AInterestManager::UpdateMonstersState()
     }
 }
 
+//APPGASCharacterNonPlayer* AInterestManager::SpawnMonsterFromPool(const FMonsterProxyData& ProxyData, EAIState DesiredState)
+//{
+//    if (!HasAuthority()) return nullptr; // 서버에서만 스폰
+//
+//    UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+//    if (NavSys == nullptr)
+//    {
+//        //UE_LOG(LogTemp, Error, TEXT("AInterestManager: Navigation System not found!"));
+//        return nullptr;
+//    }
+//
+//    FNavLocation NavLocation;
+//    bool bFoundValidLocation = NavSys->GetRandomPointInNavigableRadius(ProxyData.LastKnownLocation, SpawnSearchRadius, NavLocation);
+//
+//    if (bFoundValidLocation)
+//    {
+//        FActorSpawnParameters SpawnParams;
+//        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+//        // 서버에서 스폰된 액터는 자동으로 클라이언트로 리플리케이트됩니다.
+//        APPGASCharacterNonPlayer* SpawnedMonster = GetWorld()->SpawnActor<APPGASCharacterNonPlayer>(ProxyData.MonsterClass, NavLocation.Location, FRotator::ZeroRotator, SpawnParams);
+//
+//        if (SpawnedMonster)
+//        {
+//            SpawnedMonster->InitialState = DesiredState; // 스폰된 몬스터에 초기 상태 전달
+//            SpawnedMonster->SetReplicates(true);
+//            SpawnedMonster->SetReplicateMovement(true);
+//        }
+//        return SpawnedMonster;
+//    }
+//
+//    //UE_LOG(LogTemp, Warning, TEXT("Could not find valid spawn location on NavMesh near %s for monster."), *ProxyData.LastKnownLocation.ToString());
+//    return nullptr;
+//}
+
 APPGASCharacterNonPlayer* AInterestManager::SpawnMonsterFromPool(const FMonsterProxyData& ProxyData, EAIState DesiredState)
 {
-    if (!HasAuthority()) return nullptr; // 서버에서만 스폰
+    if (!HasAuthority()) return nullptr;
 
     UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-    if (NavSys == nullptr)
+    if (NavSys == nullptr) return nullptr;
+
+    // 1. 스폰하려는 몬스터 클래스의 기본 정보(CDO)를 가져옵니다.
+    // 이를 통해 실제로 스폰하지 않고도 캡슐의 크기를 알 수 있습니다.
+    APPGASCharacterNonPlayer* MonsterCDO = Cast<APPGASCharacterNonPlayer>(ProxyData.MonsterClass->GetDefaultObject());
+    if (!MonsterCDO) return nullptr;
+
+    float CapsuleHalfHeight = 0.0f;
+    if (MonsterCDO->GetCapsuleComponent())
     {
-        //UE_LOG(LogTemp, Error, TEXT("AInterestManager: Navigation System not found!"));
-        return nullptr;
+        CapsuleHalfHeight = MonsterCDO->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
     }
 
-    FNavLocation NavLocation;
-    bool bFoundValidLocation = NavSys->GetRandomPointInNavigableRadius(ProxyData.LastKnownLocation, SpawnSearchRadius, NavLocation);
+    // 2. 스폰 파라미터 설정 (충돌 시 스폰하지 않음)
+    FActorSpawnParameters SpawnParams;
+    // 중요: 겹치면 억지로 스폰하지 말고 nullptr을 반환하게 합니다.
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-    if (bFoundValidLocation)
+    // 3. 유효한 위치를 찾을 때까지 몇 번 재시도합니다. (예: 10회)
+    const int32 MaxRetryAttempts = 10;
+
+    for (int32 i = 0; i < MaxRetryAttempts; i++)
     {
-        FActorSpawnParameters SpawnParams;
-        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-        // 서버에서 스폰된 액터는 자동으로 클라이언트로 리플리케이트됩니다.
-        APPGASCharacterNonPlayer* SpawnedMonster = GetWorld()->SpawnActor<APPGASCharacterNonPlayer>(ProxyData.MonsterClass, NavLocation.Location, FRotator::ZeroRotator, SpawnParams);
+        FNavLocation NavLocation;
+        // LastKnownLocation 주변에서 랜덤 위치 찾기
+        bool bFoundValidLocation = NavSys->GetRandomPointInNavigableRadius(ProxyData.LastKnownLocation, SpawnSearchRadius, NavLocation);
 
-        if (SpawnedMonster)
+        if (bFoundValidLocation)
         {
-            SpawnedMonster->InitialState = DesiredState; // 스폰된 몬스터에 초기 상태 전달
-            SpawnedMonster->SetReplicates(true);
-            SpawnedMonster->SetReplicateMovement(true);
+            // 4. Z축 보정: NavMesh 좌표(바닥) + 캡슐 절반 높이 + 약간의 여유값(5.0f)
+            // 이렇게 해야 몬스터의 중심이 땅 위로 올라옵니다.
+            FVector SpawnLocation = NavLocation.Location;
+            SpawnLocation.Z += CapsuleHalfHeight + 5.0f;
+
+            APPGASCharacterNonPlayer* SpawnedMonster = GetWorld()->SpawnActor<APPGASCharacterNonPlayer>(
+                ProxyData.MonsterClass,
+                SpawnLocation,
+                FRotator::ZeroRotator,
+                SpawnParams
+            );
+
+            // 스폰에 성공했다면 (충돌이 없어서 nullptr이 아니라면)
+            if (SpawnedMonster)
+            {
+                SpawnedMonster->InitialState = DesiredState;
+                SpawnedMonster->SetReplicates(true);
+                SpawnedMonster->SetReplicateMovement(true);
+
+                // 성공했으므로 리턴
+                return SpawnedMonster;
+            }
         }
-        return SpawnedMonster;
     }
 
-    //UE_LOG(LogTemp, Warning, TEXT("Could not find valid spawn location on NavMesh near %s for monster."), *ProxyData.LastKnownLocation.ToString());
+    // 모든 시도가 실패했을 경우 (로그를 남겨서 범위를 넓혀야 할지 판단)
+    // UE_LOG(LogTemp, Warning, TEXT("Failed to spawn monster after %d attempts near %s"), MaxRetryAttempts, *ProxyData.LastKnownLocation.ToString());
+
     return nullptr;
 }
 

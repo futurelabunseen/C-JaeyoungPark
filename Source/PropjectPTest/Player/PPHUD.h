@@ -18,6 +18,9 @@ public:
     void ShowBossHealthBar(AActor* BossActor);
     void HideBossHealthBar(AActor* BossActor);
 
+    // 외부에서 만든 위젯을 HUD 관리 목록(CurrentWidgets)에 등록하는 함수
+    void RegisterWidgetToHUD(UUserWidget* InWidget);
+
     UFUNCTION(BlueprintCallable, Category = "HUD")
     void SetHUDVisibility(bool bVisible);
 

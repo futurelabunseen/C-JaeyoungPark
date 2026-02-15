@@ -19,30 +19,27 @@ void APPCharacterNonPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 void APPCharacterNonPlayer::SetDead()
 {
-    // 상위 클래스(APPCharacter)의 SetDead 호출
+    // 부모의 SetDead 호출 
+    // -> 여기서 IsDeadFlag = true가 되고, 서버는 즉시 OnRep_IsDeadFlag 호출됨.
+    // -> 클라이언트는 복제 후 OnRep_IsDeadFlag 호출됨.
     Super::SetDead();
 
-    // AI 및 움직임 정지
-    AAIController* AIController = Cast<AAIController>(GetController());
-    if (IsValid(AIController))
-    {
-        AIController->StopMovement();
-        AIController->UnPossess();
-    }
-
+    // AI 정리 (서버에서만 실행하면 됨)
     if (HasAuthority())
     {
-        // 타이머 시간 계산
+        AAIController* AIController = Cast<AAIController>(GetController());
+        if (IsValid(AIController))
+        {
+            AIController->StopMovement();
+            AIController->UnPossess();
+        }
+
+        // 액터 파괴 예약 (서버 권한)
         float AnimLength = 1.5f;
         if (GetDeadMontage())
         {
             AnimLength = GetDeadMontage()->GetPlayLength() - 0.1f;
         }
-
-        // [타이머 1] 애니메이션 끝날 때쯤 -> 디졸브 시작 (Multicast)
-        GetWorld()->GetTimerManager().SetTimer(DissolveTimerHandle, this, &APPCharacterNonPlayer::Multicast_StartDissolve, AnimLength, false);
-
-        // [타이머 2] 파괴 예약
         float TotalDestroyDelay = AnimLength + DeadEventDelayTime;
 
         GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
@@ -54,10 +51,24 @@ void APPCharacterNonPlayer::SetDead()
     }
 }
 
-void APPCharacterNonPlayer::Multicast_StartDissolve_Implementation()
+void APPCharacterNonPlayer::OnRep_IsDeadFlag()
 {
-    // 몬스터 몸체(Mesh) 녹이기 시작
-    StartDissolveTimeline();
+    // 부모의 기본 로직 실행 (애니메이션 재생, 콜리전 끄기 등)
+    Super::OnRep_IsDeadFlag();
+
+    // 만약 죽은 상태라면 -> 디졸브 스케줄링 시작
+    if (IsDeadFlag)
+    {
+        float AnimLength = 1.5f;
+        if (GetDeadMontage())
+        {
+            AnimLength = GetDeadMontage()->GetPlayLength() - 0.1f;
+        }
+
+        // "애니메이션이 끝날 때쯤" 디졸브를 시작하기 위해 로컬 타이머 설정
+        // 이 코드는 서버(Listen Server)와 모든 클라이언트에서 각자 실행됨
+        GetWorld()->GetTimerManager().SetTimer(DissolveTimerHandle, this, &APPCharacterNonPlayer::StartDissolveTimeline, AnimLength, false);
+    }
 }
 
 void APPCharacterNonPlayer::StartDissolveTimeline()

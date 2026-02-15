@@ -185,3 +185,13 @@ void APPHUD::ToggleMinimap()
         MinimapWidget->SetVisibility(NewVisibility);
     }
 }
+
+void APPHUD::RegisterWidgetToHUD(UUserWidget* InWidget)
+{
+    if (IsValid(InWidget))
+    {
+        // 핵심: 질문하신 대로 CurrentWidgets 리스트에 추가합니다!
+        // AddUnique를 써서 실수로 두 번 등록되는 것을 방지합니다.
+        CurrentWidgets.AddUnique(InWidget);
+    }
+}
