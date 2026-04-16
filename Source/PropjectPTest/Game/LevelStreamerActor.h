@@ -14,25 +14,28 @@ public:
     ALevelStreamerActor();
 
 protected:
-    UPROPERTY(VisibleAnywhere)
+    // 트리거 박스
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LevelStreamer")
     UBoxComponent* TriggerBox;
 
-    UPROPERTY(EditAnywhere)
+    // 에디터에서 수정 가능한 레벨 이름
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelStreamer")
     FName DungeonLevelName;
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelStreamer")
     FName BossLevelName;
 
-    UPROPERTY(EditAnywhere)
+    // 보스 방 이동 좌표
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelStreamer")
     FVector BossStartLocation;
 
-    // 타이머 핸들 (지연 언로드용)
+    // 중복 로딩 방지 플래그
+    bool bIsLoading = false;
+
     FTimerHandle UnloadTimerHandle;
 
     UFUNCTION()
-    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-        bool bFromSweep, const FHitResult& SweepResult);
+    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
     UFUNCTION()
     void OnBossLevelLoaded();
@@ -40,17 +43,11 @@ protected:
     UFUNCTION()
     void OnBossLevelVisible();
 
-    UFUNCTION(NetMulticast, Reliable)
-    void MulticastMovePlayers();
-
-    UFUNCTION()
-    void OnLevelUnloaded(); // 빈 껍데기 함수
-
-    // [추가] 언로드 작업을 수행할 함수
     UFUNCTION()
     void DelayedUnloadDungeon();
 
-    // [추가] 언로드 완료 콜백 (로그 경고 해결용)
     UFUNCTION()
     void OnDungeonUnloaded();
+
+    void MoveAllPlayersToBossRoom();
 };
